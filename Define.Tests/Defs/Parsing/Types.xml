@@ -1,0 +1,10 @@
+﻿<Defs>
+  <Def Type="ParserDef">
+    <Types>
+      <li>StringBuilder</li>
+      <li>Vector[double]</li>
+      <li>Span[char]</li>
+      <li>Dictionary[Vector[float], List[ValueTuple[string, float]]]</li>
+    </Types>
+  </Def>
+</Defs>

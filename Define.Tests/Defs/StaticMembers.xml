@@ -1,0 +1,6 @@
+﻿<Defs>
+  <MyDef Type="MemberTypeDef">
+    <StaticField>StaticFieldData</StaticField>
+    <StaticProperty>StaticPropData</StaticProperty>
+  </MyDef>
+</Defs>

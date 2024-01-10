@@ -1,0 +1,27 @@
+﻿<Defs>
+  <MyDef Type="TestDef" Abstract="true">
+    <Object Type="int">555</Object>
+    <Dict KeyType="string" ElementType="InnerData">
+      <FirstItem>
+        <SomeData>First item data</SomeData>
+        <OtherData>5</OtherData>
+      </FirstItem>
+      <SecondItem>
+        <SomeData>Second item data</SomeData>
+        <OtherData>8888</OtherData>
+      </SecondItem>
+    </Dict>
+  </MyDef>
+  
+  <MyDefSub Parent="MyDef">
+    <Dict>
+      <FirstItem>
+        <SomeData>Override first item!</SomeData>
+      </FirstItem>
+      <ThirdItem Type="InnerGrandSub">
+        <SomeData>Third item data</SomeData>
+        <AnInt>123</AnInt>
+      </ThirdItem>
+    </Dict>
+  </MyDefSub>
+</Defs>

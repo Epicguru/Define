@@ -1,0 +1,21 @@
+﻿<Defs>
+  <MyTestDef Type="TestDef">
+    <Object Null="true"/>
+  </MyTestDef>
+
+  <!-- All the following should have a non-null object: -->
+  <MyTestDef2 Type="TestDef">
+    <Object Null="false"/>
+  </MyTestDef2>
+
+  <MyTestDef3 Type="TestDef">
+    <Object/>
+  </MyTestDef3>
+
+  <MyTestDef4 Type="TestDef">
+    <Object/>
+  </MyTestDef4>
+
+  <MyTestDef5 Type="TestDef">
+  </MyTestDef5>
+</Defs>

@@ -1,0 +1,10 @@
+﻿<Defs>
+  <MyTestDef Type="TestDef">
+    <List>
+      <list-item Null="true" />
+      <list-item Null="true" />
+      <list-item Null="true" />
+      <list-item Null="true" />
+    </List>
+  </MyTestDef>
+</Defs>

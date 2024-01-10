@@ -1,0 +1,5 @@
+﻿<Defs>
+  <MyDef Type="MemberTypeDef">
+    <PropertyNoSetter>Some Data</PropertyNoSetter>
+  </MyDef>
+</Defs>

@@ -1,0 +1,18 @@
+﻿<Defs>
+  <MyTestDef Type="TestDef">
+    <List>
+      <li Null="true" />
+      <li>MyTestDef</li>
+      <li>MyTestDef2</li>
+      <li>MyTestDef3</li>
+    </List>
+  </MyTestDef>
+
+  <!-- All the following should have a non-null object: -->
+  <MyTestDef2 Type="SubclassDef">
+    <List><li>MyTestDef</li></List>
+  </MyTestDef2>
+
+  <MyTestDef3 Type="AltSubclassDef">
+  </MyTestDef3>
+</Defs>

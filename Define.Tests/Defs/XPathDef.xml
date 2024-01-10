@@ -1,0 +1,23 @@
+﻿<Defs>
+  <MyDef Type="TestDef">
+    <SomeData>Some Data</SomeData>
+    <List>
+      <li Null="true" />
+      <li Null="true" />
+      <li Null="true" />
+    </List>
+  </MyDef>
+
+  <OtherDef Type="TestDef">
+    <SomeData>Some Data 2</SomeData>
+    <List>
+      <li Null="true" ><!-- First --></li>
+      <li Null="true" ><!-- Second --></li>
+      <li Null="true" ><!-- Third --></li>
+    </List>
+    <Inner>
+      
+    </Inner>
+  </OtherDef>
+  
+</Defs>

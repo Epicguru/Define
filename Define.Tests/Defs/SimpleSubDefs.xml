@@ -1,0 +1,10 @@
+﻿<Defs>
+  <MyTestDef Type="TestDef">
+  </MyTestDef>
+
+  <MyTestDef2 Type="SubclassDef" Abstract="true">
+  </MyTestDef2>
+
+  <MyTestDef3 Type="AltSubclassDef">
+  </MyTestDef3>
+</Defs>

@@ -1,0 +1,10 @@
+﻿<Defs>
+  <MyTestDef Type="TestDef">
+    <List>
+      <list-item Null="true" />
+      <randomName Null="true" />
+      <somethingHere Null="true" />
+      <la-di-da Null="true" />
+    </List>
+  </MyTestDef>
+</Defs>

@@ -1,0 +1,5 @@
+﻿<Defs>
+  <MyDef Type="ThrowExceptionsDef">
+    <SomeData>Some Data</SomeData>
+  </MyDef>
+</Defs>

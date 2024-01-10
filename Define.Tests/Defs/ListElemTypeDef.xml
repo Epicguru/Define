@@ -1,0 +1,17 @@
+﻿<Defs>
+  <TestDef Type="TestDef" Abstract="true">
+    <InnerDataList ElementType="InnerSub">
+      <li Type="InnerGrandSub">
+        <AnInt>1234</AnInt>
+      </li>
+    </InnerDataList>
+  </TestDef>
+  
+  <TestDef2 Parent="TestDef">
+    <InnerDataList>
+      <li>
+        <InnerSubData>Hello, world!</InnerSubData>
+      </li>
+    </InnerDataList>
+  </TestDef2>
+</Defs>
