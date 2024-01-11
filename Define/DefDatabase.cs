@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO.Compression;
 using System.Text;
 using System.Xml;
 using Define.Xml;
@@ -9,39 +10,38 @@ namespace Define;
 /// The def database tracks all loaded <see cref="IDef"/>s.
 /// It has method to load, register, unregister and get defs.
 /// </summary>
-public static class DefDatabase
+public class DefDatabase
 {
     /// <summary>
     /// The total number of defs currently loaded.
     /// </summary>
-    public static int Count => allDefs.Count;
+    public int Count => allDefs.Count;
     /// <summary>
     /// The number of def containers currently loaded.
     /// The number of containers depends on the inheritance hierarchy of all loaded defs,
     /// as well as the number of unique interfaces they implement.
     /// This value should be used for diagnostics only.
     /// </summary>
-    public static int ContainerCount => defsOfType.Count;
-    
+    public int ContainerCount => defsOfType.Count;
     /// <summary>
     /// The <see cref="XmlLoader"/> that is used during the def loading process.
     /// This loader is only non-null after <see cref="StartLoading"/> is called
     /// and before <see cref="FinishLoading"/> is called.
     /// This loader can be configured to add or remove parsers.
     /// </summary>
-    public static XmlLoader? Loader { get; private set; }
+    public XmlLoader? Loader { get; private set; }
 
-    private static readonly Dictionary<string, IDef> idToDef = new Dictionary<string, IDef>(4096);
-    private static readonly List<IDef> allDefs = new List<IDef>(4096);
-    private static readonly Dictionary<Type, DefContainer> defsOfType = new Dictionary<Type, DefContainer>(128);
-    private static string? finalMasterDocument;
-    private static bool isReload;
-
+    private readonly Dictionary<string, IDef> idToDef = new Dictionary<string, IDef>(4096);
+    private readonly List<IDef> allDefs = new List<IDef>(4096);
+    private readonly Dictionary<Type, DefContainer> defsOfType = new Dictionary<Type, DefContainer>(128);
+    private string? finalMasterDocument;
+    private bool isReload;
+    
     /// <summary>
     /// Clears the def database of all defs.
     /// If the loading process is currently active it is cancelled.
     /// </summary>
-    public static void Clear()
+    public void Clear()
     {
         idToDef.Clear();
         allDefs.Clear();
@@ -51,7 +51,7 @@ public static class DefDatabase
         Loader = null;
         finalMasterDocument = null;
     }
-
+    
     /// <summary>
     /// Starts the def loading process using the provided config.
     /// After this call, <see cref="AddDefDocument(XmlDocument, string)"/> and similar methods can be called.
@@ -61,7 +61,7 @@ public static class DefDatabase
     /// <param name="reloading">If true, the loaded defs are applied to any existing loaded defs. If false, attempting to load defs with IDs that match existing defs will cause an error.</param>
     /// <exception cref="Exception">If the loading process has already been started and not finished by calling <see cref="FinishLoading"/>.</exception>
     /// <exception cref="ArgumentNullException">If the <paramref name="config"/> is null.</exception>
-    public static void StartLoading(DefLoadConfig config, bool reloading = false)
+    public void StartLoading(DefLoadConfig config, bool reloading = false)
     {
         if (Loader != null)
             throw new Exception("The loading process has already been started.");
@@ -73,6 +73,100 @@ public static class DefDatabase
     }
 
     /// <summary>
+    /// Loads all def (.xml) files from inside the ZIP file at the specified path.
+    /// The ZIP file should not be encrypted!
+    /// The archive is read asynchronously, <b>but it is not thread-safe!</b>
+    /// Only call from one thread at a time!
+    /// </summary>
+    /// <param name="zipFilePath">The file path of the ZIP file.</param>
+    /// <returns>True if adding the defs was successful, false otherwise.</returns>
+    public async Task<bool> AddDefsFromZipAsync(string zipFilePath)
+    {
+        if (!File.Exists(zipFilePath))
+        {
+            DefDebugger.Error($"Failed to find zip file at '{zipFilePath}'");
+            return false;
+        }
+
+        await using var fs = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using var zip = new ZipArchive(fs, ZipArchiveMode.Read);
+        
+        return await AddDefsFromZipAsync(zip);
+    }
+    
+    /// <summary>
+    /// Loads all def (.xml) files from inside the ZIP file at the specified path.
+    /// The ZIP file should not be encrypted!
+    /// </summary>
+    /// <param name="zipFilePath">The file path of the ZIP file.</param>
+    /// <returns>True if adding the defs was successful, false otherwise.</returns>
+    public bool AddDefsFromZip(string zipFilePath)
+    {
+        if (!File.Exists(zipFilePath))
+        {
+            DefDebugger.Error($"Failed to find zip file at '{zipFilePath}'");
+            return false;
+        }
+
+        using var fs = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using var zip = new ZipArchive(fs, ZipArchiveMode.Read);
+        
+        return AddDefsFromZip(zip);
+    }
+    
+    /// <summary>
+    /// Loads all def (.xml) files from inside this ZIP archive.
+    /// </summary>
+    /// <param name="zipArchive">The zip archive to load xml files from. Must be readable.</param>
+    /// <returns>True if loading all zip files succeeded, false otherwise.</returns>
+    public bool AddDefsFromZip(ZipArchive zipArchive)
+    {
+        ArgumentNullException.ThrowIfNull(zipArchive);
+
+        bool success = true;
+        
+        foreach (var entry in zipArchive.Entries)
+        {
+            if (new FileInfo(entry.FullName).Extension != ".xml")
+                continue;
+
+            using var stream = entry.Open();
+            bool worked = AddDefDocument(stream, entry.FullName);
+            if (!worked)
+                success = false;
+        }
+
+        return success;
+    }
+    
+    /// <summary>
+    /// Loads all def (.xml) files from inside this ZIP archive.
+    /// The archive is read asynchronously, <b>but it is not thread-safe!</b>
+    /// Only call from one thread at a time!
+    /// </summary>
+    /// <param name="zipArchive">The zip archive to load xml files from. Must be readable.</param>
+    /// <returns>True if loading all zip files succeeded, false otherwise.</returns>
+    public async Task<bool> AddDefsFromZipAsync(ZipArchive zipArchive)
+    {
+        ArgumentNullException.ThrowIfNull(zipArchive);
+
+        bool success = true;
+        
+        foreach (var entry in zipArchive.Entries)
+        {
+            if (new FileInfo(entry.FullName).Extension != ".xml")
+                continue;
+
+            await using var stream = entry.Open();
+            bool worked = await AddDefDocumentAsync(stream, entry.FullName);
+            if (!worked)
+                success = false;
+        }
+
+        return success;
+    }
+
+    /// <summary>
     /// Adds a def file that is read from a stream.
     /// The stream is read until the end.
     /// </summary>
@@ -80,24 +174,93 @@ public static class DefDatabase
     /// <param name="source">The source of this document. Used for debugging only.</param>
     /// <param name="encoding">The text encoding to use when reading from the stream. If null, UTF8 is used unless a different encoding is detected.</param>
     /// <param name="closeStream">If true, the stream is closed once reading is done. Defaults to false.</param>
-    public static void AddDefDocument(Stream documentStream, string source, Encoding? encoding = null, bool closeStream = false)
+    /// <returns>True if the operation succeeded, false otherwise. In the case of an error (returning false), an error will be raised using the <see cref="DefDebugger"/> error event.</returns>
+    public bool AddDefDocument(Stream documentStream, string source, Encoding? encoding = null, bool closeStream = false)
     {
         ArgumentNullException.ThrowIfNull(documentStream);
-
-        using var reader = new StreamReader(documentStream, encoding, leaveOpen: !closeStream);
-        AddDefDocument(reader, source);
+        try
+        {
+            using var reader = new StreamReader(documentStream, encoding, leaveOpen: !closeStream);
+            return AddDefDocument(reader, source);
+        }
+        catch (Exception e)
+        {
+            DefDebugger.Error($"Exception creating stream reader when trying to read def document '{source}'. The stream may not be readable.", e);
+            return false;
+        }
     }
 
+    /// <summary>
+    /// Adds a def file that is read from a stream.
+    /// The stream is read until the end.
+    /// The stream is read asynchronously, <b>but it is not thread-safe!</b>
+    /// Only call from one thread at a time!
+    /// </summary>
+    /// <param name="documentStream">The document text stream. It is read into text using provided <paramref name="encoding"/>.</param>
+    /// <param name="source">The source of this document. Used for debugging only.</param>
+    /// <param name="encoding">The text encoding to use when reading from the stream. If null, UTF8 is used unless a different encoding is detected.</param>
+    /// <param name="closeStream">If true, the stream is closed once reading is done. Defaults to false.</param>
+    /// <returns>True if the operation succeeded, false otherwise. In the case of an error (returning false), an error will be raised using the <see cref="DefDebugger"/> error event.</returns>
+    public async Task<bool> AddDefDocumentAsync(Stream documentStream, string source, Encoding? encoding = null, bool closeStream = false)
+    {
+        ArgumentNullException.ThrowIfNull(documentStream);
+        try
+        {
+            using var reader = new StreamReader(documentStream, encoding, leaveOpen: !closeStream);
+            return await AddDefDocumentAsync(reader, source);
+        }
+        catch (Exception e)
+        {
+            DefDebugger.Error($"Exception creating stream reader when trying to read def document '{source}'. The stream may not be readable.", e);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Adds a def file that is read from the provided <see cref="StreamReader"/>.
+    /// The stream is read asynchronously, <b>but it is not thread-safe!</b>
+    /// Only call from one thread at a time!
+    /// </summary>
+    /// <param name="streamReader">The reader to read XML text from. The stream is read until the end.</param>
+    /// <param name="source">The source of this document. Used for debugging only.</param>
+    /// <returns>True if the operation succeeded, false otherwise. In the case of an error (returning false), an error will be raised using the <see cref="DefDebugger"/> error event.</returns>
+    public async Task<bool> AddDefDocumentAsync(StreamReader streamReader, string source)
+    {
+        ArgumentNullException.ThrowIfNull(streamReader);
+        try
+        {
+            string xml = await streamReader.ReadToEndAsync();
+            return AddDefDocument(xml, source);
+        }
+        catch (Exception e)
+        {
+            DefDebugger.Error($"Exception when reading def document from '{source}'", e);
+            return false;
+        }
+    }
+    
     /// <summary>
     /// Adds a def file that is read from the provided <see cref="StreamReader"/>.
     /// </summary>
     /// <param name="streamReader">The reader to read XML text from. The stream is read until the end.</param>
     /// <param name="source">The source of this document. Used for debugging only.</param>
-    public static void AddDefDocument(StreamReader streamReader, string source)
+    /// <returns>True if the operation succeeded, false otherwise. In the case of an error (returning false), an error will be raised using the <see cref="DefDebugger"/> error event.</returns>
+    public bool AddDefDocument(StreamReader streamReader, string source)
     {
         ArgumentNullException.ThrowIfNull(streamReader);
-        string xml = streamReader.ReadToEnd();
-        AddDefDocument(xml, source);
+
+        string xml;
+        try
+        {
+            xml = streamReader.ReadToEnd();
+        }
+        catch (Exception e)
+        {
+            DefDebugger.Error($"Exception reading stream when adding def document '{source}'", e);
+            return false;
+        }
+        
+        return AddDefDocument(xml, source);
     }
     
     /// <summary>
@@ -105,25 +268,127 @@ public static class DefDatabase
     /// </summary>
     /// <param name="xmlDocumentContents">The contents of the XML file.</param>
     /// <param name="source">The source of this document. Used for debugging only.</param>
-    public static void AddDefDocument(string xmlDocumentContents, string source)
+    /// <returns>True if the operation succeeded, false otherwise. In the case of an error (returning false), an error will be raised using the <see cref="DefDebugger"/> error event.</returns>
+    public bool AddDefDocument(string xmlDocumentContents, string source)
     {
         ArgumentException.ThrowIfNullOrEmpty(xmlDocumentContents);
 
-        var doc = new XmlDocument
+        XmlDocument doc;
+        try
         {
-            PreserveWhitespace = true
-        };
-        doc.LoadXml(xmlDocumentContents);
+            doc = new XmlDocument
+            {
+                PreserveWhitespace = true
+            };
+            doc.LoadXml(xmlDocumentContents);
+        }
+        catch (Exception e)
+        {
+            DefDebugger.Error($"Exception parsing def file '{source}':", e);
+            return false;
+        }
+
+        try
+        {
+            AddDefDocument(doc, source);
+            return true;
+        }
+        catch (Exception e)
+        {
+            DefDebugger.Error($"Exception adding def document '{source}':", e);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Loads all def files in the specified folder into the database ready to be loaded.
+    /// This is equivalent to calling <see cref="AddDefDocument(System.IO.Stream,string,System.Text.Encoding?,bool)"/>
+    /// for each XML file in the folder.
+    /// The method returns true if every def file was added successfully, and false if any or all failed to be added.
+    /// </summary>
+    /// <param name="folderPath">The folder to load def files from.</param>
+    /// <param name="searchOption">Determines whether sub-folders should also be searched. Defaults to include sub-folders.</param>
+    /// <param name="searchPattern">Determines what file extension is searched for. Defaults to search for .xml files.</param>
+    /// <returns>True if every def file was added successfully, and false if any or all failed to be added</returns>
+    public bool AddDefFolder(string folderPath, SearchOption searchOption = SearchOption.AllDirectories, string searchPattern = "*.xml")
+    {
+        if (!Directory.Exists(folderPath))
+        {
+            DefDebugger.Error($"Failed to find directory '{folderPath}' to load defs from.");
+            return false;
+        }
+
+        bool success = true;
         
-        AddDefDocument(doc, source);
+        foreach (var file in Directory.EnumerateFiles(folderPath, searchPattern, searchOption))
+        {
+            bool worked;
+            try
+            {
+                using var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+                worked = AddDefDocument(fs, file);
+            }
+            catch (Exception e)
+            {
+                DefDebugger.Error($"Exception creating file stream when trying to read def document '{file}'.", e);
+                worked = false;
+            }
+
+            if (!worked)
+                success = false;
+        }
+        
+        return success;
+    }
+    
+    /// <summary>
+    /// Loads all def files in the specified folder into the database ready to be loaded.
+    /// The files are read asynchronously.
+    /// This is equivalent to calling <see cref="AddDefDocumentAsync(System.IO.Stream,string,System.Text.Encoding?,bool)"/>
+    /// for each XML file in the folder.
+    /// The method returns true if every def file was added successfully, and false if any or all failed to be added.
+    /// </summary>
+    /// <param name="folderPath">The folder to load def files from.</param>
+    /// <param name="searchOption">Determines whether sub-folders should also be searched. Defaults to include sub-folders.</param>
+    /// <param name="searchPattern">Determines what file extension is searched for. Defaults to search for .xml files.</param>
+    /// <returns>true if every def file was added successfully, and false if any or all failed to be added</returns>
+    public async Task<bool> AddDefFolderAsync(string folderPath, SearchOption searchOption = SearchOption.AllDirectories, string searchPattern = "*.xml")
+    {
+        if (!Directory.Exists(folderPath))
+            throw new DirectoryNotFoundException($"Could find find directory '{folderPath}'");
+
+        bool success = true;
+        
+        foreach (var file in Directory.EnumerateFiles(folderPath, searchPattern, searchOption))
+        {
+            bool worked;
+            try
+            {
+                await using var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+                worked = await AddDefDocumentAsync(fs, file);
+            }
+            catch (Exception e)
+            {
+                DefDebugger.Error($"Exception creating file stream when trying to read def document '{file}'.", e);
+                worked = false;
+            }
+
+            if (!worked)
+                success = false;
+        }
+        
+        return success;
     }
     
     /// <summary>
     /// Adds a new def document.
+    /// This operation will throw an exception if adding the document fails, such as due to an invalid format or contents.
+    /// Note that this call does not actually parse the document, that is done in <see cref="FinishLoading"/>.
     /// </summary>
     /// <param name="document">The XML document to register.</param>
     /// <param name="source">The source of this document. Used for debugging only.</param>
-    public static void AddDefDocument(XmlDocument document, string source)
+    /// <returns>True if the operation succeeded, false otherwise. In the case of an error (returning false), an error will be raised using the <see cref="DefDebugger"/> error event.</returns>
+    public void AddDefDocument(XmlDocument document, string source)
     {
         ArgumentNullException.ThrowIfNull(document);
 
@@ -140,7 +405,7 @@ public static class DefDatabase
     /// This call will parse and register all defs, and also do post-load callbacks on all parsed objects.
     /// </summary>
     /// <exception cref="Exception">If loading has not been started.</exception>
-    public static void FinishLoading()
+    public void FinishLoading()
     {
         if (Loader == null)
             throw new Exception("The loading process has not been started, call StartLoading() first.");
@@ -174,9 +439,9 @@ public static class DefDatabase
     /// for the latest loading process.
     /// Used for debugging only.
     /// </summary>
-    public static string? GetMasterDocumentXML() => finalMasterDocument ?? Loader?.GetMasterDocumentXml() ?? null;
+    public string? GetMasterDocumentXML() => finalMasterDocument ?? Loader?.GetMasterDocumentXml() ?? null;
 
-    private static void DoPostLoadCallbacks()
+    private void DoPostLoadCallbacks()
     {
         ArgumentNullException.ThrowIfNull(Loader);
 
@@ -236,7 +501,7 @@ public static class DefDatabase
     /// </summary>
     /// <param name="id">The case-sensitive ID of the def to look for.</param>
     /// <returns>The found def, or null.</returns>
-    public static IDef? Get(string id) => idToDef.GetValueOrDefault(id);
+    public IDef? Get(string id) => idToDef.GetValueOrDefault(id);
     
     /// <summary>
     /// Tries to get a def of type <see cref="T"/> based on its <see cref="IDef.ID"/>.
@@ -244,7 +509,7 @@ public static class DefDatabase
     /// </summary>
     /// <param name="id">The case-sensitive ID of the def to look for.</param>
     /// <returns>The found def, or null.</returns>
-    public static T? Get<T>(string id) where T : class => idToDef.TryGetValue(id, out var found) ? found as T : null;
+    public T? Get<T>(string id) where T : class => idToDef.TryGetValue(id, out var found) ? found as T : null;
 
     /// <summary>
     /// Registers a new def to the database, allowing it to be accessed via the <see cref="Get"/> family of methods.
@@ -255,7 +520,7 @@ public static class DefDatabase
     /// </summary>
     /// <param name="def">The def to register.</param>
     /// <returns>True on success and false otherwise.</returns>
-    public static bool Register(IDef def)
+    public bool Register(IDef def)
     {
         ArgumentNullException.ThrowIfNull(def);
 
@@ -282,7 +547,7 @@ public static class DefDatabase
     /// </summary>
     /// <param name="def">The def to remove.</param>
     /// <returns>True on success or false otherwise.</returns>
-    public static bool UnRegister(IDef def)
+    public bool UnRegister(IDef def)
     {
         ArgumentNullException.ThrowIfNull(def);
 
@@ -304,7 +569,7 @@ public static class DefDatabase
         return true;
     }
 
-    private static IEnumerable<DefContainer> GetAllContainersForDefType(Type? type)
+    private IEnumerable<DefContainer> GetAllContainersForDefType(Type? type)
     {
         if (type != null)
         {
@@ -330,7 +595,7 @@ public static class DefDatabase
     /// Gets a read-only list of all defs currently in the database.
     /// See the generic version <see cref="GetAll{T}"/> which is preferred over this one.
     /// </summary>
-    public static IReadOnlyList<IDef> GetAll() => allDefs;
+    public IReadOnlyList<IDef> GetAll() => allDefs;
 
     /// <summary>
     /// Gets a read-only list of all defs in the database that inherit from or implement the type <see name="T"/>.
@@ -341,7 +606,7 @@ public static class DefDatabase
     /// </summary>
     /// <typeparam name="T">The type of def to look for.</typeparam>
     /// <returns>The list of defs matching the target type, or an empty list if none were found.</returns>
-    public static IReadOnlyList<T> GetAll<T>() where T : class
+    public IReadOnlyList<T> GetAll<T>() where T : class
     {
         if (defsOfType.TryGetValue(typeof(T), out var found))
             return ((DefContainer<T>)found).Defs;
@@ -352,7 +617,7 @@ public static class DefDatabase
     /// <summary>
     /// Gets or creates a def container for the specified type.
     /// </summary>
-    private static DefContainer GetContainerForType(Type type)
+    private DefContainer GetContainerForType(Type type)
     {
         if (defsOfType.TryGetValue(type, out var found))
             return found;

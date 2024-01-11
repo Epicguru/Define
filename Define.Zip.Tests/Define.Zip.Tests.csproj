@@ -24,19 +24,13 @@
   
   <ItemGroup>
     <!-- Copy defs and patches folder to output. -->
-    <Content Include="Defs\**">
+    <Content Include="Content\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Patches\**">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <!-- Ignore test results -->
-    <Compile Remove="TestResults\**" />
-    <EmbeddedResource Remove="TestResults\**" />
-    <None Remove="TestResults\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Define.Zip\Define.Zip.csproj" />
     <ProjectReference Include="..\TestSharedLib\TestSharedLib.csproj" />
   </ItemGroup>
 

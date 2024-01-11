@@ -1,8 +1,11 @@
 ﻿using System.Xml;
+using Define;
 using Define.Xml;
+using FluentAssertions;
+using Xunit;
 using Xunit.Abstractions;
 
-namespace Define.Tests;
+namespace TestSharedLib;
 
 [Collection("SequentialDefTests")]
 public abstract class DefTestBase : IDisposable
@@ -11,10 +14,11 @@ public abstract class DefTestBase : IDisposable
     protected readonly ITestOutputHelper Output;
     protected readonly List<string> ErrorMessages = new List<string>();
     protected readonly List<string> WarningMessages = new List<string>();
+    protected readonly DefDatabase DefDatabase;
     
     protected DefTestBase(ITestOutputHelper output)
     {
-        DefDatabase.Clear();
+        DefDatabase = new DefDatabase();
         Output = output;
         DefDebugger.OnWarning += OnWarning;
         DefDebugger.OnError += OnError;

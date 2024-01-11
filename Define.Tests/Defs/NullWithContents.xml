@@ -1,7 +1,7 @@
 ﻿<Defs>
-  <MyTestDef Type="TestDef">
+  <MyDefWithNull Type="TestDef">
     <Inner Null="true">
       <SomeData>Hello</SomeData>
     </Inner>
-  </MyTestDef>
+  </MyDefWithNull>
 </Defs>

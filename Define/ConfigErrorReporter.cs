@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Xml;
 
 namespace Define;
 
@@ -12,24 +13,30 @@ public class ConfigErrorReporter
     /// The current <see cref="IDef"/> that is reporting errors.
     /// </summary>
     public IDef? CurrentDef { get; set; }
+    /// <summary>
+    /// The current <see cref="XmlElement"/> that is being parsed.
+    /// </summary>
+    public XmlElement? CurrentElement { get; set; }
 
     /// <summary>
     /// Logs a config error for this def.
+    /// It is logged to the <see cref="DefDebugger"/> as an error.
     /// </summary>
     /// <param name="message">The message to print. Should not be null.</param>
     /// <param name="e">The optional exception if one occurred. May be null.</param>
     public void Error(string message, Exception? e = null)
     {
-        DefDebugger.Error($"[{CurrentDef?.ID ?? "???"}] {message}", e);
+        DefDebugger.Error($"[{CurrentDef?.ID ?? "?"}, {CurrentElement?.GetFullXPath() ?? "?"}] {message}", e);
     }
 
     /// <summary>
     /// Logs a config warning for this def.
+    /// It is logged to the <see cref="DefDebugger"/> as a warning.
     /// </summary>
     /// <param name="message">The message to print. Should not be null.</param>
     public void Warn(string message)
     {
-        DefDebugger.Warn($"[{CurrentDef?.ID ?? "???"}] {message}");
+        DefDebugger.Warn($"[{CurrentDef?.ID ?? "?"}, {CurrentElement?.GetFullXPath() ?? "?"}] {message}");
     }
 
     /// <summary>

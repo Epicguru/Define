@@ -1,0 +1,5 @@
+﻿<Defs>
+  <ExampleDef Type="SimpleDef">
+    <Data>ExampleDef data here</Data>
+  </ExampleDef>
+</Defs>

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Define.Tests;
+namespace TestSharedLib;
 
 public struct ArgMatrix : IEnumerable<object[]>
 {

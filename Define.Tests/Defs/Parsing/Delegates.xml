@@ -1,9 +1,9 @@
 ﻿<Defs>
-  <Def Type="ParserDef">
+  <DelegatesDef Type="ParserDef">
     <Action>Define.Tests.ExampleMethods:SimpleAction</Action>
     <SimpleFunc>Define.Tests.ExampleMethods:SimpleFunc</SimpleFunc>
     <SimpleFunc2>Define.Tests.ExampleMethods:SimpleFunc</SimpleFunc2>
     <MethodWithOutArg>Define.Tests.ExampleMethods:MethodWithOut</MethodWithOutArg>
     <MethodDoMath>Define.Tests.ExampleMethods:GenericMath</MethodDoMath>
-  </Def>
+  </DelegatesDef>
 </Defs>

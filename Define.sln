@@ -4,6 +4,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Define", "Define\Define.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Define.Tests", "Define.Tests\Define.Tests.csproj", "{9B114FD4-8762-4189-B93B-5DBEA6E56081}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Define.Zip", "Define.Zip\Define.Zip.csproj", "{C5538DBB-08DC-43FF-8E04-5BB799225EE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Define.Zip.Tests", "Define.Zip.Tests\Define.Zip.Tests.csproj", "{7F036BC3-A492-466E-B5D8-A53DB76A7007}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSharedLib", "TestSharedLib\TestSharedLib.csproj", "{556206C5-855A-4976-A26B-87AC39C82804}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +24,17 @@ Global
 		{9B114FD4-8762-4189-B93B-5DBEA6E56081}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B114FD4-8762-4189-B93B-5DBEA6E56081}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B114FD4-8762-4189-B93B-5DBEA6E56081}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5538DBB-08DC-43FF-8E04-5BB799225EE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5538DBB-08DC-43FF-8E04-5BB799225EE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5538DBB-08DC-43FF-8E04-5BB799225EE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5538DBB-08DC-43FF-8E04-5BB799225EE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F036BC3-A492-466E-B5D8-A53DB76A7007}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F036BC3-A492-466E-B5D8-A53DB76A7007}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F036BC3-A492-466E-B5D8-A53DB76A7007}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F036BC3-A492-466E-B5D8-A53DB76A7007}.Release|Any CPU.Build.0 = Release|Any CPU
+		{556206C5-855A-4976-A26B-87AC39C82804}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{556206C5-855A-4976-A26B-87AC39C82804}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{556206C5-855A-4976-A26B-87AC39C82804}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{556206C5-855A-4976-A26B-87AC39C82804}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
