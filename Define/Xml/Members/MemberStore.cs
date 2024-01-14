@@ -14,10 +14,10 @@ public class MemberStore
     /// </summary>
     public readonly Type TargetType;
     /// <summary>
-    /// The <see cref="DefLoadConfig"/> that was used when creating this member store - this
+    /// The <see cref="DefSerializeConfig"/> that was used when creating this member store - this
     /// changes what types of field and properties are discovered, among other settings.
     /// </summary>
-    public readonly DefLoadConfig Config;
+    public readonly DefSerializeConfig Config;
 
     private readonly Dictionary<string, MemberWrapper> members = new Dictionary<string, MemberWrapper>();
 
@@ -25,10 +25,10 @@ public class MemberStore
     /// Creates a new member store for a particular type (<paramref name="targetType"/>)
     /// using a config that defines how members are found.
     /// </summary>
-    /// <param name="config">The config to use when finding members on the target type. See <see cref="DefLoadConfig"/> for more info.</param>
+    /// <param name="config">The config to use when finding members on the target type. See <see cref="DefSerializeConfig"/> for more info.</param>
     /// <param name="targetType">The <see cref="Type"/> to look for fields and properties in.</param>
     /// <exception cref="ArgumentNullException">If either parameter is null.</exception>
-    public MemberStore(DefLoadConfig config, Type targetType)
+    public MemberStore(DefSerializeConfig config, Type targetType)
     {
         TargetType = targetType ?? throw new ArgumentNullException(nameof(targetType));
         Config = config ?? throw new ArgumentNullException(nameof(config));
@@ -133,7 +133,7 @@ public class MemberStore
     /// can be configured using <see cref="Config"/>.
     /// The return value of this method is cached to repeated calls are fast.
     /// Note: If the target type has multiple members with the same name
-    /// (or the same name with different capitalization if <see cref="DefLoadConfig.MemberNamesAreCaseSensitive"/> is set to false)
+    /// (or the same name with different capitalization if <see cref="DefSerializeConfig.MemberNamesAreCaseSensitive"/> is set to false)
     /// then the member returned by this is non-deterministic. Use <see cref="GetMembers"/> instead to enumerate all
     /// possible matches instead.
     /// </summary>
@@ -155,7 +155,7 @@ public class MemberStore
     /// What fields/properties can be found, and other settings,
     /// can be configured using <see cref="Config"/>.
     /// Note: If the target type has multiple members with the same name
-    /// (or the same name with different capitalization if <see cref="DefLoadConfig.MemberNamesAreCaseSensitive"/> is set to false)
+    /// (or the same name with different capitalization if <see cref="DefSerializeConfig.MemberNamesAreCaseSensitive"/> is set to false)
     /// then the member returned by this is non-deterministic and as such avoiding duplicate field names is encouraged.
     /// The return value of this method is cached to repeated calls are fast.
     /// </summary>

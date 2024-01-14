@@ -1,0 +1,6 @@
+﻿<Defs>
+  <RectangleDef Type="RectangleDef">
+    <Rectangle>(10, 12, -15, 20)</Rectangle>
+    <RectangleNullable>(11, 12, 15, 21)</RectangleNullable>
+  </RectangleDef>
+</Defs>

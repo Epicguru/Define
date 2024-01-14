@@ -2,6 +2,10 @@
 
 namespace Define.Zip;
 
+/// <summary>
+/// Extension methods for <see cref="DefDatabase"/>
+/// that add support for encrypted ZIP files.
+/// </summary>
 public static class ZipFileMethods
 {
     /// <summary>

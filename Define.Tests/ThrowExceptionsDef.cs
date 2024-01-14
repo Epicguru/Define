@@ -23,6 +23,9 @@ public class ThrowExceptionsDef : IDef, IPostLoad, IConfigErrors, IPostXmlConstr
 
     public void ConfigErrors(ConfigErrorReporter config)
     {
+        config.Warn("This is a warning");
+        config.Error("This is an error", new Exception("Some exception"));
+        config.Assert(true);
         throw new Exception("ConfigErrors exception!");
     }
 

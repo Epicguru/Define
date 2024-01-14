@@ -50,6 +50,10 @@ public class XmlLoader : IDisposable
     /// Gets a read-only list of all <see cref="XmlParser"/>s that are currently registered to this loader.
     /// </summary>
     public IReadOnlyList<XmlParser> AllParsers => allParsers;
+    /// <summary>
+    /// A collection of types that had static data loaded into them.
+    /// </summary>
+    public HashSet<Type> TypesWithStaticData { get; } = new HashSet<Type>();
 
     internal bool TypeToParserIsDirty { get; set; }
     
@@ -57,7 +61,7 @@ public class XmlLoader : IDisposable
     /// The config that is being used to parse defs.
     /// Passed in through the constructor.
     /// </summary>
-    public readonly DefLoadConfig Config;
+    public readonly DefSerializeConfig Config;
     /// <summary>
     /// A list of items that need to have their post-load methods called.
     /// </summary>
@@ -82,7 +86,7 @@ public class XmlLoader : IDisposable
     /// using the provided config, and registers the default <see cref="XmlParser"/>.
     /// </summary>
     /// <param name="config"></param>
-    public XmlLoader(DefLoadConfig config)
+    public XmlLoader(DefSerializeConfig config)
     {
         ArgumentNullException.ThrowIfNull(config);
         Config = config;
@@ -144,6 +148,7 @@ public class XmlLoader : IDisposable
     /// <summary>
     /// Adds a new parser to this loader.
     /// Parsers can be retrieved using <see cref="TryGetParser"/>.
+    /// Duplicate parsers will be ignored.
     /// </summary>
     public void AddParser(XmlParser parser)
     {
@@ -493,6 +498,12 @@ public class XmlLoader : IDisposable
             if (parsed is IConfigErrors configErrorItem)
                 ConfigErrorItems.Add(configErrorItem);
         }
+
+        if (context.Member is { IsValid: true, IsStatic: true, DeclaringType: not null})
+        {
+            // Loaded static data into this class here!
+            TypesWithStaticData.Add(context.Member.DeclaringType);
+        }
     }
 
     private ParseResult NodeToList(scoped in XmlParseContext context)
@@ -689,7 +700,7 @@ public class XmlLoader : IDisposable
 
         foreach (XmlNode node in context.Node!.ChildNodes)
         {
-            if (node.NodeType != XmlNodeType.Element)
+            if (ShouldSkipNodeForClassLikeParsing(node))
                 continue;
 
             // Try to find member from name.
@@ -725,6 +736,26 @@ public class XmlLoader : IDisposable
         }
 
         return new ParseResult(instance);
+    }
+
+    private static bool ShouldSkipNodeForClassLikeParsing(XmlNode node)
+    {
+        switch (node.NodeType)
+        {
+            case XmlNodeType.Element:
+                return false;
+            
+            case XmlNodeType.Whitespace:
+            case XmlNodeType.SignificantWhitespace:
+            case XmlNodeType.Comment:
+                return true;
+            
+            default:
+                var parent = node.ParentNode as XmlElement;
+                DefDebugger.Warn($"Unexpected XML node type '{node.NodeType}' found when parsing part of {parent?.GetFullXPath() ?? "?"}.\n" +
+                                  "This is often due to bad XML formatting or a missing parser.");
+                return true;
+        }
     }
 
     private static object? TryCreateInstance(Type type, in XmlParseContext context)

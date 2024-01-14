@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Define\Define.csproj" />
+    <PackageReference Include="Ceras" Version="4.1.7" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <ProjectReference Include="..\Define\Define.csproj" />
   </ItemGroup>
 
 </Project>

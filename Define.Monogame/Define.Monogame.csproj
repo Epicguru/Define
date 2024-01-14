@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" PrivateAssets="all"/>
   </ItemGroup>
 
 </Project>

@@ -1,21 +1,29 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Define;
 
 /// <summary>
-/// A class representing the configuration used when loading defs from either XML or FastCache.
+/// A class representing the configuration used when loading and saving defs from either XML or FastCache.
 /// </summary>
-public sealed class DefLoadConfig
+public sealed class DefSerializeConfig : IEquatable<DefSerializeConfig>
 {
     /// <summary>
     /// The binding flags for members that will be included in XML/FastCache serialization by default.
     /// Default value is <c>BindingFlags.Public | BindingFlags.Instance</c>
+    /// The only valid flags are:
+    /// <list type="bullet">
+    /// <item><see cref="BindingFlags.Public"/></item>
+    /// <item><see cref="BindingFlags.NonPublic"/></item>
+    /// <item><see cref="BindingFlags.Instance"/></item>
+    /// <item><see cref="BindingFlags.Static"/></item>
+    /// </list>
     /// </summary>
     public BindingFlags DefaultMemberBindingFlags { get; set; } = BindingFlags.Public | BindingFlags.Instance;
 
     /// <summary>
     /// The member types that will be included in XML/FastCache serialization by default.
-    /// Only valid values are <see cref="MemberTypes.Field"/> and <see cref="MemberTypes.Property"/>.
+    /// Only valid flags are <see cref="MemberTypes.Field"/> and <see cref="MemberTypes.Property"/>.
     /// Default value is <c>MemberTypes.Field</c>
     /// </summary>
     public MemberTypes DefaultMemberTypes { get; set; } = MemberTypes.Field;
@@ -51,4 +59,33 @@ public sealed class DefLoadConfig
     /// You can disable this for a gain in performance.
     /// </summary>
     public bool DoConfigErrors { get; set; } = true;
+
+    /// <inheritdoc/>
+    public bool Equals(DefSerializeConfig? other)
+    {
+        if (ReferenceEquals(null, other))
+            return false;
+        if (ReferenceEquals(this, other))
+            return true;
+        
+        return DefaultMemberBindingFlags == other.DefaultMemberBindingFlags 
+               && DefaultMemberTypes == other.DefaultMemberTypes 
+               && MemberNamesAreCaseSensitive == other.MemberNamesAreCaseSensitive 
+               && ListItemName == other.ListItemName 
+               && DoPostLoad == other.DoPostLoad 
+               && DoLatePostLoad == other.DoLatePostLoad 
+               && DoConfigErrors == other.DoConfigErrors;
+    }
+    
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+    {
+        return ReferenceEquals(this, obj) || obj is DefSerializeConfig other && Equals(other);
+    }
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return RuntimeHelpers.GetHashCode(this);
+    }
 }

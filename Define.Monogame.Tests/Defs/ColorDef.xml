@@ -1,0 +1,13 @@
+﻿<Defs>
+  <ColorDef Type="ColorDef">
+    <Colors>
+      <li>(0.1, 0.2, 0.3)</li>
+      <li>(0.1, 0.2, 0.3, 0.45)</li>
+      <li>#4fdb74</li>
+      <li>#4fdb74FA</li>
+      <li>Green</li>
+      <li>Aquamarine</li>
+      <li>Beige</li>
+    </Colors>
+  </ColorDef>
+</Defs>

@@ -1,0 +1,8 @@
+﻿<Defs>
+  <ExampleDef Type="SimpleDef">
+    <Data>ExampleDef data here</Data>
+    <Ref>ExampleDef2</Ref>
+    <SelfRef>ExampleDef</SelfRef>
+    <StaticField>Some static data here!</StaticField>
+  </ExampleDef>
+</Defs>

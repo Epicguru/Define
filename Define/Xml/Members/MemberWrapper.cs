@@ -45,6 +45,11 @@ public readonly struct MemberWrapper
     /// </summary>
     [MemberNotNullWhen(true, nameof(field))]
     public bool IsField => field != null;
+
+    /// <summary>
+    /// The declaring type of the field/property that this wrapper represents.
+    /// </summary>
+    public Type DeclaringType => IsField ? field.DeclaringType! : property!.DeclaringType!;
     
     /// <summary>
     /// The name of this field or property.

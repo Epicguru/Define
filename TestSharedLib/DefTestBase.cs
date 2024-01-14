@@ -10,7 +10,7 @@ namespace TestSharedLib;
 [Collection("SequentialDefTests")]
 public abstract class DefTestBase : IDisposable
 {
-    protected readonly DefLoadConfig Config = new DefLoadConfig();
+    protected readonly DefSerializeConfig Config = new DefSerializeConfig();
     protected readonly ITestOutputHelper Output;
     protected readonly List<string> ErrorMessages = new List<string>();
     protected readonly List<string> WarningMessages = new List<string>();
@@ -35,6 +35,8 @@ public abstract class DefTestBase : IDisposable
         ErrorMessages.Add(msg);
         Output.WriteLine($"Def.Prs.Err: {msg}\nException: {e}");
     }
+    
+    protected virtual void PreLoad(DefDatabase db) {}
 
     protected void LoadDefFile(string file, bool expectErrors = false, bool expectWarnings = false)
     {
@@ -48,6 +50,7 @@ public abstract class DefTestBase : IDisposable
         doc.LoadXml(xml);
 
         DefDatabase.StartLoading(Config);
+        PreLoad(DefDatabase);
         DefDatabase.AddDefDocument(doc, fullPath);
         
         DefDatabase.FinishLoading();

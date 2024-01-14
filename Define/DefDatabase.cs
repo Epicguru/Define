@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics;
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
 using Define.Xml;
 
+[assembly: InternalsVisibleTo("Define.FastCache")]
 namespace Define;
 
 /// <summary>
@@ -12,6 +14,12 @@ namespace Define;
 /// </summary>
 public class DefDatabase
 {
+    /// <summary>
+    /// If true the database is currently in the loading process,
+    /// which means after <see cref="StartLoading"/> has been called but
+    /// before <see cref="FinishLoading"/>.
+    /// </summary>
+    public bool IsLoading => Loader != null;
     /// <summary>
     /// The total number of defs currently loaded.
     /// </summary>
@@ -30,7 +38,19 @@ public class DefDatabase
     /// This loader can be configured to add or remove parsers.
     /// </summary>
     public XmlLoader? Loader { get; private set; }
-
+    /// <summary>
+    /// A read-only collection of types that had static data loaded into them.
+    /// Used for FastCache.
+    /// </summary>
+    public IReadOnlyCollection<Type> TypesWithStaticData => typesWithStaticData;
+    /// <summary>
+    /// The latest <see cref="DefSerializeConfig"/> that has been used to load
+    /// defs. Will be null until <see cref="StartLoading"/> is called, or when
+    /// a FastCache is loaded into this database.
+    /// </summary>
+    public DefSerializeConfig? Config { get; internal set; }
+    
+    private readonly HashSet<Type> typesWithStaticData = new HashSet<Type>();
     private readonly Dictionary<string, IDef> idToDef = new Dictionary<string, IDef>(4096);
     private readonly List<IDef> allDefs = new List<IDef>(4096);
     private readonly Dictionary<Type, DefContainer> defsOfType = new Dictionary<Type, DefContainer>(128);
@@ -57,11 +77,11 @@ public class DefDatabase
     /// After this call, <see cref="AddDefDocument(XmlDocument, string)"/> and similar methods can be called.
     /// If <paramref name="reloading"/> is true, then the def files are loaded into existing defs if their <see cref="IDef.ID"/>'s match.
     /// </summary>
-    /// <param name="config">The <see cref="DefLoadConfig"/> to use when loading.</param>
+    /// <param name="config">The <see cref="DefSerializeConfig"/> to use when loading.</param>
     /// <param name="reloading">If true, the loaded defs are applied to any existing loaded defs. If false, attempting to load defs with IDs that match existing defs will cause an error.</param>
     /// <exception cref="Exception">If the loading process has already been started and not finished by calling <see cref="FinishLoading"/>.</exception>
     /// <exception cref="ArgumentNullException">If the <paramref name="config"/> is null.</exception>
-    public void StartLoading(DefLoadConfig config, bool reloading = false)
+    public void StartLoading(DefSerializeConfig config, bool reloading = false)
     {
         if (Loader != null)
             throw new Exception("The loading process has already been started.");
@@ -70,6 +90,7 @@ public class DefDatabase
 
         isReload = reloading;
         Loader = new XmlLoader(config);
+        Config = config;
     }
 
     /// <summary>
@@ -427,9 +448,17 @@ public class DefDatabase
             Register(def);
         }
         
+        // Post load...
         DoPostLoadCallbacks();
 
+        // Copy the final master document xml string for future diagnostics...
         finalMasterDocument = Loader.GetMasterDocumentXml();
+        
+        // Copy over all types with static data for FastCache.
+        foreach (var item in Loader.TypesWithStaticData)
+            typesWithStaticData.Add(item);
+        
+        // Remove the loader as it is no longer needed and has a lot of garbage.
         Loader.Dispose();
         Loader = null;
     }

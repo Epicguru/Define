@@ -7,13 +7,15 @@ public class ExceptionHandlingTests(ITestOutputHelper output) : DefTestBase(outp
     [Fact]
     public void ExceptionsInCallbacksAreCaughtAndReported()
     {
-        var def = LoadSingleDef<ThrowExceptionsDef>("ExceptionDef", expectErrors: true);
+        var def = LoadSingleDef<ThrowExceptionsDef>("ExceptionDef", expectErrors: true, expectWarnings: true);
         
         // Despite the exceptions, the data should be there:
         def.SomeData.Should().Be("Some Data");
         
         // There should be 3 exceptions thrown and logged.
-        ErrorMessages.Should().HaveCount(3);
+        ErrorMessages.Should().HaveCount(4);
+        // And a warning from the config reporter.
+        WarningMessages.Should().HaveCount(1);
     }
     
     [Fact]
