@@ -15,7 +15,6 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         // Allow static fields too.
         Config.DefaultMemberBindingFlags |= BindingFlags.Static;
         
-        DefDatabase.StartLoading(Config);
         DefDatabase.AddDefFolder("./Content");
         DefDatabase.FinishLoading();
         
@@ -31,7 +30,7 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         serialised.Should().Contain(b => b != 0);
         
         // Deserialize.
-        var db2 = new DefDatabase();
+        var db2 = new DefDatabase(Config);
         var cache2 = DefFastCache.Load(serialised, Config);
         cache2.Should().BeEquivalentTo(cache);
         
@@ -52,7 +51,6 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         Config.DefaultMemberBindingFlags |= BindingFlags.Static;
 
         var timer = Stopwatch.StartNew();
-        DefDatabase.StartLoading(Config);
         DefDatabase.AddDefFolder("./Content");
         DefDatabase.FinishLoading();
         timer.Stop();
@@ -63,7 +61,7 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         var toCache = DefDatabase.CreateFastCache();
         var savedCache = toCache.Serialize();
 
-        var newDb = new DefDatabase();
+        var newDb = new DefDatabase(Config);
         
         timer = Stopwatch.StartNew();
         var loadedCache = DefFastCache.Load(savedCache, Config);

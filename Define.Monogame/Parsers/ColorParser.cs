@@ -8,8 +8,15 @@ using Microsoft.Xna.Framework;
 namespace Define.Monogame.Parsers;
 
 /// <summary>
-/// Parsers the Monogame/XNA/FNA types
-/// <see cref="ColorParser"/>.
+/// Parsers the Monogame/XNA/FNA type
+/// <see cref="Color"/>.
+/// Supports 3 colors formats:
+/// <list type="bullet">
+/// <item>(R,G,B,[A]) where each channel is a float in the range [0,1]. The alpha channel is optional and defaults to 1 if not specified.
+/// Example: <c>(1.0, 0, 0, 0.5)</c> is semi-transparent red.</item>
+/// <item>Hexadecimal in the format #RRGGBB[AA]. Note that the hex specified '#' is required. The alpha channel is optional and defaults to 100% if not specified.</item>
+/// <item>A Monogame named color, from the <see cref="Color"/> class' static properties. Examples: <c>Green</c> or <c>AliceBlue</c>. The names are not case sensitive.</item>
+/// </list>
 /// </summary>
 public sealed class ColorParser : CSVParser<float>
 {
@@ -28,7 +35,7 @@ public sealed class ColorParser : CSVParser<float>
 
             allNamedColors.Add(name, value);
         }
-    }
+    } 
     
     /// <inheritdoc />
     public ColorParser()

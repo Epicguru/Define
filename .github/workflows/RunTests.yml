@@ -30,3 +30,12 @@ jobs:
       
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
+    - name: Clear old packages
+      run: find . -name 'Packed/*.nupkg' -delete
+
+    - name: Pack libraries
+      run: dotnet pack --configuration Release --output Packed --include-symbols --no-build --no-restore
+
+    - name: Upload NuGet packages
+      run: dotnet nuget push "Packed\*.nupkg" --api-key ${{ secrets.NUGETUPLOADAPIKEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

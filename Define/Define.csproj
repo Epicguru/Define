@@ -6,7 +6,28 @@
     <Nullable>enable</Nullable>
     <WarningsAsErrors>true</WarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>A data object parser library intended for game developers.</Description>
   </PropertyGroup>
+
+  <!-- Package info -->
+  <PropertyGroup>
+    <PackageId>Define</PackageId>
+    <Title>Define</Title>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <Authors>Epicguru</Authors>
+    <PackageProjectUrl>https://github.com/Epicguru/Define</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Epicguru/Define</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PackageReadmeFile>Readme.md</PackageReadmeFile>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <None Include="..\Icon.png" Pack="true" PackagePath="\"/>
+    <None Include="Readme.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
