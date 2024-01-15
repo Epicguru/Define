@@ -33,7 +33,6 @@ public static class Extensions
     }
 
     /// <summary>
-    
     /// This sets up the serializer such that it matches this config and can handle
     /// <see cref="IDef"/>s correctly.
     /// </summary>

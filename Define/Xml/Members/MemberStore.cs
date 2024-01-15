@@ -19,7 +19,7 @@ public class MemberStore
     /// </summary>
     public readonly DefSerializeConfig Config;
 
-    private readonly Dictionary<string, MemberWrapper> members = new Dictionary<string, MemberWrapper>();
+    private readonly Dictionary<string, MemberWrapper> members = [];
 
     /// <summary>
     /// Creates a new member store for a particular type (<paramref name="targetType"/>)
@@ -170,7 +170,7 @@ public class MemberStore
     /// <summary>
     /// Enumerates all members in the <see cref="TargetType"/> that can be found using the
     /// current <see cref="Config"/>.
-    /// Unlike <see cref="GetMember"/> the results of this method call are not cached:
+    /// Unlike <see cref="GetMember(string)"/>, the results of this method call are not cached:
     /// this is quite slow so use sparingly.
     /// </summary>
     /// <returns>An enumeration of all <see cref="MemberWrapper"/>s on the <see cref="TargetType"/>.</returns>
