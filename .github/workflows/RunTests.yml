@@ -40,4 +40,4 @@ jobs:
       run: dotnet pack --configuration Release --output Packed --include-symbols --no-build --no-restore
 
     - name: Upload NuGet packages
-      run: dotnet nuget push "Packed\*.nupkg" --api-key ${{ secrets.NUGETUPLOADAPIKEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      run: dotnet nuget push "Packed/*.nupkg" --api-key ${{ secrets.NUGETUPLOADAPIKEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
