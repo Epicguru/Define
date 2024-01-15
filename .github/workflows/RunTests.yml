@@ -19,25 +19,39 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    # This global tool is required to build Monogame content which is used in a test.
     - name: Install mgcb
       run: dotnet tool install dotnet-mgcb --global
 
+    # Grab dependencies like NuGet packages.
     - name: Restore dependencies
       run: dotnet restore
       
     # Build and test in debug mode:
     - name: Test
-      run: dotnet test --verbosity normal
+      run: dotnet test --verbosity normal --logger "trx;LogFileName=test-results.trx" --no-restore
+
+    # Generate a test report.
+    - name: Test Report
+        uses: dorny/test-reporter@v1.7.0
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: JEST Tests            # Name of the check run which will be created
+          path: Define*Tests/TestResults/test-results.trx # Path to test results. Note the wildcard.
+          reporter: dotnet-trx        # Format of test results
 
     # Do final build in release mode, ready to be packed.
     - name: Build
       run: dotnet build --no-restore --configuration Release
 
+    # If running on a custom machine, sometimes there may be some old nupkg files hanging about. Delete them.
     - name: Clear old packages
       run: find . -name 'Packed/*.nupkg' -delete
 
+    # Pack libs into nupkg files in the Packed folder.
     - name: Pack libraries
       run: dotnet pack --configuration Release --output Packed --include-symbols --no-build --no-restore
-
+    
+    # Upload packages to NuGet. Will not upload if the version is not greater than the existing one.
     - name: Upload NuGet packages
       run: dotnet nuget push "Packed/*.nupkg" --api-key ${{ secrets.NUGETUPLOADAPIKEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
