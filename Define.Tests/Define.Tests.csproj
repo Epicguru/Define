@@ -32,7 +32,7 @@
     </Content>
     <!-- Ignore test results -->
     <Compile Remove="TestResults\**" />
-    <EmbeddedResource Remove="TestResults\**" />
+    <EmbeddedResource Remove="TestResults\**" /> 
     <None Remove="TestResults\**" />
   </ItemGroup>
 
