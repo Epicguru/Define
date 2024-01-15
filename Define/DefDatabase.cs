@@ -50,7 +50,7 @@ public class DefDatabase
     /// </summary>
     public DefSerializeConfig? Config { get; internal set; }
     
-    private readonly HashSet<Type> typesWithStaticData = new HashSet<Type>();
+    private readonly HashSet<Type> typesWithStaticData = [];
     private readonly Dictionary<string, IDef> idToDef = new Dictionary<string, IDef>(4096);
     private readonly List<IDef> allDefs = new List<IDef>(4096);
     private readonly Dictionary<Type, DefContainer> defsOfType = new Dictionary<Type, DefContainer>(128);
@@ -83,10 +83,10 @@ public class DefDatabase
     /// <exception cref="ArgumentNullException">If the <paramref name="config"/> is null.</exception>
     public void StartLoading(DefSerializeConfig config, bool reloading = false)
     {
+        ArgumentNullException.ThrowIfNull(config);
+
         if (Loader != null)
             throw new Exception("The loading process has already been started.");
-        if (config == null)
-            throw new ArgumentNullException(nameof(config));
 
         isReload = reloading;
         Loader = new XmlLoader(config);
@@ -535,9 +535,9 @@ public class DefDatabase
     /// <param name="id">The case-sensitive ID of the def to look for.</param>
     /// <returns>The found def, or null.</returns>
     public IDef? Get(string id) => idToDef.GetValueOrDefault(id);
-    
+
     /// <summary>
-    /// Tries to get a def of type <see cref="T"/> based on its <see cref="IDef.ID"/>.
+    /// Tries to get a def of type <typeparamref name="T"/> based on its <see cref="IDef.ID"/>.
     /// Will return null if a matching def was not found, or the def was not of the expected type.
     /// </summary>
     /// <param name="id">The case-sensitive ID of the def to look for.</param>
@@ -631,10 +631,10 @@ public class DefDatabase
     public IReadOnlyList<IDef> GetAll() => allDefs;
 
     /// <summary>
-    /// Gets a read-only list of all defs in the database that inherit from or implement the type <see name="T"/>.
-    /// <see cref="T"/> may be any class or interface.
+    /// Gets a read-only list of all defs in the database that inherit from or implement the type <typeparamref name="T"/>.
+    /// <typeparamref name="T"/> may be any class or interface.
     /// The returned list will include all defs that are of the target type or a subclass of that type.
-    /// If <see cref="T"/> is an interface, this returns all defs that implement that interface.
+    /// If <typeparamref name="T"/> is an interface, this returns all defs that implement that interface.
     /// Calls to this method are fast because the groups are pre-computed.
     /// </summary>
     /// <typeparam name="T">The type of def to look for.</typeparam>
@@ -671,7 +671,7 @@ public class DefDatabase
 
     private sealed class DefContainer<T> : DefContainer where T : class
     {
-        public readonly List<T> Defs = new List<T>();
+        public readonly List<T> Defs = [];
 
         public override void Add(object def)
         {

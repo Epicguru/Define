@@ -69,14 +69,14 @@ public abstract class XmlParser : IComparable<XmlParser>
 /// <summary>
 /// A generic subclass of <see cref="XmlParser"/>.
 /// This generic version overrides the <see cref="CanHandle"/> method and makes it only
-/// return true if the type <b>exactly</b> matches the type <see cref="T"/>.
+/// return true if the type <b>exactly</b> matches the type <typeparamref name="T"/>.
 /// </summary>
 /// <typeparam name="T">The exact C# type that this parser supports.</typeparam>
 public abstract class XmlParser<T> : XmlParser
 {
     /// <summary>
     /// Returns true if this parser can parse the specified type.
-    /// Only returns true when <paramref name="t"/> exactly matches the type <see cref="T"/>.
+    /// Only returns true when <paramref name="t"/> exactly matches the type <typeparamref name="T"/>.
     /// </summary>
     public sealed override bool CanHandle(Type t) => typeof(T) == t;
 }

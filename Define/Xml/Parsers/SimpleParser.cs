@@ -17,15 +17,15 @@ public sealed class SimpleParser<T> : XmlParser<T>
 
     /// <summary>
     /// The function that is used to convert strings to objects
-    /// of type <see cref="T"/>.
+    /// of type <typeparamref name="T"/>.
     /// This function is provided via the constructor.
     /// </summary>
     public readonly Func<string, T?> ParseFunction;
-    
+
     /// <summary>
     /// Creates a new simple parser and sets it up to use the provided
     /// parser function, that takes in a string and outputs an object of type
-    /// <see cref="T"/>.
+    /// <typeparamref name="T"/>.
     /// </summary>
     public SimpleParser(Func<string, T?> parseFunc)
     {

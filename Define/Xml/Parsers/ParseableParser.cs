@@ -8,14 +8,14 @@ namespace Define.Xml.Parsers
     /// </summary>
     public sealed class ParseableParser : XmlParser
     {
-        private readonly Dictionary<Type, IWorker> workers = new Dictionary<Type, IWorker>();
+        private readonly Dictionary<Type, IWorker> workers = [];
         
         /// <inheritdoc/>
         public override bool CanParseNoContext => true;
 
         /// <summary>
         /// Creates a new <see cref="ParseableParser"/> and sets its
-        /// <see cref="Priority"/> to -100.
+        /// <see cref="XmlParser.Priority"/> to -100.
         /// </summary>
         public ParseableParser()
         {

@@ -6,13 +6,13 @@ namespace Define;
 
 /// <summary>
 /// A utility class that aids in parsing <see cref="Type"/>
-/// beyond what <see cref="Type.Parse"/> is capable of,
+/// beyond what <see cref="Type.GetType()"/> is capable of,
 /// including support for short class names, subclasses and fully-constructed generic types.
 /// </summary>
 public static partial class TypeResolver
 {
     private static readonly Dictionary<string, Type?> cache = new Dictionary<string, Type?>(1024);
-    private static readonly List<Assembly> allAssemblies = new List<Assembly>();
+    private static readonly List<Assembly> allAssemblies = [];
     private static readonly Dictionary<Type, string> typeAliases = new Dictionary<Type, string>
     {
         { typeof(byte), "byte" },
@@ -32,7 +32,7 @@ public static partial class TypeResolver
         { typeof(string), "string" },
         { typeof(void), "void" }
     };
-    private static readonly Dictionary<string, Type> typeAliasesInverse = new Dictionary<string, Type>();
+    private static readonly Dictionary<string, Type> typeAliasesInverse = [];
     [ThreadStatic] private static StringBuilder? strBuilder;
 
     static TypeResolver()

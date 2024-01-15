@@ -1,4 +1,5 @@
 ﻿
+using JetBrains.Annotations;
 using System.Xml.Serialization;
 
 namespace Define.Tests;
@@ -8,7 +9,7 @@ public sealed class MemberTypeDef : IDef
     [XmlIgnore]
     public string? Ignored;
 
-    [Xml.XmlInclude]
+    [Xml.XmlInclude, UsedImplicitly]
     private string? included;
     
     public static string? StaticField;
