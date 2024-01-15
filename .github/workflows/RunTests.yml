@@ -24,12 +24,14 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
-
-    - name: Build
-      run: dotnet build --no-restore
       
+    # Build and test in debug mode:
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --verbosity normal
+
+    # Do final build in release mode, ready to be packed.
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
 
     - name: Clear old packages
       run: find . -name 'Packed/*.nupkg' -delete
