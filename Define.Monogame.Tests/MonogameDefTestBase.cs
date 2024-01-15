@@ -9,6 +9,6 @@ public abstract class MonogameDefTestBase(ITestOutputHelper output) : DefTestBas
     {
         base.PreLoad(db);
         
-        db.Loader!.AddMonogameParsers();
+        db.Loader!.AddMonogameDataParsers();
     }
 }

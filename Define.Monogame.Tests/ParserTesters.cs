@@ -1,5 +1,6 @@
 using Define.FastCache;
 using Define.Monogame.Tests.DefClasses;
+using Microsoft.Xna.Framework.Graphics;
 using Xunit.Abstractions;
 
 namespace Define.Monogame.Tests;
@@ -31,8 +32,8 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
     public void TestFastCache()
     {
         DefDatabase.StartLoading(Config);
-        DefDatabase.Loader!.AddMonogameParsers();
-        DefDatabase.AddDefFolder("./Defs");
+        DefDatabase.Loader!.AddMonogameDataParsers();
+        DefDatabase.AddDefFolder("./Defs", fileFilter: f => !f.EndsWith("ContentDef.xml"));
         DefDatabase.FinishLoading();
 
         const int EXPECTED = 3;
@@ -65,5 +66,50 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
             def.EnsureExpected();
         }
         db2.GetAll().Should().BeEquivalentTo(DefDatabase.GetAll());
+    }
+
+    [Fact]
+    public void TestGameRunBaseline()
+    {
+        using var game = new TestGame(_ =>
+        {
+            
+        });
+        game.Run();
+    }
+    
+    [Fact]
+    public void TestGameLoadContentManual()
+    {
+        using var game = new TestGame(g =>
+        {
+            using var tex = g.ContentManager.Load<Texture2D>("Content/MyImage");
+            tex.Should().NotBeNull();
+            tex.Width.Should().Be(128);
+            tex.Height.Should().Be(128);
+        });
+        game.Run();
+    }
+    
+    [Fact]
+    public void TestParseTexture()
+    {
+        using var game = new TestGame(g =>
+        {
+            DefDatabase.StartLoading(Config);
+            DefDatabase.Loader!.AddMonogameContentParsers(g.ContentManager);
+            DefDatabase.AddDefDocument(File.ReadAllText("./Defs/ContentDef.xml"), "ContentDef.xml");
+            DefDatabase.FinishLoading();
+
+            ErrorMessages.Should().BeEmpty();
+            WarningMessages.Should().BeEmpty();
+            
+            var def = DefDatabase.Get<ContentDef>("ContentDef");
+            def.Should().NotBeNull();
+            def!.Texture.Should().NotBeNull();
+            def.Texture!.Width.Should().Be(128);
+            def.Texture.Height.Should().Be(128);
+        });
+        game.Run();
     }
 }

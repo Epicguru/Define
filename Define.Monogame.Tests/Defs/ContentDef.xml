@@ -1,0 +1,5 @@
+﻿<Defs>
+  <ContentDef Type="ContentDef">
+    <Texture>Content/MyImage</Texture>
+  </ContentDef>
+</Defs>

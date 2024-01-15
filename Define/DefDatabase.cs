@@ -330,8 +330,9 @@ public class DefDatabase
     /// <param name="folderPath">The folder to load def files from.</param>
     /// <param name="searchOption">Determines whether sub-folders should also be searched. Defaults to include sub-folders.</param>
     /// <param name="searchPattern">Determines what file extension is searched for. Defaults to search for .xml files.</param>
+    /// <param name="fileFilter">An optional predicate to pick which found files to include. If null, all files found in the folder that match the <paramref name="searchPattern"/> are included.</param>
     /// <returns>True if every def file was added successfully, and false if any or all failed to be added</returns>
-    public bool AddDefFolder(string folderPath, SearchOption searchOption = SearchOption.AllDirectories, string searchPattern = "*.xml")
+    public bool AddDefFolder(string folderPath, SearchOption searchOption = SearchOption.AllDirectories, string searchPattern = "*.xml", Predicate<string>? fileFilter = null)
     {
         if (!Directory.Exists(folderPath))
         {
@@ -343,6 +344,9 @@ public class DefDatabase
         
         foreach (var file in Directory.EnumerateFiles(folderPath, searchPattern, searchOption))
         {
+            if (!(fileFilter?.Invoke(file) ?? true))
+                continue;
+            
             bool worked;
             try
             {

@@ -24,8 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Copy defs and patches folder to output. -->
+    <!-- Copy defs and content folder to output. -->
     <Content Include="Defs\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Content\*.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -35,5 +39,9 @@
     <ProjectReference Include="..\Define.Monogame\Define.Monogame.csproj" />
     <ProjectReference Include="..\TestSharedLib\TestSharedLib.csproj" />
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="mgcb /build:Content/MyImage.png" />
+  </Target>
 
 </Project>
