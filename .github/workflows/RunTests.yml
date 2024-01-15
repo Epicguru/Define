@@ -33,12 +33,12 @@ jobs:
 
     # Generate a test report.
     - name: Test Report
-        uses: dorny/test-reporter@v1.7.0
-        if: success() || failure()    # run this step even if previous step failed
-        with:
-          name: JEST Tests            # Name of the check run which will be created
-          path: Define*Tests/TestResults/test-results.trx # Path to test results. Note the wildcard.
-          reporter: dotnet-trx        # Format of test results
+      uses: dorny/test-reporter@v1.7.0
+      if: success() || failure()    # run this step even if previous step failed
+      with:
+        name: JEST Tests            # Name of the check run which will be created
+        path: Define*Tests/TestResults/test-results.trx # Path to test results. Note the wildcard.
+        reporter: dotnet-trx        # Format of test results
 
     # Do final build in release mode, ready to be packed.
     - name: Build
