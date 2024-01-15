@@ -1,0 +1,8 @@
+﻿<Defs>
+  <ArrayDef Type="TestDef">
+    <Array>
+      <li>123.4</li>
+      <li>998.1</li>
+    </Array>
+  </ArrayDef>
+</Defs>

@@ -34,6 +34,13 @@ public class ListTests(ITestOutputHelper output) : DefTestBase(output)
     }
 
     [Fact]
+    public void TestListWithExistingItems()
+    {
+        var def = LoadSingleDef<TestDef>("ListWithExisting");
+        def.ListWithExisting.Should().BeEquivalentTo([1, 2, 3, 55.6f]);
+    }
+
+    [Fact]
     public void TestAlternateListNames()
     {
         Config.ListItemName = "list-item";

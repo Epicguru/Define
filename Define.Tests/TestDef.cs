@@ -20,6 +20,9 @@ public class TestDef : IDef, IPostLoad, IConfigErrors, IPostXmlConstruct
     public Dictionary<string, InnerData>? Dict;
     public List<TestDef?>? List;
     public List<InnerData?>? InnerDataList;
+    public float[] Array = System.Array.Empty<float>();
+    public float[] ArrayWithExisting = [1, 2, 3];
+    public List<float> ListWithExisting = [1, 2, 3];
 
     public void PostLoad()
     {

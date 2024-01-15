@@ -1,0 +1,7 @@
+﻿<Defs>
+  <MyTestDef Type="TestDef">
+    <ListWithExisting>
+      <li>55.6</li>
+    </ListWithExisting>
+  </MyTestDef>
+</Defs>

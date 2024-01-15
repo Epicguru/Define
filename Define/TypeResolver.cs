@@ -80,11 +80,15 @@ public static partial class TypeResolver
     /// <returns>The found type, or null.</returns>
     public static Type? Get(string typeName, bool throwOnError = false)
     {
-        if (cache.TryGetValue(typeName, out var found))
+        Type? found;
+        lock (cache)
         {
-            if (throwOnError && found == null)
-                throw new Exception($"Type not found: '{typeName}' was not found in any loaded assembly.");
-            return found;
+            if (cache.TryGetValue(typeName, out found))
+            {
+                if (throwOnError && found == null)
+                    throw new Exception($"Type not found: '{typeName}' was not found in any loaded assembly.");
+                return found;
+            }
         }
 
         bool isNullable = typeName[^1] == '?';
@@ -98,7 +102,10 @@ public static partial class TypeResolver
         }
 
         found = TryFindType(typeName);
-        cache.Add(typeName, found);
+        lock (cache)
+        {
+            cache.TryAdd(typeName, found);
+        }
 
         // Make nullable if required:
         found = isNullable ? MakeNullable(found) : found;
@@ -290,6 +297,9 @@ public static partial class TypeResolver
     /// </summary>
     public static void ClearCache()
     {
-        cache.Clear();
+        lock (cache)
+        {
+            cache.Clear();
+        }
     }
 }

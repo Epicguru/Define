@@ -7,6 +7,15 @@ using Xunit.Abstractions;
 
 namespace TestSharedLib;
 
+/*
+ * Tests needs to run sequentially. Normally multiple threads can work on defs
+ * safely if each thread uses its own DefDatabase, which the tests do,
+ * however the DefDebugger class and events are static and therefore events are
+ * fired from multiple threads at once and so the tests that are listening for the events
+ * end up failing.
+ * This is a design oversight and in retrospect I would have but the debug events on the
+ * def database itself instead.
+ */
 [Collection("SequentialDefTests")]
 public abstract class DefTestBase : IDisposable
 {

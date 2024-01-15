@@ -510,7 +510,11 @@ public class XmlLoader : IDisposable
     {
         var listType = context.TargetType;
 
-        Type elementType = listType.IsConstructedGenericType ? listType.GenericTypeArguments[0] : typeof(object);
+        Type elementType = listType.IsConstructedGenericType ?
+            listType.GenericTypeArguments[0] : // Generic List<> and the such.
+            listType.IsArray ? 
+                listType.GetElementType()!
+                : typeof(object);
 
         bool isExplicitList = context.Node!.GetAttributeAsBool("IsList");
         
@@ -532,7 +536,62 @@ public class XmlLoader : IDisposable
             }
         }
 
-        if ((context.CurrentValue ?? TryCreateInstance(listType, context)) is not IList list) // No need to log error, TryCreateInstance already logs.
+        int expectedNewItems = context.Node!.ChildNodes.Cast<XmlNode>().Count(n => n.NodeType == XmlNodeType.Element);
+        IList? existingList = context.CurrentValue as IList;
+        
+        /*
+         * If the existing list is not null, and it is of fixed size,
+         * then a new list (probably an array) needs to be made
+         * with the new capacity.
+         * The old items the need to be copied over.
+         */
+
+        IList? list;
+        int arrayIndex;
+        bool isFixedLength;
+        
+        if (existingList == null || (existingList.IsFixedSize && expectedNewItems > 0))
+        {
+            // Make new list if it is fixed-size.
+            isFixedLength = existingList is { IsFixedSize: true } ||
+                                 context.TargetType.IsArray;
+            if (isFixedLength)
+            {
+                list = TryCreateInstance(listType, context, [expectedNewItems + existingList?.Count ?? 0]) as IList;
+
+                if (list != null)
+                {
+                    // Copy over old items.
+                    for (int i = 0; i < existingList!.Count; i++)
+                    {
+                        list[i] = existingList[i];
+                    }
+                }
+
+                arrayIndex = existingList?.Count ?? 0;
+            }
+            else
+            {
+                // If not fixed size, just use the existing list or create 
+                // one if it is null. It will be expanded to fit new items later.
+                list = existingList ?? TryCreateInstance(listType, context, [expectedNewItems]) as IList;
+                arrayIndex = list?.Count ?? 0;
+                
+                if (list is { IsReadOnly: true })
+                {
+                    DefDebugger.Error($"Cannot write to read-only list-like type '{list.GetType()}' for node {((XmlElement)context.Node).GetFullXPath()}.");
+                    return default;
+                }
+            }
+        }
+        else
+        {
+            list = existingList;
+            arrayIndex = list.Count;
+            isFixedLength = list.IsFixedSize;
+        }
+        
+        if (list == null) // No need to log error, TryCreateInstance already logs.
             return default;
 
         foreach (XmlNode node in context.Node!)
@@ -573,7 +632,18 @@ public class XmlLoader : IDisposable
 
             // Add to list!
             if (parsed.ShouldWrite)
-                list.Add(parsed.Value);
+            {
+                if (isFixedLength)
+                {
+                    list[arrayIndex] = parsed.Value;
+                }
+                else
+                {
+                    list.Add(parsed.Value);
+                }
+            }
+
+            arrayIndex++;
         }
 
         return new ParseResult(list);
@@ -758,11 +828,12 @@ public class XmlLoader : IDisposable
         }
     }
 
-    private static object? TryCreateInstance(Type type, in XmlParseContext context)
+    private static object? TryCreateInstance(Type type, in XmlParseContext context, Span<object> args = default)
     {
         try
         {
-            var instance = Activator.CreateInstance(type);
+            object[]? argsArray = args.Length > 0 ? args.ToArray() : null;
+            var instance = Activator.CreateInstance(type, argsArray);
             return instance;
         }
         catch (Exception e)

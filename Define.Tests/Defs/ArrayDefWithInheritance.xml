@@ -1,0 +1,14 @@
+﻿<Defs>
+  <ArrayDef Type="TestDef" Abstract="true">
+    <Array>
+      <li>123.4</li>
+      <li>998.1</li>
+    </Array>
+  </ArrayDef>
+  
+  <ArrayDefChild Parent="ArrayDef">
+    <Array>
+      <li>12.1</li>
+    </Array>
+  </ArrayDefChild>
+</Defs>

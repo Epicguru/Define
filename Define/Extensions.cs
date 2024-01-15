@@ -60,22 +60,6 @@ public static class Extensions
     }
 
     /// <summary>
-    /// Returns the first child <see cref="XmlNode"/>
-    /// on this node that is an <see cref="XmlElement"/>, or null if it is not found.
-    /// </summary>
-    public static XmlNode? FirstElement(this XmlNode? node)
-    {
-        if (node == null)
-            return null;
-        
-        foreach (XmlNode child in node)
-            if (child.NodeType == XmlNodeType.Element)
-                return child;
-        
-        return null;
-    }
-
-    /// <summary>
     /// Gets the full XPath for a particular <see cref="XmlNode"/> in a document.
     /// </summary>
     public static string GetFullXPath(this XmlElement node)

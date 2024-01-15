@@ -31,6 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Define.FastCache\Define.FastCache.csproj" />
     <ProjectReference Include="..\Define.Monogame\Define.Monogame.csproj" />
     <ProjectReference Include="..\TestSharedLib\TestSharedLib.csproj" />
   </ItemGroup>

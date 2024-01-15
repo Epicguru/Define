@@ -93,8 +93,6 @@ public sealed class ColorParser : CSVParser<float>
         if (!hasAlpha)
             asInt = (asInt << 8) | 0b_11111111;
         
-        BoundingBox
-        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         byte GetByte(int offsetFromRight)
         {
