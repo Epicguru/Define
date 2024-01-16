@@ -1,0 +1,47 @@
+name: Publish NuGet Package
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 8.0.x
+
+    # This global tool is required to build Monogame content which is used in a test.
+    - name: Install mgcb
+      run: dotnet tool install dotnet-mgcb --global
+
+    # Grab dependencies like NuGet packages.
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    # Build and test in debug mode:
+    # Note: tests should have already been run in the pull request, but run again here just in case to avoid uploading a broken package.
+    - name: Test
+      run: dotnet test --verbosity normal --no-restore
+
+    # Do final build in release mode, ready to be packed.
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    # If running on a custom machine, sometimes there may be some old nupkg files hanging about. Delete them.
+    - name: Clear old packages
+      run: find . -name 'Packed/*.nupkg' -delete
+
+    # Pack libs into nupkg files in the Packed folder.
+    - name: Pack libraries
+      run: dotnet pack --configuration Release --output Packed --include-symbols --no-build --no-restore
+    
+    # Upload packages to NuGet. Will not upload if the version is not greater than the existing one.
+    - name: Upload NuGet packages
+      run: dotnet nuget push "Packed/*.nupkg" --api-key ${{ secrets.NUGETUPLOADAPIKEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

@@ -1,18 +1,19 @@
 name: Build & Test
 
 on:
-  push:
-    branches: [ master ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, develop ]
 
 permissions:
   contents: read
   actions: read
   checks: write
+  pull-requests: write
 
 jobs:
   build:
+
+    # TODO split test and publish!
 
     runs-on: ubuntu-latest
 
@@ -34,29 +35,35 @@ jobs:
       
     # Build and test in debug mode:
     - name: Test
-      run: dotnet test --verbosity normal --logger "trx;LogFileName=test-results.trx" --no-restore
+      run: dotnet test --verbosity normal --logger "trx;LogFileName=test-results.trx" --no-restore --collect:"XPlat Code Coverage"
 
     # Generate a test report.
     - name: Test Report
       uses: dorny/test-reporter@v1.7.0
       if: success() || failure()    # run this step even if previous step failed
       with:
-        name: Generate test reports            # Name of the check run which will be created
+        name: Generate test report            # Name of the check run which will be created
         path: Define*Tests/TestResults/test-results.trx # Path to test results. Note the wildcard.
         reporter: dotnet-trx        # Format of test results
 
-    # Do final build in release mode, ready to be packed.
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
+    # Generate code coverage report.
+    - name: Code Coverage Report
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: Define*Tests/TestResults/**/coverage.cobertura.xml
+        badge: true
+        fail_below_min: true
+        format: markdown
+        hide_branch_rate: false
+        hide_complexity: true
+        indicators: true
+        output: both
+        thresholds: '60 80'
 
-    # If running on a custom machine, sometimes there may be some old nupkg files hanging about. Delete them.
-    - name: Clear old packages
-      run: find . -name 'Packed/*.nupkg' -delete
-
-    # Pack libs into nupkg files in the Packed folder.
-    - name: Pack libraries
-      run: dotnet pack --configuration Release --output Packed --include-symbols --no-build --no-restore
-    
-    # Upload packages to NuGet. Will not upload if the version is not greater than the existing one.
-    - name: Upload NuGet packages
-      run: dotnet nuget push "Packed/*.nupkg" --api-key ${{ secrets.NUGETUPLOADAPIKEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+    # Post the results of the previous step as a PR comment.
+    - name: Add Coverage PR Comment
+      uses: marocchino/sticky-pull-request-comment@v2.8.0
+      if: github.event_name == 'pull_request'
+      with:
+        recreate: true
+        path: code-coverage-results.md
