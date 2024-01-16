@@ -1094,9 +1094,27 @@ public class XmlLoader : IDisposable
         return stringBuilder.ToString();
     }
 
+    /// <summary>
+    /// Clears all stored data on this loader,
+    /// except for: cached type and member data, and parsers.
+    /// </summary>
+    public void Clear()
+    {
+        TypesWithStaticData.Clear();
+        HasResolvedInheritance = false;
+        PostLoadItems.Clear();
+        ConfigErrorItems.Clear();
+        masterDoc.RemoveAll();
+        tempInheritance.Clear();
+        tempInheritanceList.Clear();
+        prePopulatedDefs.Clear();
+        existingDefsFunc = null;
+    }
+    
     /// <inheritdoc/>
     public void Dispose()
     {
+        Clear();
         GC.SuppressFinalize(this);
     }
 

@@ -24,11 +24,12 @@ public sealed class TypeResolverTests : DefTestBase
         var data = Generate_ResolveGenericTypes_ArgsBase();
 
         // Using square brackets:
-        int baseCount = data.Count();
+        int baseCount = data.Count;
         var pending = new List<(string, Type)>();
         for (int i = 0; i < baseCount; i++)
         {
             var pair = data.ElementAt(i);
+            pair = [.. pair]; // Copy array to avoid changing original.
             pair[0] = ((string)pair[0]).Replace('<', '[').Replace('>', ']');
             pending.Add(((string)pair[0], (Type)pair[1]));
         }
@@ -38,6 +39,7 @@ public sealed class TypeResolverTests : DefTestBase
             data.Add(pair.Item1, pair.Item2);
         }
         
+        data.Count.Should().Be(baseCount * 2);
         return data;
     }
 

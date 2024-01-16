@@ -15,12 +15,6 @@ namespace Define;
 public class DefDatabase
 {
     /// <summary>
-    /// If true the database is currently in the loading process,
-    /// which means after <see cref="StartLoading"/> has been called but
-    /// before <see cref="FinishLoading"/>.
-    /// </summary>
-    public bool IsLoading => Loader != null;
-    /// <summary>
     /// The total number of defs currently loaded.
     /// </summary>
     public int Count => allDefs.Count;
@@ -31,31 +25,39 @@ public class DefDatabase
     /// This value should be used for diagnostics only.
     /// </summary>
     public int ContainerCount => defsOfType.Count;
+
     /// <summary>
     /// The <see cref="XmlLoader"/> that is used during the def loading process.
-    /// This loader is only non-null after <see cref="StartLoading"/> is called
-    /// and before <see cref="FinishLoading"/> is called.
     /// This loader can be configured to add or remove parsers.
     /// </summary>
-    public XmlLoader? Loader { get; private set; }
+    public XmlLoader Loader { get; }
     /// <summary>
     /// A read-only collection of types that had static data loaded into them.
     /// Used for FastCache.
     /// </summary>
     public IReadOnlyCollection<Type> TypesWithStaticData => typesWithStaticData;
     /// <summary>
-    /// The latest <see cref="DefSerializeConfig"/> that has been used to load
-    /// defs. Will be null until <see cref="StartLoading"/> is called, or when
-    /// a FastCache is loaded into this database.
+    /// The <see cref="DefSerializeConfig"/> used by this database.
     /// </summary>
-    public DefSerializeConfig? Config { get; internal set; }
+    public DefSerializeConfig Config { get; internal set; }
     
     private readonly HashSet<Type> typesWithStaticData = [];
     private readonly Dictionary<string, IDef> idToDef = new Dictionary<string, IDef>(4096);
     private readonly List<IDef> allDefs = new List<IDef>(4096);
     private readonly Dictionary<Type, DefContainer> defsOfType = new Dictionary<Type, DefContainer>(128);
     private string? finalMasterDocument;
-    private bool isReload;
+    private bool isReloading;
+
+    /// <summary>
+    /// Creates a new empty <see cref="DefDatabase"/> using the provided config.
+    /// </summary>
+    public DefDatabase(DefSerializeConfig config)
+    {
+        ArgumentNullException.ThrowIfNull(config);
+        
+        Config = config;
+        Loader = new XmlLoader(config);
+    }
     
     /// <summary>
     /// Clears the def database of all defs.
@@ -66,31 +68,9 @@ public class DefDatabase
         idToDef.Clear();
         allDefs.Clear();
         defsOfType.Clear();
-        Loader?.Dispose();
-        isReload = false;
-        Loader = null;
+        Loader.Dispose();
+        isReloading = false;
         finalMasterDocument = null;
-    }
-    
-    /// <summary>
-    /// Starts the def loading process using the provided config.
-    /// After this call, <see cref="AddDefDocument(XmlDocument, string)"/> and similar methods can be called.
-    /// If <paramref name="reloading"/> is true, then the def files are loaded into existing defs if their <see cref="IDef.ID"/>'s match.
-    /// </summary>
-    /// <param name="config">The <see cref="DefSerializeConfig"/> to use when loading.</param>
-    /// <param name="reloading">If true, the loaded defs are applied to any existing loaded defs. If false, attempting to load defs with IDs that match existing defs will cause an error.</param>
-    /// <exception cref="Exception">If the loading process has already been started and not finished by calling <see cref="FinishLoading"/>.</exception>
-    /// <exception cref="ArgumentNullException">If the <paramref name="config"/> is null.</exception>
-    public void StartLoading(DefSerializeConfig config, bool reloading = false)
-    {
-        ArgumentNullException.ThrowIfNull(config);
-
-        if (Loader != null)
-            throw new Exception("The loading process has already been started.");
-
-        isReload = reloading;
-        Loader = new XmlLoader(config);
-        Config = config;
     }
 
     /// <summary>
@@ -432,21 +412,18 @@ public class DefDatabase
     /// <exception cref="Exception">If loading has not been started.</exception>
     public void FinishLoading()
     {
-        if (Loader == null)
-            throw new Exception("The loading process has not been started, call StartLoading() first.");
-        
         // Resolve inheritance.
         Debug.Assert(!Loader.HasResolvedInheritance);
         Loader.ResolveInheritance();
         
         Func<string, IDef?>? existing = null;
-        if (isReload)
+        if (isReloading)
             existing = str => idToDef.GetValueOrDefault(str);
 
         // Parse defs.
         foreach (var def in Loader.MakeDefs(existing))
         {
-            if (isReload && idToDef.ContainsKey(def.ID))
+            if (isReloading && idToDef.ContainsKey(def.ID))
                 continue;
 
             Register(def);
@@ -462,9 +439,8 @@ public class DefDatabase
         foreach (var item in Loader.TypesWithStaticData)
             typesWithStaticData.Add(item);
         
-        // Remove the loader as it is no longer needed and has a lot of garbage.
-        Loader.Dispose();
-        Loader = null;
+        // Reset the loader to free memory and prepare for future loading.
+        Loader.Clear();
     }
 
     /// <summary>
@@ -472,7 +448,7 @@ public class DefDatabase
     /// for the latest loading process.
     /// Used for debugging only.
     /// </summary>
-    public string? GetMasterDocumentXML() => finalMasterDocument ?? Loader?.GetMasterDocumentXml() ?? null;
+    public string GetMasterDocumentXML() => finalMasterDocument ?? Loader.GetMasterDocumentXml();
 
     private void DoPostLoadCallbacks()
     {
