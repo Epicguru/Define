@@ -31,7 +31,6 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
     [Fact]
     public void TestFastCache()
     {
-        DefDatabase.StartLoading(Config);
         DefDatabase.Loader!.AddMonogameDataParsers();
         DefDatabase.AddDefFolder("./Defs", fileFilter: f => !f.EndsWith("ContentDef.xml"));
         DefDatabase.FinishLoading();
@@ -57,7 +56,7 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
         var loadedCache = DefFastCache.Load(cacheData, DefDatabase.Config!);
         
         // Load into new database.
-        var db2 = new DefDatabase();
+        var db2 = new DefDatabase(Config);
         loadedCache.LoadIntoDatabase(db2);
 
         // Make sure it is all the same...
@@ -68,17 +67,26 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
         db2.GetAll().Should().BeEquivalentTo(DefDatabase.GetAll());
     }
 
-    [Fact]
+    [SkippableFact(typeof(NoSuitableGraphicsDeviceException))]
     public void TestGameRunBaseline()
     {
         using var game = new TestGame(_ =>
         {
             
         });
-        game.Run();
+
+        try
+        {
+            game.Run();
+        }
+        catch (NoSuitableGraphicsDeviceException e)
+        {
+            Output.WriteLine("Critical error! No graphics device was found to monogame content tests cannot run! See the following exception:\n{0}", e);
+            throw;
+        }
     }
-    
-    [Fact]
+
+    [SkippableFact(typeof(NoSuitableGraphicsDeviceException))]
     public void TestGameLoadContentManual()
     {
         using var game = new TestGame(g =>
@@ -90,13 +98,12 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
         });
         game.Run();
     }
-    
-    [Fact]
+
+    [SkippableFact(typeof(NoSuitableGraphicsDeviceException))]
     public void TestParseTexture()
     {
         using var game = new TestGame(g =>
         {
-            DefDatabase.StartLoading(Config);
             DefDatabase.Loader!.AddMonogameContentParsers(g.ContentManager);
             DefDatabase.AddDefDocument(File.ReadAllText("./Defs/ContentDef.xml"), "ContentDef.xml");
             DefDatabase.FinishLoading();

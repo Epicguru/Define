@@ -19,7 +19,6 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestReadUnEncryptedDefs()
     {
-        DefDatabase.StartLoading(Config);
         DefDatabase.AddDefsFromZip("./Content/Defs.zip", null!).Should().BeTrue();
         DefDatabase.FinishLoading();
 
@@ -32,7 +31,6 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public async Task TestReadUnEncryptedDefsAsync()
     {
-        DefDatabase.StartLoading(Config);
         (await DefDatabase.AddDefsFromZipAsync("./Content/Defs.zip", null!)).Should().BeTrue();
         DefDatabase.FinishLoading();
 
@@ -45,7 +43,6 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestReadUnEncryptedDefsWithPassword()
     {
-        DefDatabase.StartLoading(Config);
         DefDatabase.AddDefsFromZip("./Content/Defs.zip", "Wrong password").Should().BeTrue();
         DefDatabase.FinishLoading();
 
@@ -58,7 +55,6 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public async Task TestReadUnEncryptedDefsWithPasswordAsync()
     {
-        DefDatabase.StartLoading(Config);
         (await DefDatabase.AddDefsFromZipAsync("./Content/Defs.zip", "Wrong password")).Should().BeTrue();
         DefDatabase.FinishLoading();
 
@@ -71,7 +67,6 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestReadEncryptedDefs_FailNoPassword()
     {
-        DefDatabase.StartLoading(Config);
         DefDatabase.AddDefsFromZip("./Content/DefsEncrypted.zip").Should().BeFalse();
         DefDatabase.FinishLoading();
 
@@ -82,7 +77,6 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public async Task TestReadEncryptedDefs_FailNoPasswordAsync()
     {
-        DefDatabase.StartLoading(Config);
         (await DefDatabase.AddDefsFromZipAsync("./Content/DefsEncrypted.zip")).Should().BeFalse();
         DefDatabase.FinishLoading();
 
@@ -93,7 +87,6 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestReadEncryptedDefs_FailWrongPassword()
     {
-        DefDatabase.StartLoading(Config);
         DefDatabase.AddDefsFromZip("./Content/DefsEncrypted.zip", "asd123").Should().BeFalse();
         DefDatabase.FinishLoading();
 
@@ -104,7 +97,6 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public async Task TestReadEncryptedDefs_FailWrongPasswordAsync()
     {
-        DefDatabase.StartLoading(Config);
         (await DefDatabase.AddDefsFromZipAsync("./Content/DefsEncrypted.zip", "asd123")).Should().BeFalse();
         DefDatabase.FinishLoading();
 
@@ -115,7 +107,6 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestReadEncryptedDefs()
     {
-        DefDatabase.StartLoading(Config);
         DefDatabase.AddDefsFromZip("./Content/DefsEncrypted.zip", "ExamplePassword").Should().BeTrue();
         DefDatabase.FinishLoading();
 
@@ -128,7 +119,6 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public async Task TestReadEncryptedDefsAsync()
     {
-        DefDatabase.StartLoading(Config);
         (await DefDatabase.AddDefsFromZipAsync("./Content/DefsEncrypted.zip", "ExamplePassword")).Should().BeTrue();
         DefDatabase.FinishLoading();
 
@@ -141,10 +131,8 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void CompareEncryptedAndNonEncrypted()
     {
-        var db1 = new DefDatabase();
-        var db2 = new DefDatabase();
-        db1.StartLoading(Config);
-        db2.StartLoading(Config);
+        var db1 = new DefDatabase(Config);
+        var db2 = new DefDatabase(Config);
 
         db1.AddDefsFromZip("./Content/Defs.zip");
         db2.AddDefsFromZip("./Content/DefsEncrypted.zip", "ExamplePassword");

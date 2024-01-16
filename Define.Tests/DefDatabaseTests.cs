@@ -37,7 +37,6 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestLoadMultipleDefs()
     {
-        DefDatabase.StartLoading(Config);
         DefDatabase.AddDefDocument(File.ReadAllText("./Defs/SimpleSubDefs.xml"), "SimpleSubDefs.xml").Should().BeTrue();
         DefDatabase.AddDefDocument(File.ReadAllText("./Defs/NullWithContents.xml"), "NullWithContents.xml").Should().BeTrue();
         DefDatabase.FinishLoading();
@@ -59,7 +58,6 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestLoadFolder()
     {
-        DefDatabase.StartLoading(Config);
         (DefDatabase.AddDefFolder("./Defs/Parsing")).Should().BeTrue();
         DefDatabase.FinishLoading();
         
@@ -74,7 +72,6 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public async Task TestLoadFolderAsync()
     {
-        DefDatabase.StartLoading(Config);
         (await DefDatabase.AddDefFolderAsync("./Defs/Parsing")).Should().BeTrue();
         DefDatabase.FinishLoading();
         
@@ -89,8 +86,6 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestLoadFromStream()
     {
-        DefDatabase.StartLoading(Config);
-        
         using var fs = new FileStream("./Defs/SimpleSubDefs.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
         DefDatabase.AddDefDocument(fs, "SimpleSubDefs.xml").Should().BeTrue();
         
@@ -107,7 +102,6 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestLoadFromZipFile()
     {
-        DefDatabase.StartLoading(Config);
         (DefDatabase.AddDefsFromZip("./Defs/Parsing.zip")).Should().BeTrue();
         DefDatabase.FinishLoading();
         
@@ -122,7 +116,6 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public async Task TestLoadFromZipFileAsync()
     {
-        DefDatabase.StartLoading(Config);
         (await DefDatabase.AddDefsFromZipAsync("./Defs/Parsing.zip")).Should().BeTrue();
         DefDatabase.FinishLoading();
         
@@ -138,7 +131,6 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
     public async Task TestLoadFromStreamAsync()
     {
         await using var fs = new FileStream("./Defs/SimpleSubDefs.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
-        DefDatabase.StartLoading(Config);
         await DefDatabase.AddDefDocumentAsync(fs, "SimpleSubDefs.xml");
         DefDatabase.FinishLoading();
         

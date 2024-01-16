@@ -27,7 +27,7 @@ public abstract class DefTestBase : IDisposable
     
     protected DefTestBase(ITestOutputHelper output)
     {
-        DefDatabase = new DefDatabase();
+        DefDatabase = new DefDatabase(Config);
         Output = output;
         DefDebugger.OnWarning += OnWarning;
         DefDebugger.OnError += OnError;
@@ -58,7 +58,6 @@ public abstract class DefTestBase : IDisposable
         };
         doc.LoadXml(xml);
 
-        DefDatabase.StartLoading(Config);
         PreLoad(DefDatabase);
         DefDatabase.AddDefDocument(doc, fullPath);
         
