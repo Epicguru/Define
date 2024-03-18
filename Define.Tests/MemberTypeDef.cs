@@ -1,6 +1,4 @@
-﻿
-using JetBrains.Annotations;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace Define.Tests;
 
@@ -9,8 +7,11 @@ public sealed class MemberTypeDef : IDef
     [XmlIgnore]
     public string? Ignored;
 
-    [Xml.XmlInclude, UsedImplicitly]
-    private string? included;
+    [Xml.XmlInclude]
+    // Required null assignment because the compiler hates me not assigning a value to this private field.
+    // [UsedImplicitly] does not help because it is the compiler, not the analyzer, that issues the warning.
+    // ReSharper disable once RedundantDefaultMemberInitializer
+    private string? included = null;
     
     public static string? StaticField;
     public static string? StaticProperty { get; set; }

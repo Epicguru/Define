@@ -38,11 +38,11 @@ jobs:
       # Generate a test report.
       - name: Test Report
         uses: dorny/test-reporter@v1.7.0
-        if: success() || failure()    # run this step even if previous step failed
+        if: success() || failure()
         with:
-          name: Generate test report            # Name of the check run which will be created
-          path: Define*Tests/TestResults/test-results.trx # Path to test results. Note the wildcard.
-          reporter: dotnet-trx        # Format of test results
+          name: Test Report
+          path: Define*Tests/TestResults/test-results.trx
+          reporter: dotnet-trx
 
       # See this issue here for the reason why I am running test twice:
       # https://github.com/microsoft/vstest/issues/2334
@@ -68,7 +68,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: both
-          thresholds: '60 75'
+          thresholds: '70 75'
 
       # Post the results of the previous step as a PR comment.
       - name: Add Coverage PR Comment

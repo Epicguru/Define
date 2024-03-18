@@ -72,7 +72,7 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         
         CheckDatabaseIsGood(newDb);
         
-        Output.WriteLine($"XML {baseline} vs Ceras {timer.Elapsed}");
+        Output.WriteLine($"XML {baseline.TotalMilliseconds:F3} ms vs Ceras {timer.Elapsed.TotalMilliseconds:F3} ms");
         baseline.Should().BeGreaterThan(timer.Elapsed);
     }
 
