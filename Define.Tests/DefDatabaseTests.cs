@@ -17,7 +17,9 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
         // But only one of the specific subclass type:
         DefDatabase.GetAll<AltSubclassDef>().Should().HaveCount(1);
         DefDatabase.GetAll<AltSubclassAbstractDef>().Should().HaveCount(1);
-        
+
+        DefDatabase.ContainerCount.Should().Be(7); // 4 interfaces, 3 classes
+
         // Now unregister that sub:
         var sub = DefDatabase.GetAll<AltSubclassAbstractDef>()[0];
         string id = sub.ID;
@@ -32,8 +34,10 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
         DefDatabase.GetAll<TestDef>().Should().HaveCount(1);
         DefDatabase.GetAll<AltSubclassDef>().Should().HaveCount(0);
         DefDatabase.GetAll<AltSubclassAbstractDef>().Should().HaveCount(0);
+
+        DefDatabase.ContainerCount.Should().Be(5); // 4 interfaces, 1 class
     }
-    
+
     [Fact]
     public void TestLoadMultipleDefs()
     {

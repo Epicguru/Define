@@ -18,6 +18,7 @@ public class DefDatabase
     /// The total number of defs currently loaded.
     /// </summary>
     public int Count => allDefs.Count;
+
     /// <summary>
     /// The number of def containers currently loaded.
     /// The number of containers depends on the inheritance hierarchy of all loaded defs,
@@ -27,15 +28,23 @@ public class DefDatabase
     public int ContainerCount => defsOfType.Count;
 
     /// <summary>
+    /// A read only collection of the types of def containers that hold all currently loaded defs.
+    /// Use for diagnostic reasons only. Not thread safe.
+    /// </summary>
+    public IReadOnlyCollection<Type> ContainerTypes => defsOfType.Keys;
+
+    /// <summary>
     /// The <see cref="XmlLoader"/> that is used during the def loading process.
     /// This loader can be configured to add or remove parsers.
     /// </summary>
     public XmlLoader Loader { get; }
+
     /// <summary>
     /// A read-only collection of types that had static data loaded into them.
     /// Used for FastCache.
     /// </summary>
     public IReadOnlyCollection<Type> TypesWithStaticData => typesWithStaticData;
+
     /// <summary>
     /// The <see cref="DefSerializeConfig"/> used by this database.
     /// </summary>
@@ -360,7 +369,7 @@ public class DefDatabase
     public async Task<bool> AddDefFolderAsync(string folderPath, SearchOption searchOption = SearchOption.AllDirectories, string searchPattern = "*.xml")
     {
         if (!Directory.Exists(folderPath))
-            throw new DirectoryNotFoundException($"Could find find directory '{folderPath}'");
+            return false;
 
         bool success = true;
         
@@ -573,6 +582,10 @@ public class DefDatabase
         foreach (var container in GetAllContainersForDefType(def.GetType()))
         {
             container.Remove(def);
+            if (container.Count == 0)
+            {
+                defsOfType.Remove(container.ContainedType);
+            }
         }
         
         return true;
@@ -615,16 +628,20 @@ public class DefDatabase
     /// </summary>
     /// <typeparam name="T">The type of def to look for.</typeparam>
     /// <returns>The list of defs matching the target type, or an empty list if none were found.</returns>
-    public IReadOnlyList<T> GetAll<T>() where T : class
-    {
-        if (defsOfType.TryGetValue(typeof(T), out var found))
-            return ((DefContainer<T>)found).Defs;
-
-        return Array.Empty<T>();
-    }
+    public IReadOnlyList<T> GetAll<T>() where T : class    
+        => defsOfType.TryGetValue(typeof(T), out var found) ? ((DefContainer<T>)found).Defs : [];    
 
     /// <summary>
-    /// Gets or creates a def container for the specified type.
+    /// Gets all defs of the specified type, or any subclass of that type, or implementing the specified interface.
+    /// The <see cref="GetAll{T}()"/> generic overload is preferred because it is faster.
+    /// </summary>
+    /// <param name="defType">The type of def to look for.</param>
+    /// <returns>The list of defs matching the target type, or an empty list if none were found.</returns>    
+    public IReadOnlyList<object> GetAll(Type defType)    
+        => defsOfType.TryGetValue(defType, out var found) ? found.DefsAsObjects : Array.Empty<object>();    
+
+    /// <summary>
+    /// Gets or creates a def container for the specified def type (or def interface).
     /// </summary>
     private DefContainer GetContainerForType(Type type)
     {
@@ -641,12 +658,19 @@ public class DefDatabase
     #region Container classes
     private abstract class DefContainer
     {
+        public abstract int Count { get; }
+        public abstract Type ContainedType { get; }
+        public abstract IReadOnlyList<object> DefsAsObjects { get; }
         public abstract void Add(object def);
         public abstract void Remove(object def);
     }
 
     private sealed class DefContainer<T> : DefContainer where T : class
     {
+        public override int Count => Defs.Count;
+        public override IReadOnlyList<object> DefsAsObjects => Defs;
+        public override Type ContainedType => typeof(T);
+
         public readonly List<T> Defs = [];
 
         public override void Add(object def)
