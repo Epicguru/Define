@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using Ceras;
+using JetBrains.Annotations;
 
 namespace Define.FastCache;
 
@@ -10,50 +11,6 @@ namespace Define.FastCache;
 /// </summary>
 public class DefFastCache
 {
-    /// <summary>
-    /// Creates a new <see cref="DefFastCache"/> based on the current contents
-    /// and config of the provided database.
-    /// </summary>
-    public static DefFastCache Create(DefDatabase database)
-    {
-        ArgumentNullException.ThrowIfNull(database);
-        if (database.Config == null)
-            throw new InvalidOperationException("The database must have finished loading before creating a FastCache for it.");
-
-        var cache = new DefFastCache
-        {
-            TimeCreatedUtc = DateTime.UtcNow,
-            Defs = database.GetAll().ToArray(),
-            Config = database.Config!
-        };
-        
-        // Use this to store a list of types that have static data.
-        foreach (var type in database.TypesWithStaticData)
-            cache.StaticClassData.Add(type, null!);
-
-        return cache;
-    }
-
-    /// <summary>
-    /// Loads a <see cref="DefFastCache"/> from serialized data.
-    /// The <paramref name="config"/> should be identical to the one used to save
-    /// the cache in the first place.
-    /// Will throw an exception if the loading fails for any reason.
-    /// </summary>
-    public static DefFastCache Load(byte[] serializedData, DefSerializeConfig config)
-    {
-        ArgumentNullException.ThrowIfNull(serializedData);
-        ArgumentNullException.ThrowIfNull(config);
-
-        var serializer = new CerasSerializer(config.ToFastCacheConfig());
-        var loaded = serializer.Deserialize<DefFastCache>(serializedData);
-        if (!loaded.Config.Equals(config))
-        {
-            DefDebugger.Warn("The def config that was used to save this FastCache does not match the config used to save it, this can lead to broken defs.");
-        }
-        return loaded;
-    }
-    
     /// <summary>
     /// The time, in UTC, that this cache was created at.
     /// </summary>
@@ -80,6 +37,50 @@ public class DefFastCache
     [Include]
     public DefSerializeConfig Config { get; private set; } = null!;
 
+    /// <summary>
+    /// Creates a new <see cref="DefFastCache"/> based on the current contents
+    /// and config of the provided database.
+    /// </summary>
+    public DefFastCache(DefDatabase database)
+    {
+        ArgumentNullException.ThrowIfNull(database);
+        ArgumentNullException.ThrowIfNull(database.Config);
+
+        TimeCreatedUtc = DateTime.UtcNow;
+        Defs = database.GetAll().ToArray();
+        Config = database.Config;
+        
+        // Use this to store a list of types that have static data.
+        foreach (var type in database.TypesWithStaticData)
+            StaticClassData.Add(type, null!);
+    }
+
+    /// <summary>
+    /// Creates a <see cref="DefFastCache"/> from serialized data.
+    /// The <paramref name="config"/> should be identical to the one used to save
+    /// the cache in the first place.
+    /// Will throw an exception if the loading fails for any reason.
+    /// You can later call <see cref="LoadIntoDatabase"/> to put the contents of this cache into a database.
+    /// </summary>
+    public DefFastCache(byte[] serializedData, DefSerializeConfig config)
+    {
+        ArgumentNullException.ThrowIfNull(serializedData);
+        ArgumentNullException.ThrowIfNull(config);
+
+        var serializer = new CerasSerializer(config.ToFastCacheConfig());
+        
+        // Ref self is required because Deserialize only has an overload that takes ref.
+        DefFastCache self = this;
+        serializer.Deserialize(ref self, serializedData);
+        
+        if (!Config.Equals(config))
+        {
+            DefDebugger.Warn("The def config that was used to save this FastCache does not match the config used to save it, this can lead to broken defs.");
+        }
+    }
+    
+    [CerasConstructor]
+    [UsedImplicitly]
     private DefFastCache() { }
     
     /// <summary>

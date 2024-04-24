@@ -30,6 +30,7 @@
   
   <ItemGroup>
     <PackageReference Include="Ceras" Version="4.1.7" />
+    <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
   </ItemGroup>
 
   <ItemGroup>

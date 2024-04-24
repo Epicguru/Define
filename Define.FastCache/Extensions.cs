@@ -67,10 +67,7 @@ public static class Extensions
     /// Creates a new <see cref="DefFastCache"/> based on the current contents of
     /// this database. This cache can then be saved to file using <see cref="DefFastCache.Serialize"/>.
     /// </summary>
-    public static DefFastCache CreateFastCache(this DefDatabase database)
-    {
-        return DefFastCache.Create(database);
-    }
+    public static DefFastCache ToFastCache(this DefDatabase database) => new DefFastCache(database);
 
     private static TargetMember MakeTargetMembers(DefSerializeConfig config)
     {
