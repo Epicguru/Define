@@ -46,14 +46,14 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
         }
         
         // Make fast cache.
-        var fastCache = DefDatabase.CreateFastCache();
+        var fastCache = DefDatabase.ToFastCache();
 
         byte[] cacheData = fastCache.Serialize();
         cacheData.Should().HaveCountGreaterThan(0).And.Contain(b => b != 0);
         Output.WriteLine($"Serialized all MG defs into {cacheData.Length} bytes.");
         
         // Deserialize.
-        var loadedCache = DefFastCache.Load(cacheData, DefDatabase.Config!);
+        var loadedCache = new DefFastCache(cacheData, DefDatabase.Config);
         
         // Load into new database.
         var db2 = new DefDatabase(Config);

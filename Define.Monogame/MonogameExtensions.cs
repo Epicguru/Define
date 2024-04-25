@@ -28,6 +28,12 @@ public static class MonogameExtensions
     /// Adds parsers for many common Monogame data types like <see cref="Vector2"/> or <see cref="Color"/>,
     /// excluding content types such as <see cref="Texture2D"/>.
     /// For content types such as <see cref="Texture2D"/>, call the <see cref="AddMonogameContentParsers"/>.
+    /// The following asset types are supported:
+    /// <list type="bullet">
+    /// <item><see cref="Vector2"/>, <see cref="Vector3"/>, <see cref="Vector4"/></item>
+    /// <item><see cref="Rectangle"/></item>
+    /// <item><see cref="Color"/></item>
+    /// </list>
     /// </summary>
     public static void AddMonogameDataParsers(this XmlLoader loader)
     {
@@ -41,6 +47,15 @@ public static class MonogameExtensions
     /// Adds parsers for common monogame content types such as <see cref="Texture2D"/>
     /// or <see cref="Effect"/>.
     /// The provided <see cref="ContentManager"/> is used to load assets.
+    /// The following asset types are supported:
+    /// <list type="bullet">
+    /// <item><see cref="Texture2D"/></item>
+    /// <item><see cref="Effect"/></item>
+    /// <item><see cref="SoundEffect"/></item>
+    /// <item><see cref="SpriteFont"/></item>
+    /// <item><see cref="Model"/></item>
+    /// <item><see cref="Song"/></item>
+    /// </list>
     /// </summary>
     public static void AddMonogameContentParsers(this XmlLoader loader, ContentManager contentManager)
     {

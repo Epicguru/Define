@@ -19,7 +19,7 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         
         CheckDatabaseIsGood(DefDatabase);
 
-        var cache = DefDatabase.CreateFastCache();
+        var cache = DefDatabase.ToFastCache();
         cache.Defs.Should().BeEquivalentTo(DefDatabase.GetAll());
         cache.StaticClassData.Should().ContainSingle(p => p.Key == typeof(SimpleDef));
         
@@ -30,7 +30,7 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         
         // Deserialize.
         var db2 = new DefDatabase(Config);
-        var cache2 = DefFastCache.Load(serialised, Config);
+        var cache2 = new DefFastCache(serialised, Config);
         cache2.Should().BeEquivalentTo(cache);
         
         // Check new load was successful.
@@ -60,19 +60,19 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         
         CheckDatabaseIsGood(DefDatabase);
 
-        var toCache = DefDatabase.CreateFastCache();
+        var toCache = DefDatabase.ToFastCache();
         var savedCache = toCache.Serialize();
 
         var newDb = new DefDatabase(Config);
         
         timer = Stopwatch.StartNew();
-        var loadedCache = DefFastCache.Load(savedCache, Config);
+        var loadedCache = new DefFastCache(savedCache, Config);
         loadedCache.LoadIntoDatabase(newDb);
         timer.Stop();
         
         CheckDatabaseIsGood(newDb);
         
-        Output.WriteLine($"XML {baseline} vs Ceras {timer.Elapsed}");
+        Output.WriteLine($"XML {baseline.TotalMilliseconds:F3} ms vs Ceras {timer.Elapsed.TotalMilliseconds:F3} ms");
         baseline.Should().BeGreaterThan(timer.Elapsed);
     }
 
