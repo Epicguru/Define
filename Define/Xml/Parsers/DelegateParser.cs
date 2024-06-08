@@ -4,7 +4,7 @@ namespace Define.Xml.Parsers;
 
 /// <summary>
 /// An <see cref="XmlParser"/> that parses all type of delegates, including
-/// <see cref="Action"/>, <see cref="Func{T}"/>.
+/// <see cref="Action"/> and <see cref="Func{T}"/>.
 /// This parser is only capable of handling static methods.
 /// </summary>
 public class DelegateParser : XmlParser

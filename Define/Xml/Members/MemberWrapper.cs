@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using JetBrains.Annotations;
 
 namespace Define.Xml.Members;
 
@@ -8,21 +9,22 @@ namespace Define.Xml.Members;
 /// or a <see cref="PropertyInfo"/>, with utility methods to
 /// read and write to it.
 /// </summary>
+[PublicAPI]
 public readonly struct MemberWrapper
 {
     /// <summary>
     /// A <see cref="MemberWrapper"/> that is invalid.
     /// </summary>
-    public static readonly MemberWrapper Null = default;
+    public static readonly MemberWrapper Null;
 
     /// <summary>
-    /// Whether or not this member can be read from.
+    /// Whether this member can be read from.
     /// Fields can always be read but properties may not have getters.
     /// </summary>
     public bool CanRead => IsField || property!.GetMethod != null;
 
     /// <summary>
-    /// Whether or not this member can be written to.
+    /// Whether this member can be written to.
     /// Fields can always be read but properties may not have setters.
     /// </summary>
     public bool CanWrite => IsField || property!.SetMethod != null;
@@ -103,7 +105,7 @@ public readonly struct MemberWrapper
     /// <summary>
     /// Enumerates all custom attributes that are of the type <see name="T"/> (or a subclass of <see name="T"/>).
     /// </summary>
-    /// <param name="inherit">Whether or not to include inherited attributes.</param>
+    /// <param name="inherit">Whether to include inherited attributes.</param>
     public IEnumerable<T> GetAttributes<T>(bool inherit = true) where T : class
         => from attr in Member.GetCustomAttributes(inherit)
            let t = attr as T
@@ -113,7 +115,7 @@ public readonly struct MemberWrapper
     /// <summary>
     /// Tries to get a custom attribute that is of the type <see name="T"/> (or a subclass of <see name="T"/>).
     /// </summary>
-    /// <param name="inherit">Whether or not to include inherited attributes.</param>
+    /// <param name="inherit">Whether to include inherited attributes.</param>
     public T? TryGetAttribute<T>(bool inherit = true) where T : Attribute
         => IsField ? field.GetCustomAttribute<T>(inherit) : property!.GetCustomAttribute<T>(inherit);
 

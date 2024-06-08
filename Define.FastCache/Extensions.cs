@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Ceras;
+using JetBrains.Annotations;
 
 namespace Define.FastCache;
 
@@ -24,7 +25,7 @@ public static class Extensions
             Advanced =
             {
                 ReadonlyFieldHandling = ReadonlyFieldHandling.Members,
-                SealTypesWhenUsingKnownTypes = false,
+                SealTypesWhenUsingKnownTypes = false
             }
         };
 
@@ -36,6 +37,7 @@ public static class Extensions
     /// This sets up the serializer such that it matches this config and can handle
     /// <see cref="IDef"/>s correctly.
     /// </summary>
+    [PublicAPI]
     public static void ConfigureForDefine(this SerializerConfig config)
     {
         // Set IDef.ID to always be included regardless of other settings.
@@ -48,7 +50,7 @@ public static class Extensions
                 return;
             
             // Unfortunately for some reason the Include method is not exposed
-            // in the base TypeConfig class so I have to resort to generics.
+            // in the base TypeConfig class, so I have to resort to generics.
             var member = t.Members.First(m => m.Member.Name == nameof(IDef.ID) && m.Member is PropertyInfo);
             member.GetType().GetMethod("Include", [])!.Invoke(member, []);
         };
@@ -82,14 +84,16 @@ public static class Extensions
             if (doPrivate)
                 output |= TargetMember.PrivateFields;
         }
-        
-        if (config.DefaultMemberTypes.HasFlag(MemberTypes.Property))
+
+        if (!config.DefaultMemberTypes.HasFlag(MemberTypes.Property))
         {
-            if (doPublic)
-                output |= TargetMember.PublicProperties;
-            if (doPrivate)
-                output |= TargetMember.PrivateProperties;
+            return output;
         }
+        
+        if (doPublic)
+            output |= TargetMember.PublicProperties;
+        if (doPrivate)
+            output |= TargetMember.PrivateProperties;
 
         return output;
     }

@@ -8,7 +8,7 @@ public struct ArgMatrix : IEnumerable<object[]>
 
     public void Add(Span<object> arg)
     {
-        args ??= new List<object[]>();
+        args ??= [];
         args.Add(arg.ToArray());
     }
 

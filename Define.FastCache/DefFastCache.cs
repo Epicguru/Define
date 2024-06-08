@@ -15,26 +15,28 @@ public class DefFastCache
     /// The time, in UTC, that this cache was created at.
     /// </summary>
     [Include]
+    [PublicAPI]
     public DateTime TimeCreatedUtc { get; private set; }
 
     /// <summary>
     /// The defs stored in this cache.
     /// </summary>
     [Include]
-    public IDef[] Defs { get; private set; } = Array.Empty<IDef>();
+    public IDef[] Defs { get; [UsedImplicitly] private set; } = [];
 
     /// <summary>
     /// If static members are serialized (see <see cref="DefSerializeConfig.DefaultMemberBindingFlags"/>) then
     /// this dictionary contains serialized data for those types' static members.
     /// </summary>
     [Include]
-    public Dictionary<Type, byte[]> StaticClassData { get; private set; } = new Dictionary<Type, byte[]>();
+    public Dictionary<Type, byte[]> StaticClassData { get; [UsedImplicitly] private set; } = new Dictionary<Type, byte[]>();
 
     /// <summary>
     /// The config that this <see cref="DefFastCache"/> uses when
     /// saving and loading.
     /// </summary>
     [Include]
+    [PublicAPI]
     public DefSerializeConfig Config { get; private set; } = null!;
 
     /// <summary>

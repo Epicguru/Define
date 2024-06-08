@@ -22,6 +22,7 @@ public abstract class XmlParser : IComparable<XmlParser>
     /// (see <see cref="CanHandle"/>), then this priority decides which parser will be used.
     /// Higher priority means it will be used first.
     /// </summary>
+    [PublicAPI]
     public int Priority
     {
         get => priority;
@@ -40,6 +41,7 @@ public abstract class XmlParser : IComparable<XmlParser>
     /// <summary>
     /// The <see cref="XmlLoader"/> that this parser has been registered to.
     /// </summary>
+    [PublicAPI]
     public XmlLoader? Loader { get; internal set; }
 
     private int priority;

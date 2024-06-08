@@ -5,6 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Define.Xml.Members;
 using Define.Xml.Parsers;
+using JetBrains.Annotations;
 
 namespace Define.Xml;
 
@@ -12,6 +13,7 @@ namespace Define.Xml;
 /// The class responsible for turning XML files into C# defs.
 /// It is used by the <see cref="DefDatabase"/> although it can be used standalone if desired.
 /// </summary>
+[PublicAPI]
 public class XmlLoader : IDisposable
 {
     /*
@@ -53,7 +55,7 @@ public class XmlLoader : IDisposable
     /// <summary>
     /// A collection of types that had static data loaded into them.
     /// </summary>
-    public HashSet<Type> TypesWithStaticData { get; } = new HashSet<Type>();
+    public HashSet<Type> TypesWithStaticData { get; } = [];
 
     internal bool TypeToParserIsDirty { get; set; }
     
@@ -72,13 +74,13 @@ public class XmlLoader : IDisposable
     /// </summary>
     public readonly List<IConfigErrors> ConfigErrorItems = new List<IConfigErrors>(256);
     
-    private readonly List<XmlParser> allParsers = new List<XmlParser>();
-    private readonly Dictionary<Type, MemberStore> fieldMaps = new Dictionary<Type, MemberStore>();
-    private readonly Dictionary<Type, XmlParser?> typeToParser = new Dictionary<Type, XmlParser?>();
+    private readonly List<XmlParser> allParsers = [];
+    private readonly Dictionary<Type, MemberStore> fieldMaps = [];
+    private readonly Dictionary<Type, XmlParser?> typeToParser = [];
+    private readonly HashSet<XmlNode> tempInheritance = [];
+    private readonly List<XmlNode> tempInheritanceList = [];
+    private readonly Dictionary<string, IDef> prePopulatedDefs = [];
     private readonly XmlDocument masterDoc = new XmlDocument();
-    private readonly HashSet<XmlNode> tempInheritance = new HashSet<XmlNode>();
-    private readonly List<XmlNode> tempInheritanceList = new List<XmlNode>();
-    private readonly Dictionary<string, IDef> prePopulatedDefs = new Dictionary<string, IDef>();
     private Func<string, IDef?>? existingDefsFunc;
 
     /// <summary>
@@ -719,7 +721,7 @@ public class XmlLoader : IDisposable
                 Loader = this,
                 TextValue = node.Name,
                 DefaultType = keyType,
-                TargetType = keyType,
+                TargetType = keyType
             });
             if (key == null)
             {
@@ -1123,6 +1125,7 @@ public class XmlLoader : IDisposable
     /// <summary>
     /// The results of an XML parsing operation.
     /// </summary>
+    [PublicAPI]
     public readonly ref struct ParseResult
     {
         /// <summary>
@@ -1140,6 +1143,7 @@ public class XmlLoader : IDisposable
         /// <see cref="Value"/> is null.
         /// See <see cref="ShouldWrite"/>.
         /// </summary>
+        [PublicAPI]
         public bool ForceWrite { get; init; }
 
         /// <summary>

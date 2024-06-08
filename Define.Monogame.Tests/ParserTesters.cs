@@ -31,7 +31,7 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
     [Fact]
     public void TestFastCache()
     {
-        DefDatabase.Loader!.AddMonogameDataParsers();
+        DefDatabase.Loader.AddMonogameDataParsers();
         DefDatabase.AddDefFolder("./Defs", fileFilter: f => !f.EndsWith("ContentDef.xml"));
         DefDatabase.FinishLoading();
 
@@ -104,7 +104,7 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
     {
         using var game = new TestGame(g =>
         {
-            DefDatabase.Loader!.AddMonogameContentParsers(g.ContentManager);
+            DefDatabase.Loader.AddMonogameContentParsers(g.ContentManager);
             DefDatabase.AddDefDocument(File.ReadAllText("./Defs/ContentDef.xml"), "ContentDef.xml");
             DefDatabase.FinishLoading();
 

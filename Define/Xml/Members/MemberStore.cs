@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 
 namespace Define.Xml.Members;
 
@@ -7,6 +8,7 @@ namespace Define.Xml.Members;
 /// A class containing all the known members (fields and properties)
 /// for a particular type.
 /// </summary>
+[PublicAPI]
 public class MemberStore
 {
     /// <summary>

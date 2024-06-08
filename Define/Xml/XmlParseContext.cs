@@ -1,6 +1,7 @@
 ﻿using System.Xml;
 using Define.Xml.Members;
 using Define.Xml.Parsers;
+using JetBrains.Annotations;
 
 namespace Define.Xml;
 
@@ -10,6 +11,7 @@ namespace Define.Xml;
 /// In some cases, when the parser allows <see cref="XmlParser.CanParseNoContext"/>,
 /// there may be no information except for <see cref="TextValue"/> and <see cref="TargetType"/>.
 /// </summary>
+[PublicAPI]
 public readonly struct XmlParseContext
 {
     /// <summary>

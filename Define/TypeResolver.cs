@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 
 namespace Define;
 
@@ -47,6 +48,7 @@ public static partial class TypeResolver
     /// Registers all assemblies that are currently loaded into the <see cref="AppDomain"/>.
     /// </summary>
     /// <param name="getAssemblyPriority">If not null, this provides the priority of assemblies when searching for types.</param>
+    [PublicAPI]
     public static void RefreshAssembliesList(Func<Assembly, int>? getAssemblyPriority = null)
     {
         allAssemblies.Clear();
@@ -193,11 +195,13 @@ public static partial class TypeResolver
             {
                 foreach (var type in ass.GetTypes())
                 {
-                    if (type.FullName!.Equals(name, comp))
+                    if (!type.FullName!.Equals(name, comp))
                     {
-                        found = type;
-                        break;
+                        continue;
                     }
+                    
+                    found = type;
+                    break;
                 }
                 if (found != null)
                     break;
@@ -269,26 +273,21 @@ public static partial class TypeResolver
     }
 
     private static string MakeNestedName(Type type)
-    {
-        if (!type.IsNested)
-            return type.Name;
-
-        return $"{MakeNestedName(type.DeclaringType!)}+{type.Name}";
-    }
+        => !type.IsNested ? type.Name : $"{MakeNestedName(type.DeclaringType!)}+{type.Name}";
 
     private static Type? MakeNullable(Type? type)
     {
         if (type == null)
             return null;
 
-        if (!type.IsValueType)
+        if (type.IsValueType)
         {
-            DefDebugger.Error($"The type '{type}' cannot be nullable, it is passed by ref.");
-            return null;
+            // Construct nullable wrapper...
+            return typeof(Nullable<>).MakeGenericType(type);
         }
-
-        // Construct nullable wrapper...
-        return typeof(Nullable<>).MakeGenericType(type);
+        
+        DefDebugger.Error($"The type '{type}' cannot be nullable, it is passed by ref.");
+        return null;
     }
 
     /// <summary>

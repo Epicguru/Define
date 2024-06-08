@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Text;
+using JetBrains.Annotations;
 
 namespace Define.Xml.Parsers;
 
@@ -20,6 +20,7 @@ public sealed class SimpleParser<T> : XmlParser<T>
     /// of type <typeparamref name="T"/>.
     /// This function is provided via the constructor.
     /// </summary>
+    [PublicAPI]
     public readonly Func<string, T?> ParseFunction;
 
     /// <summary>

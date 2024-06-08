@@ -7,7 +7,7 @@
 public interface IConfigErrors
 {
     /// <summary>
-    /// Called once after <see cref="IPostLoad.PostLoad"/> and <see cref="IPostLoad.LatePostLoad"/>.
+    /// Called once after <see cref="IPostLoad.PostLoad"/> and <see cref="IPostLoad.LatePostLoad"/> have been called.
     /// Should be used to check for errors in the def.
     /// </summary>
     void ConfigErrors(ConfigErrorReporter config);

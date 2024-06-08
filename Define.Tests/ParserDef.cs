@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using JetBrains.Annotations;
 
 namespace Define.Tests;
 
@@ -17,9 +18,10 @@ public class ParserDef : IDef
     public DoMath<float>? MethodDoMath;
     
     // Type:
-    public List<Type?> Types = new List<Type?>();
+    public List<Type?> Types = [];
 }
 
+[UsedImplicitly(ImplicitUseKindFlags.Access, ImplicitUseTargetFlags.WithMembers)]
 public static class ExampleMethods
 {
     public static void SimpleAction() { }
