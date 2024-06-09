@@ -23,7 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Define.Monogame.Tests", "De
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Define.XnaSupportShared", "Define.XnaSupportShared\Define.XnaSupportShared.shproj", "{A55B2BDD-4C0B-49FF-A08A-81200B842BA6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Define.KNI", "Define.KNI\Define.KNI.csproj", "{E26AB71F-1C2E-46A0-A411-977B73352C40}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Define.KNI", "Define.KNI\Define.KNI.csproj", "{E26AB71F-1C2E-46A0-A411-977B73352C40}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Define.XnaSupportShared.Tests", "Define.XnaSupportShared.Tests\Define.XnaSupportShared.Tests.shproj", "{E1FD3DD6-5451-4121-AE13-CAD65879F71C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Define.KNI.Tests", "Define.KNI.Tests\Define.KNI.Tests.csproj", "{DD314756-D4EE-4B6D-A383-50F95B040ABC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,6 +75,10 @@ Global
 		{E26AB71F-1C2E-46A0-A411-977B73352C40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E26AB71F-1C2E-46A0-A411-977B73352C40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E26AB71F-1C2E-46A0-A411-977B73352C40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD314756-D4EE-4B6D-A383-50F95B040ABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD314756-D4EE-4B6D-A383-50F95B040ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD314756-D4EE-4B6D-A383-50F95B040ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD314756-D4EE-4B6D-A383-50F95B040ABC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,8 +87,11 @@ Global
 		SolutionGuid = {6AD23389-BE88-4F2B-935F-C8C9419903D6}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Define.XnaSupportShared.Tests\Define.XnaSupportShared.Tests.projitems*{9014be32-6901-4c0b-b713-901ec84a407d}*SharedItemsImports = 5
 		Define.XnaSupportShared\Define.XnaSupportShared.projitems*{a0c1cdd4-acb9-408f-ae13-3deb67c1391f}*SharedItemsImports = 5
 		Define.XnaSupportShared\Define.XnaSupportShared.projitems*{a55b2bdd-4c0b-49ff-a08a-81200b842ba6}*SharedItemsImports = 13
+		Define.XnaSupportShared.Tests\Define.XnaSupportShared.Tests.projitems*{dd314756-d4ee-4b6d-a383-50f95b040abc}*SharedItemsImports = 5
+		Define.XnaSupportShared.Tests\Define.XnaSupportShared.Tests.projitems*{e1fd3dd6-5451-4121-ae13-cad65879f71c}*SharedItemsImports = 13
 		Define.XnaSupportShared\Define.XnaSupportShared.projitems*{e26ab71f-1c2e-46a0-a411-977b73352c40}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
