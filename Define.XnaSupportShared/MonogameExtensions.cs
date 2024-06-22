@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Media;
 namespace Define.Monogame;
 
 /// <summary>
-/// A collection of extension methods for use with Monogame and Define.
+/// A collection of extension methods for use with Monogame/XNA/KNI and Define.
 /// </summary>
 public static class MonogameExtensions
 {

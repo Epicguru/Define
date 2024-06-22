@@ -10,7 +10,7 @@ namespace Define.Xml.Members;
 /// read and write to it.
 /// </summary>
 [PublicAPI]
-public readonly struct MemberWrapper
+public readonly struct MemberWrapper : IEquatable<MemberWrapper>
 {
     /// <summary>
     /// A <see cref="MemberWrapper"/> that is invalid.
@@ -142,4 +142,23 @@ public readonly struct MemberWrapper
         else if (property!.CanWrite)
             property.SetValue(owner, value);
     }
+
+    /// <inheritdoc/>
+    public bool Equals(MemberWrapper other) => other.property == property && other.field == field;
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj) => obj is MemberWrapper wrapper && Equals(wrapper);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => HashCode.Combine(property, field);
+
+    /// <summary>
+    /// Equivalent to <see cref="Equals(Define.Xml.Members.MemberWrapper)"/>.
+    /// </summary>
+    public static bool operator ==(MemberWrapper left, MemberWrapper right) => left.Equals(right);
+
+    /// <summary>
+    /// Equivalent to <see cref="Equals(Define.Xml.Members.MemberWrapper)"/> == false.
+    /// </summary>
+    public static bool operator !=(MemberWrapper left, MemberWrapper right) => !left.Equals(right);
 }

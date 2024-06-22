@@ -70,6 +70,8 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
     [SkippableFact(typeof(NoSuitableGraphicsDeviceException))]
     public void TestGameRunBaseline()
     {
+        CheckAdapterCreation();
+
         using var game = new TestGame(_ =>
         {
             
@@ -89,6 +91,8 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
     [SkippableFact(typeof(NoSuitableGraphicsDeviceException))]
     public void TestGameLoadContentManual()
     {
+        CheckAdapterCreation();
+
         using var game = new TestGame(g =>
         {
             using var tex = g.ContentManager.Load<Texture2D>("Content/MyImage");
@@ -102,6 +106,8 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
     [SkippableFact(typeof(NoSuitableGraphicsDeviceException))]
     public void TestParseTexture()
     {
+        CheckAdapterCreation();
+
         using var game = new TestGame(g =>
         {
             DefDatabase.Loader.AddMonogameContentParsers(g.ContentManager);

@@ -19,6 +19,14 @@ public class TestDef : IDef, IPostLoad, IConfigErrors, IPostXmlConstruct
     [Alias("Object")]
     public object? ObjectWithDifferentName = new object();
 
+    [Alias("Name1", "Name2")]
+    public string? MultiAliasSingleAttribute;
+
+    [Alias("Name3"), Alias("Name4")]
+    public string? MultiAliasMultiAttribute;
+
+    public string? SimpleString;
+
     public Dictionary<string, InnerData>? Dict;
     public List<TestDef?>? List;
     public List<InnerData?>? InnerDataList;

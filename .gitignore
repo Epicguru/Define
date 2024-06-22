@@ -348,10 +348,8 @@ healthchecksdb
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 
-Define.Monogame.Tests/.mgstats
+*.mgstats
+*.mgcontent
+*.xnb
 
-Define.Monogame.Tests/.mgcontent
-
-Define.Monogame.Tests/Content/MyImage.xnb
-
-Define.Monogame.Tests/Content/MyImage.mgcontent
+.idea/.idea.Define/.idea/aws.xml

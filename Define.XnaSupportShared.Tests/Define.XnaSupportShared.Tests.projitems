@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>e1fd3dd6-5451-4121-ae13-cad65879f71c</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Define.XnaSupportShared.Tests</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DefClasses\ColorDef.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DefClasses\ContentDef.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DefClasses\MGDefBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DefClasses\RectangleDef.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DefClasses\VectorDef.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GlobalUsings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MonogameDefTestBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ParserTesters.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestGame.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Defs\ColorDef.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Defs\ContentDef.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Defs\RectangleDef.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Defs\VectorDef.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory).mgcontent" />
+    <None Include="$(MSBuildThisFileDirectory).mgstats" />
+  </ItemGroup>
+</Project>
