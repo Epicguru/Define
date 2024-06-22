@@ -351,3 +351,5 @@ MigrationBackup/
 *.mgstats
 *.mgcontent
 *.xnb
+
+.idea/.idea.Define/.idea/aws.xml

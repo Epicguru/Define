@@ -29,6 +29,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Define.XnaSupportShared.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Define.KNI.Tests", "Define.KNI.Tests\Define.KNI.Tests.csproj", "{DD314756-D4EE-4B6D-A383-50F95B040ABC}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XNA_Like_Support", "XNA_Like_Support", "{90427E06-BC54-4001-9A85-1A6953322F0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,5 +95,13 @@ Global
 		Define.XnaSupportShared.Tests\Define.XnaSupportShared.Tests.projitems*{dd314756-d4ee-4b6d-a383-50f95b040abc}*SharedItemsImports = 5
 		Define.XnaSupportShared.Tests\Define.XnaSupportShared.Tests.projitems*{e1fd3dd6-5451-4121-ae13-cad65879f71c}*SharedItemsImports = 13
 		Define.XnaSupportShared\Define.XnaSupportShared.projitems*{e26ab71f-1c2e-46a0-a411-977b73352c40}*SharedItemsImports = 5
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E26AB71F-1C2E-46A0-A411-977B73352C40} = {90427E06-BC54-4001-9A85-1A6953322F0D}
+		{DD314756-D4EE-4B6D-A383-50F95B040ABC} = {90427E06-BC54-4001-9A85-1A6953322F0D}
+		{A0C1CDD4-ACB9-408F-AE13-3DEB67C1391F} = {90427E06-BC54-4001-9A85-1A6953322F0D}
+		{9014BE32-6901-4C0B-B713-901EC84A407D} = {90427E06-BC54-4001-9A85-1A6953322F0D}
+		{A55B2BDD-4C0B-49FF-A08A-81200B842BA6} = {90427E06-BC54-4001-9A85-1A6953322F0D}
+		{E1FD3DD6-5451-4121-AE13-CAD65879F71C} = {90427E06-BC54-4001-9A85-1A6953322F0D}
 	EndGlobalSection
 EndGlobal
