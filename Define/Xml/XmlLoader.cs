@@ -769,6 +769,9 @@ public class XmlLoader : IDisposable
         var instance = context.CurrentValue ?? TryCreateInstance(type, context);
         if (instance == null) // No need to log error, TryCreateInstance already logs.
             return default;
+        Type instanceType = instance.GetType();
+
+        using var _ = HashSetPool<MemberWrapper>.Rent(out var usedMembers);
 
         foreach (XmlNode node in context.Node!.ChildNodes)
         {
@@ -776,11 +779,17 @@ public class XmlLoader : IDisposable
                 continue;
 
             // Try to find member from name.
-            var member = GetMember(instance.GetType(), node.Name);
+            var member = GetMember(instanceType, node.Name);
             if (!member.IsValid)
             {
-                DefDebugger.Error($"Failed to find member called '{node.Name}' in class '{instance.GetType().FullName}'!", ctx: context); // This technically isn't the right context...
+                DefDebugger.Error($"Failed to find member called '{node.Name}' in class '{instanceType.FullName}'!", ctx: context); // This technically isn't the right context...
                 continue;
+            }
+
+            // Check for duplicate member assignment.
+            if (!usedMembers.Add(member))
+            {
+                WarnAboutDuplicateAssignment(member, node);
             }
 
             // Resolve type (uses member type unless overriden using Type="name")
@@ -804,10 +813,23 @@ public class XmlLoader : IDisposable
 
             // Assign value back unless it is null.
             if (parsed.ShouldWrite)
+            {
                 member.SetValue(instance, parsed.Value);
+            }
         }
 
         return new ParseResult(instance);
+    }
+
+    private static void WarnAboutDuplicateAssignment(in MemberWrapper member, XmlNode node)
+    {
+        string warnMsg = $"Duplicate assignment to member '{member.Name}' at {(node as XmlElement)?.GetFullXPath() ?? "???"}.";
+        var names = MemberStore.GetNames(member.Member);
+        if (names.Any())
+        {
+            warnMsg += $"This might be caused by aliases - {member.Name} has the following names: {string.Join(", ", names.Select(n => $"'{n}'"))}";
+        }
+        DefDebugger.Warn(warnMsg);
     }
 
     private static bool ShouldSkipNodeForClassLikeParsing(XmlNode node)

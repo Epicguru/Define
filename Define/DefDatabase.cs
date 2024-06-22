@@ -7,6 +7,7 @@ using Define.Xml;
 using JetBrains.Annotations;
 
 [assembly: InternalsVisibleTo("Define.FastCache")]
+[assembly: InternalsVisibleTo("Define.Tests")]
 namespace Define;
 
 /// <summary>

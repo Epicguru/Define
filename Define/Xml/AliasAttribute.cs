@@ -6,10 +6,20 @@
 /// Multiple aliases can be defined.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
-public class AliasAttribute(string name) : Attribute
+public class AliasAttribute : Attribute
 {
     /// <summary>
     /// The alternative name that this member can have in XML.
     /// </summary>
-    public readonly string Alias = name;
+    public readonly string[] Aliases;
+
+    /// <summary>
+    /// Marks this member with a single alias.
+    /// </summary>
+    public AliasAttribute(string alias) => Aliases = [alias];
+
+    /// <summary>
+    /// Masks this member with multiple aliases.
+    /// </summary>
+    public AliasAttribute(params string[] aliases) => Aliases = aliases;
 }
