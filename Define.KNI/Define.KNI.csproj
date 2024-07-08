@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2024.2.0" />
     <PackageReference Include="nkast.Xna.Framework.Ref" Version="3.12.9001" />
   </ItemGroup>
 
