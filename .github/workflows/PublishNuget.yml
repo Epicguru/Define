@@ -45,3 +45,9 @@ jobs:
       # Upload packages to NuGet. Will not upload if the version is not greater than the existing one.
       - name: Upload NuGet packages
         run: dotnet nuget push "Packed/*.nupkg" --api-key ${{ secrets.NUGETUPLOADAPIKEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2.0.8
+        with:
+          generate_release_notes: true

@@ -12,9 +12,9 @@
   <PropertyGroup>
     <PackageId>Define.Monogame</PackageId>
     <Title>Define.Monogame</Title>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.2</AssemblyVersion>
+    <FileVersion>1.0.2</FileVersion>
     <Authors>Epicguru</Authors>
     <PackageProjectUrl>https://github.com/Epicguru/Define</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Epicguru/Define</RepositoryUrl>
