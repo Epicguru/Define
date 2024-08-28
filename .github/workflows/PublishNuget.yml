@@ -2,7 +2,10 @@ name: Publish NuGet Package
 
 on:
   push:
-    branches: [ master ]
+    tags:
+      # This will only run the release workflow when it's tagged with a version
+      # tag.
+      - 'v*'
 
 jobs:
   build:
