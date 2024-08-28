@@ -9,8 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Content\MyImage.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.12.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
+    <PackageReference Include="MonoGame.Framework.DesktopGL.9000" Version="3.13.9001" />
     <PackageReference Include="xunit" Version="2.9.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.1">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,18 +27,19 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <!-- Copy defs and patches folder to output. -->
-    <Content Include="Content\**">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Define.Zip\Define.Zip.csproj" />
+    <ProjectReference Include="..\Define.FastCache\Define.FastCache.csproj" />
+    <ProjectReference Include="..\Define.KNI\Define.KNI.csproj" />
     <ProjectReference Include="..\TestSharedLib\TestSharedLib.csproj" />
   </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="mgcb /build:Content/MyImage.png" />
+  </Target>
+
+  <Import Project="..\Define.XnaSupportShared.Tests\Define.XnaSupportShared.Tests.projitems" Label="Shared" />
 
 </Project>

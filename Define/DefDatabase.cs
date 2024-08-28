@@ -4,14 +4,17 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
 using Define.Xml;
+using JetBrains.Annotations;
 
 [assembly: InternalsVisibleTo("Define.FastCache")]
+[assembly: InternalsVisibleTo("Define.Tests")]
 namespace Define;
 
 /// <summary>
 /// The def database tracks all loaded <see cref="IDef"/>s.
 /// It has method to load, register, unregister and get defs.
 /// </summary>
+[PublicAPI]
 public class DefDatabase
 {
     /// <summary>
@@ -31,6 +34,7 @@ public class DefDatabase
     /// A read only collection of the types of def containers that hold all currently loaded defs.
     /// Use for diagnostic reasons only. Not thread safe.
     /// </summary>
+    [PublicAPI]
     public IReadOnlyCollection<Type> ContainerTypes => defsOfType.Keys;
 
     /// <summary>
@@ -72,6 +76,7 @@ public class DefDatabase
     /// Clears the def database of all defs.
     /// If the loading process is currently active it is cancelled.
     /// </summary>
+    [PublicAPI]
     public void Clear()
     {
         idToDef.Clear();
@@ -101,7 +106,7 @@ public class DefDatabase
         await using var fs = new FileStream(zipFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         using var zip = new ZipArchive(fs, ZipArchiveMode.Read);
         
-        return await AddDefsFromZipAsync(zip);
+        return await AddDefsFromZipAsync(zip).ConfigureAwait(false);
     }
     
     /// <summary>
@@ -168,7 +173,7 @@ public class DefDatabase
                 continue;
 
             await using var stream = entry.Open();
-            bool worked = await AddDefDocumentAsync(stream, entry.FullName);
+            bool worked = await AddDefDocumentAsync(stream, entry.FullName).ConfigureAwait(false);
             if (!worked)
                 success = false;
         }
@@ -217,7 +222,7 @@ public class DefDatabase
         try
         {
             using var reader = new StreamReader(documentStream, encoding, leaveOpen: !closeStream);
-            return await AddDefDocumentAsync(reader, source);
+            return await AddDefDocumentAsync(reader, source).ConfigureAwait(false);
         }
         catch (Exception e)
         {
@@ -239,7 +244,7 @@ public class DefDatabase
         ArgumentNullException.ThrowIfNull(streamReader);
         try
         {
-            string xml = await streamReader.ReadToEndAsync();
+            string xml = await streamReader.ReadToEndAsync().ConfigureAwait(false);
             return AddDefDocument(xml, source);
         }
         catch (Exception e)
@@ -379,7 +384,7 @@ public class DefDatabase
             try
             {
                 await using var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
-                worked = await AddDefDocumentAsync(fs, file);
+                worked = await AddDefDocumentAsync(fs, file).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -636,7 +641,8 @@ public class DefDatabase
     /// The <see cref="GetAll{T}()"/> generic overload is preferred because it is faster.
     /// </summary>
     /// <param name="defType">The type of def to look for.</param>
-    /// <returns>The list of defs matching the target type, or an empty list if none were found.</returns>    
+    /// <returns>The list of defs matching the target type, or an empty list if none were found.</returns>
+    [PublicAPI]
     public IReadOnlyList<object> GetAll(Type defType)    
         => defsOfType.TryGetValue(defType, out var found) ? found.DefsAsObjects : Array.Empty<object>();    
 

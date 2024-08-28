@@ -106,4 +106,25 @@ public sealed class ConfigTests(ITestOutputHelper output) : DefTestBase(output)
         var def = LoadSingleDef<MemberTypeDef>("WriteIncluded");
         def.GetIncluded().Should().Be("Some Data");
     }
+
+    [Theory]
+    [InlineData(true,  true,  false)]
+    [InlineData(true,  false, true)]
+    [InlineData(false, true,  true)]
+    [InlineData(false, false, true)]
+    public void TestCaseSensitivity(bool caseSensitive, bool lowercase, bool shouldFind)
+    {
+        string toLoad = lowercase ? "CaseSensitivity_Lowercase" : "CaseSensitivity_Uppercase";
+        Config.MemberNamesAreCaseSensitive = caseSensitive;
+
+        var def = LoadSingleDef<TestDef>(toLoad, expectErrors: !shouldFind);
+        if (!shouldFind)
+        {
+            ErrorMessages.Should().ContainMatch("Failed to find member called *");
+        }
+        else
+        {
+            def.SimpleString.Should().Be("Correct write.");
+        }
+    }
 }

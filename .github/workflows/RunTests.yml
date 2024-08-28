@@ -16,10 +16,10 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.1.7
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4.0.0
+        uses: actions/setup-dotnet@v4.0.1
         with:
           dotnet-version: 8.0.x
 
@@ -37,7 +37,7 @@ jobs:
 
       # Generate a test report.
       - name: Test Report
-        uses: dorny/test-reporter@v1.7.0
+        uses: dorny/test-reporter@v1.9.1
         if: success() || failure()
         with:
           name: Test Report

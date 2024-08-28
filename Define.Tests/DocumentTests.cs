@@ -1,13 +1,10 @@
-﻿using System.Buffers;
-using System.Xml;
+﻿using System.Xml;
 using Xunit.Abstractions;
 
 namespace Define.Tests;
 
 public class DocumentTests(ITestOutputHelper output) : DefTestBase(output)
 {
-    private static readonly SearchValues<char> toReplace = SearchValues.Create(['\n', '\t', '\r']);
-    
     [Fact]
     public void TestXPathGeneration()
     {
@@ -27,7 +24,7 @@ public class DocumentTests(ITestOutputHelper output) : DefTestBase(output)
         
         while (nodes.TryPop(out var node))
         {
-            string? xPath = node.GetFullXPath();
+            string xPath = node.GetFullXPath();
             xPath.Should().NotBeNullOrEmpty();
 
             string txt = node.OuterXml.Replace("\n", "");
@@ -35,7 +32,7 @@ public class DocumentTests(ITestOutputHelper output) : DefTestBase(output)
                 txt = txt[..30] + "...";
             Output.WriteLine($"'{txt}' -> '{xPath}'");
 
-            var found = document.SelectSingleNode(xPath!);
+            var found = document.SelectSingleNode(xPath);
             found.Should().NotBeNull();
             (found == node).Should().BeTrue();
 

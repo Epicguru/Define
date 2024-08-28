@@ -1,0 +1,8 @@
+﻿<Defs>
+
+  <AliasDef1 Type="TestDef">
+    <Name1>This is name1.</Name1>
+    <Name2>This is name2.</Name2>
+  </AliasDef1>
+
+</Defs>

@@ -1,0 +1,9 @@
+﻿<Defs>
+
+  <Def1 Type="TestDef">
+    <SimpleString>A</SimpleString>
+    <SimpleString>B</SimpleString>
+    <SimpleString>C</SimpleString>
+  </Def1>
+
+</Defs>

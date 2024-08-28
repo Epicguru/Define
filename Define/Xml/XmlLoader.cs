@@ -5,6 +5,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Define.Xml.Members;
 using Define.Xml.Parsers;
+using JetBrains.Annotations;
 
 namespace Define.Xml;
 
@@ -12,6 +13,7 @@ namespace Define.Xml;
 /// The class responsible for turning XML files into C# defs.
 /// It is used by the <see cref="DefDatabase"/> although it can be used standalone if desired.
 /// </summary>
+[PublicAPI]
 public class XmlLoader : IDisposable
 {
     /*
@@ -53,7 +55,7 @@ public class XmlLoader : IDisposable
     /// <summary>
     /// A collection of types that had static data loaded into them.
     /// </summary>
-    public HashSet<Type> TypesWithStaticData { get; } = new HashSet<Type>();
+    public HashSet<Type> TypesWithStaticData { get; } = [];
 
     internal bool TypeToParserIsDirty { get; set; }
     
@@ -72,13 +74,13 @@ public class XmlLoader : IDisposable
     /// </summary>
     public readonly List<IConfigErrors> ConfigErrorItems = new List<IConfigErrors>(256);
     
-    private readonly List<XmlParser> allParsers = new List<XmlParser>();
-    private readonly Dictionary<Type, MemberStore> fieldMaps = new Dictionary<Type, MemberStore>();
-    private readonly Dictionary<Type, XmlParser?> typeToParser = new Dictionary<Type, XmlParser?>();
+    private readonly List<XmlParser> allParsers = [];
+    private readonly Dictionary<Type, MemberStore> fieldMaps = [];
+    private readonly Dictionary<Type, XmlParser?> typeToParser = [];
+    private readonly HashSet<XmlNode> tempInheritance = [];
+    private readonly List<XmlNode> tempInheritanceList = [];
+    private readonly Dictionary<string, IDef> prePopulatedDefs = [];
     private readonly XmlDocument masterDoc = new XmlDocument();
-    private readonly HashSet<XmlNode> tempInheritance = new HashSet<XmlNode>();
-    private readonly List<XmlNode> tempInheritanceList = new List<XmlNode>();
-    private readonly Dictionary<string, IDef> prePopulatedDefs = new Dictionary<string, IDef>();
     private Func<string, IDef?>? existingDefsFunc;
 
     /// <summary>
@@ -719,7 +721,7 @@ public class XmlLoader : IDisposable
                 Loader = this,
                 TextValue = node.Name,
                 DefaultType = keyType,
-                TargetType = keyType,
+                TargetType = keyType
             });
             if (key == null)
             {
@@ -767,6 +769,9 @@ public class XmlLoader : IDisposable
         var instance = context.CurrentValue ?? TryCreateInstance(type, context);
         if (instance == null) // No need to log error, TryCreateInstance already logs.
             return default;
+        Type instanceType = instance.GetType();
+
+        using var _ = HashSetPool<MemberWrapper>.Rent(out var usedMembers);
 
         foreach (XmlNode node in context.Node!.ChildNodes)
         {
@@ -774,11 +779,17 @@ public class XmlLoader : IDisposable
                 continue;
 
             // Try to find member from name.
-            var member = GetMember(instance.GetType(), node.Name);
+            var member = GetMember(instanceType, node.Name);
             if (!member.IsValid)
             {
-                DefDebugger.Error($"Failed to find member called '{node.Name}' in class '{instance.GetType().FullName}'!", ctx: context); // This technically isn't the right context...
+                DefDebugger.Error($"Failed to find member called '{node.Name}' in class '{instanceType.FullName}'!", ctx: context); // This technically isn't the right context...
                 continue;
+            }
+
+            // Check for duplicate member assignment.
+            if (!usedMembers.Add(member))
+            {
+                WarnAboutDuplicateAssignment(member, node);
             }
 
             // Resolve type (uses member type unless overriden using Type="name")
@@ -802,10 +813,23 @@ public class XmlLoader : IDisposable
 
             // Assign value back unless it is null.
             if (parsed.ShouldWrite)
+            {
                 member.SetValue(instance, parsed.Value);
+            }
         }
 
         return new ParseResult(instance);
+    }
+
+    private static void WarnAboutDuplicateAssignment(in MemberWrapper member, XmlNode node)
+    {
+        string warnMsg = $"Duplicate assignment to member '{member.Name}' at {(node as XmlElement)?.GetFullXPath() ?? "???"}.";
+        var names = MemberStore.GetNames(member.Member);
+        if (names.Any())
+        {
+            warnMsg += $"This might be caused by aliases - {member.Name} has the following names: {string.Join(", ", names.Select(n => $"'{n}'"))}";
+        }
+        DefDebugger.Warn(warnMsg);
     }
 
     private static bool ShouldSkipNodeForClassLikeParsing(XmlNode node)
@@ -1123,6 +1147,7 @@ public class XmlLoader : IDisposable
     /// <summary>
     /// The results of an XML parsing operation.
     /// </summary>
+    [PublicAPI]
     public readonly ref struct ParseResult
     {
         /// <summary>
@@ -1140,6 +1165,7 @@ public class XmlLoader : IDisposable
         /// <see cref="Value"/> is null.
         /// See <see cref="ShouldWrite"/>.
         /// </summary>
+        [PublicAPI]
         public bool ForceWrite { get; init; }
 
         /// <summary>

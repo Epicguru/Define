@@ -1,0 +1,19 @@
+﻿<Defs>
+
+  <AliasDef1 Type="TestDef">
+    <Name1>This is name1.</Name1>
+  </AliasDef1>
+
+  <AliasDef2 Type="TestDef">
+    <Name2>This is name2.</Name2>
+  </AliasDef2>
+
+  <AliasDef3 Type="TestDef">
+    <Name3>This is name3.</Name3>
+  </AliasDef3>
+
+  <AliasDef4 Type="TestDef">
+    <Name4>This is name4.</Name4>
+  </AliasDef4>
+
+</Defs>

@@ -1,6 +1,7 @@
 ﻿using Define.Monogame.Parsers;
 using Define.Xml;
 using Define.Xml.Parsers;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
@@ -10,13 +11,14 @@ using Microsoft.Xna.Framework.Media;
 namespace Define.Monogame;
 
 /// <summary>
-/// A collection of extension methods for use with Monogame and Define.
+/// A collection of extension methods for use with Monogame/XNA/KNI and Define.
 /// </summary>
 public static class MonogameExtensions
 {
     /// <summary>
     /// A list of all the parsers that are added when calling <see cref="AddMonogameDataParsers"/>.
     /// </summary>
+    [PublicAPI]
     public static List<XmlParser> MonogameParserList { get; } =
     [
         new VectorParser(),

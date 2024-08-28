@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Xml;
+using JetBrains.Annotations;
 
 namespace Define;
 
@@ -7,16 +7,13 @@ namespace Define;
 /// An object used to report errors after the XML load process.
 /// See <see cref="IConfigErrors"/>.
 /// </summary>
+[PublicAPI]
 public class ConfigErrorReporter
 {
     /// <summary>
     /// The current <see cref="IDef"/> that is reporting errors.
     /// </summary>
     public IDef? CurrentDef { get; set; }
-    /// <summary>
-    /// The current <see cref="XmlElement"/> that is being parsed.
-    /// </summary>
-    public XmlElement? CurrentElement { get; set; }
 
     /// <summary>
     /// Logs a config error for this def.
@@ -26,7 +23,7 @@ public class ConfigErrorReporter
     /// <param name="e">The optional exception if one occurred. May be null.</param>
     public void Error(string message, Exception? e = null)
     {
-        DefDebugger.Error($"[{CurrentDef?.ID ?? "?"}, {CurrentElement?.GetFullXPath() ?? "?"}] {message}", e);
+        DefDebugger.Error($"[{CurrentDef?.ID ?? "?"}] {message}", e);
     }
 
     /// <summary>
@@ -36,7 +33,7 @@ public class ConfigErrorReporter
     /// <param name="message">The message to print. Should not be null.</param>
     public void Warn(string message)
     {
-        DefDebugger.Warn($"[{CurrentDef?.ID ?? "?"}, {CurrentElement?.GetFullXPath() ?? "?"}] {message}");
+        DefDebugger.Warn($"[{CurrentDef?.ID ?? "?"}] {message}");
     }
 
     /// <summary>

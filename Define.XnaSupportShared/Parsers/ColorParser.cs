@@ -65,17 +65,18 @@ public sealed class ColorParser : CSVParser<float>
         Span<char> txtLower = stackalloc char[64];
         int count = txtTrimmed.ToLowerInvariant(txtLower);
         txtLower = txtLower[..count];
-        
-        // Is it a hex color?
-        if (txtLower[0] == '#')
+
+        switch (txtLower[0])
         {
-            return ParseAsHex(txtLower);
+            // Is it a hex color?
+            case '#':
+                return ParseAsHex(txtLower);
+            
+            // Is it a number based on its parts?
+            case '(':
+                return base.Parse(context);
         }
 
-        // Is it a number based on it's parts?
-        if (txtLower[0] == '(')
-            return base.Parse(context);
-        
         // Assume that it is a named color.
         if (allNamedColors.TryGetValue(txtLower.ToString(), out var found))
             return found;
@@ -83,7 +84,7 @@ public sealed class ColorParser : CSVParser<float>
         throw new Exception($"Failed to find named color called '{txtLower}'. If this color was intended to be a hex color, it should start with a hashtag (#).");
     }
 
-    private static object? ParseAsHex(ReadOnlySpan<char> txtLower)
+    private static object ParseAsHex(ReadOnlySpan<char> txtLower)
     {
         /*
         * All this fuckery below is required because Monogame
@@ -110,15 +111,11 @@ public sealed class ColorParser : CSVParser<float>
         }
         
         Color c = new Color(GetByte(3), GetByte(2), GetByte(1), GetByte(0));
-
-        if (!hasAlpha)
-            asInt = (asInt << 8) | 0b_11111111;
-
         return c;
     }
 
     /// <inheritdoc />
-    protected override object? Construct(in XmlParseContext context, ReadOnlySpan<float> parts, char? openingChar, char? closingChar)
+    protected override object Construct(in XmlParseContext context, ReadOnlySpan<float> parts, char? openingChar, char? closingChar)
     {
         Color c = new Color(parts[0], parts[1], parts[2], 1f);
         if (parts.Length > 3)

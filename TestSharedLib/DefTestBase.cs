@@ -21,8 +21,8 @@ public abstract class DefTestBase : IDisposable
 {
     protected readonly DefSerializeConfig Config = new DefSerializeConfig();
     protected readonly ITestOutputHelper Output;
-    protected readonly List<string> ErrorMessages = new List<string>();
-    protected readonly List<string> WarningMessages = new List<string>();
+    protected readonly List<string> ErrorMessages = [];
+    protected readonly List<string> WarningMessages = [];
     protected readonly DefDatabase DefDatabase;
     
     protected DefTestBase(ITestOutputHelper output)

@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using JetBrains.Annotations;
 
 namespace Define.Xml.Parsers;
 
@@ -7,6 +8,7 @@ namespace Define.Xml.Parsers;
 /// type that has comma-separated values (CSV), such as a 2D vector like (0, 1, 2).
 /// </summary>
 /// <typeparam name="TPart">The type of the individual parts of the CSV. Must be parseable from a span.</typeparam>
+[PublicAPI]
 public abstract class CSVParser<TPart> : XmlParser where TPart : unmanaged, ISpanParsable<TPart>
 {
     /// <summary>
@@ -14,7 +16,7 @@ public abstract class CSVParser<TPart> : XmlParser where TPart : unmanaged, ISpa
     /// can use. This is needed because variables are stack-allocated for speed,
     /// and this controls the allocation size.
     /// </summary>
-    public const int MAX_PARTS_GLOBAL = 32;
+    private const int MAX_PARTS_GLOBAL = 32;
     
     /// <inheritdoc/>
     public override bool CanParseNoContext => true;
@@ -26,13 +28,13 @@ public abstract class CSVParser<TPart> : XmlParser where TPart : unmanaged, ISpa
     /// <summary>
     /// The possible characters that can be put at the start of the CSV.
     /// These are normally opening brackets, such as '(' or '{'.
-    /// Whether or not this character is optional is controlled by <see cref="OpenAndCloseAreRequired"/>.
+    /// Whether this character is optional is controlled by <see cref="OpenAndCloseAreRequired"/>.
     /// </summary>
     public SearchValues<char> OpeningChars { get; protected set; } = SearchValues.Create(['(']);
     /// <summary>
     /// The possible characters that can be put at the end of the CSV.
     /// These are normally closing brackets, such as ')' or '}'.
-    /// Whether or not this character is optional is controlled by <see cref="OpenAndCloseAreRequired"/>.
+    /// Whether this character is optional is controlled by <see cref="OpenAndCloseAreRequired"/>.
     /// </summary>
     public SearchValues<char> ClosingChars { get; protected set; } = SearchValues.Create([')']);
     /// <summary>
@@ -40,7 +42,7 @@ public abstract class CSVParser<TPart> : XmlParser where TPart : unmanaged, ISpa
     /// and closed by one that is in the <see cref="ClosingChars"/> set.
     /// If false, these characters are optional.
     /// </summary>
-    public bool OpenAndCloseAreRequired { get; protected set; } = false;
+    public bool OpenAndCloseAreRequired { get; protected set; }
 
     /// <inheritdoc/>
     public override object? Parse(in XmlParseContext context)

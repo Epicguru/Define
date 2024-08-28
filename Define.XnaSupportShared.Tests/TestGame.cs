@@ -8,11 +8,10 @@ public sealed class TestGame : Game
     public ContentManager ContentManager { get; private set; } = null!;
 
     private readonly Action<TestGame> toExecute;
-    private readonly GraphicsDeviceManager gdm;
     
     public TestGame(Action<TestGame> toExecute)
     {
-        gdm = new GraphicsDeviceManager(this);
+        _ = new GraphicsDeviceManager(this);
         this.toExecute = toExecute;
     }
     

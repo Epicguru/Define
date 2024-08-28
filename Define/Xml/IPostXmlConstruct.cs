@@ -1,4 +1,6 @@
-﻿namespace Define.Xml;
+﻿using JetBrains.Annotations;
+
+namespace Define.Xml;
 
 /// <summary>
 /// An interface with a single callback method that is invoked
@@ -6,6 +8,7 @@
 /// members have been populated.
 /// Unlike <see cref="IPostLoad"/>, this is called before the def has finished constructing.
 /// </summary>
+[PublicAPI]
 public interface IPostXmlConstruct
 {
     /// <summary>

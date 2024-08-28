@@ -62,7 +62,7 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestLoadFolder()
     {
-        (DefDatabase.AddDefFolder("./Defs/Parsing")).Should().BeTrue();
+        DefDatabase.AddDefFolder("./Defs/Parsing").Should().BeTrue();
         DefDatabase.FinishLoading();
         
         // There should not be any errors or warnings.
@@ -106,7 +106,7 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
     [Fact]
     public void TestLoadFromZipFile()
     {
-        (DefDatabase.AddDefsFromZip("./Defs/Parsing.zip")).Should().BeTrue();
+        DefDatabase.AddDefsFromZip("./Defs/Parsing.zip").Should().BeTrue();
         DefDatabase.FinishLoading();
         
         // There should not be any errors or warnings.

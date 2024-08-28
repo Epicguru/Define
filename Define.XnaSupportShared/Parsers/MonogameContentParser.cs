@@ -1,5 +1,6 @@
 ﻿using Define.Xml;
 using Define.Xml.Parsers;
+using JetBrains.Annotations;
 using Microsoft.Xna.Framework.Content;
 
 namespace Define.Monogame.Parsers;
@@ -22,6 +23,7 @@ public sealed class MonogameContentParser<T>(ContentManager contentManager) : Xm
     /// The content manager that is used to load content.
     /// Should not be null.
     /// </summary>
+    [PublicAPI]
     public ContentManager ContentManager { get; } = contentManager ?? throw new ArgumentNullException(nameof(contentManager));
 
     /// <inheritdoc />
@@ -36,9 +38,6 @@ public sealed class MonogameContentParser<T>(ContentManager contentManager) : Xm
 
         bool localized = context.Node?.GetAttributeAsBool("Localized") ?? false;
 
-        if (localized)
-            return ContentManager.LoadLocalized<T>(path);
-        
-        return ContentManager.Load<T>(path);
+        return localized ? ContentManager.LoadLocalized<T>(path) : ContentManager.Load<T>(path);
     }
 }

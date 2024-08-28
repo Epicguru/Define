@@ -29,7 +29,7 @@ public class RectangleParser : CSVParser<int>
     }
 
     /// <inheritdoc/>
-    protected override object? Construct(in XmlParseContext context, ReadOnlySpan<int> parts, char? openingChar, char? closingChar)
+    protected override object Construct(in XmlParseContext context, ReadOnlySpan<int> parts, char? openingChar, char? closingChar)
     {
         return new Rectangle(parts[0], parts[1], parts[2], parts[3]);
     }

@@ -1,11 +1,13 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 
 namespace Define;
 
 /// <summary>
 /// A class representing the configuration used when loading and saving defs from either XML or FastCache.
 /// </summary>
+[PublicAPI]
 public sealed class DefSerializeConfig : IEquatable<DefSerializeConfig>
 {
     /// <summary>

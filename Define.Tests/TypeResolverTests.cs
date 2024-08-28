@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using JetBrains.Annotations;
 using Xunit.Abstractions;
 
 namespace Define.Tests;
@@ -95,12 +96,16 @@ public sealed class TypeResolverTests : DefTestBase
         });
     }
 
-    public class NestedClass
+    private class NestedClass
     {
-        public class SubNestedClass<T> {}
+        // ReSharper disable once MemberHidesStaticFromOuterClass
+        // ReSharper disable once UnusedTypeParameter
+        public class SubNestedClass<T>;
     }
     
-    public class SubNestedClass{}
-    
-    public class SubNestedClass<T>{}
+    [UsedImplicitly]
+    public class SubNestedClass;
+
+    // ReSharper disable once UnusedTypeParameter
+    private class SubNestedClass<T>;
 }

@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Xml.Serialization;
+using JetBrains.Annotations;
 
 namespace Define.Xml.Members;
 
@@ -7,6 +8,7 @@ namespace Define.Xml.Members;
 /// A class containing all the known members (fields and properties)
 /// for a particular type.
 /// </summary>
+[PublicAPI]
 public class MemberStore
 {
     /// <summary>
@@ -95,12 +97,23 @@ public class MemberStore
         return true;
     }
 
-    private static IEnumerable<string> GetNames(MemberInfo member)
+    /// <summary>
+    /// Given a <see cref="MemberInfo"/>, returns all the names that the member can be accessed by.
+    /// This is a slow method because it always performs reflection, no caching is done unlike in <see cref="GetMember"/>.
+    /// </summary>
+    /// <param name="member">The member to get the names of. Valid types are <see cref="FieldInfo"/> and <see cref="PropertyInfo"/>. Must not be null.</param>
+    /// <returns>An enumeration of possible names. Will never be null or empty.</returns>
+    public static IEnumerable<string> GetNames(MemberInfo member)
     {
         yield return member.Name;
 
         foreach (var alias in member.GetCustomAttributes<AliasAttribute>())
-            yield return alias.Alias;
+        {
+            foreach (string name in alias.Aliases)
+            {
+                yield return name;
+            }
+        }
     }
 
     private IEnumerable<MemberWrapper> GetMember(Predicate<MemberInfo> selector)
@@ -163,7 +176,7 @@ public class MemberStore
     /// <returns>The member wrapper for the found member, or an invalid wrapper if the member was not found. See <see cref="MemberWrapper.IsValid"/>.</returns>
     public IEnumerable<MemberWrapper> GetMembers(string name)
     {
-        var stringComp = Config.MemberNamesAreCaseSensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        var stringComp = Config.MemberNamesAreCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
         return GetMember(member => GetNames(member).Any(n => n.Equals(name, stringComp)));
     }
     
