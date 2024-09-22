@@ -38,8 +38,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Define.SourceGen\Define.SourceGen.csproj" />
-    <ProjectReference Include="..\TestSharedLib\TestSharedLib.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\Define.SourceGen.Attributes\Define.SourceGen.Attributes.csproj" />
+    <ProjectReference Include="..\Define.SourceGen\Define.SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TestSharedLib\TestSharedLib.csproj"/>
+  </ItemGroup>
+  
 </Project>
