@@ -52,14 +52,15 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
         return found;
     }
 
-    private void EnsureConfigAndPartial(IFieldSymbol symbol)
+    private void EnsureConfigAndPartial(IFieldSymbol symbol, AttributeData attr)
     {
         var owner = symbol.ContainingType;
         if (!owner.IsDeclaredPartial())
         {
             DiagnosticsList.Add(Diagnostic.Create(
                 Diagnostics.ClassNotPartial,
-                symbol.Locations.FirstOrDefault()
+                symbol.Locations.FirstOrDefault(),
+                attr.AttributeClass!.Name
             ));
         }
         // TODO Check that the owner implements interface!
@@ -74,10 +75,10 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
         }
 
         // [Required] attribute:
-        bool isRequired = fieldSymbol.HasAttribute(RequiredAttributeName);
+        bool isRequired = fieldSymbol.HasAttribute(RequiredAttributeName, out var requiredAttr);
         if (isRequired)
         {
-            EnsureConfigAndPartial(fieldSymbol);
+            EnsureConfigAndPartial(fieldSymbol, requiredAttr!);
             var def = GetDefGenData(parentType);
             // Check if the def.ClassSymbol is partial:
             var member = def.GetOrCreateMemberData(fieldSymbol);
@@ -88,7 +89,7 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
         bool isAssert = fieldSymbol.HasAttribute(AssertAttributeName, out var assertAttr);
         if (isAssert)
         {
-            EnsureConfigAndPartial(fieldSymbol);
+            EnsureConfigAndPartial(fieldSymbol, assertAttr!);
             var def = GetDefGenData(parentType);
             var member = def.GetOrCreateMemberData(fieldSymbol);
             string? expression = assertAttr!.ConstructorArguments[0].Value as string;
@@ -114,7 +115,7 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
         bool isMax = fieldSymbol.HasAttribute(MaxAttributeName, out var maxAttr);
         if (isMin || isMax)
         {
-            EnsureConfigAndPartial(fieldSymbol);
+            EnsureConfigAndPartial(fieldSymbol, minAttr ?? maxAttr!);
             var def = GetDefGenData(parentType);
             var member = def.GetOrCreateMemberData(fieldSymbol);
 

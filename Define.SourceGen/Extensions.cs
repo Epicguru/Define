@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,7 +13,7 @@ public static class Extensions
         => symbol.GetAttributes().Any(attr => attr.AttributeClass?.ToDisplayString() == extensionFullName);
 
     [Pure]
-    public static bool HasAttribute(this ISymbol symbol, string extensionFullName, out AttributeData? attribute)
+    public static bool HasAttribute(this ISymbol symbol, string extensionFullName, [NotNullWhen(true)] out AttributeData? attribute)
     {
         attribute = symbol.GetAttributes().FirstOrDefault(attr => attr.AttributeClass?.ToDisplayString() == extensionFullName);
         return attribute != null;
