@@ -99,7 +99,7 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
                 // Output warning if null or blank condition.
                 DiagnosticsList.Add(Diagnostic.Create(
                     Diagnostics.AssertionExpressionNull,
-                    assertAttr.AttributeConstructor!.Locations.FirstOrDefault()
+                    fieldSymbol.Locations.FirstOrDefault()
                 ));
             }
             else
