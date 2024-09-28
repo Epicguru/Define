@@ -9,12 +9,12 @@ internal static class Diagnostics
 
     private const string CATEGORY = "Define";
 
-    // public static readonly DiagnosticDescriptor ParsersNeedNoArgConstructor = new DiagnosticDescriptor(
-    //     id: "MGS0001",
-    //     title: "XML parsers must have a public parameterless constructor",
-    //     messageFormat: "XML parser '{0}' must have a public parameterless constructor",
-    //     category: CATEGORY,
-    //     DiagnosticSeverity.Error,
-    //     isEnabledByDefault: true
-    // );
+    public static readonly DiagnosticDescriptor AssertionExpressionNull = new DiagnosticDescriptor(
+        id: "DEFS0001",
+        title: "Assertion expression must not be null or blank",
+        messageFormat: "Assertion expression must not be a null or blank string. The assertion will be ignored.",
+        category: CATEGORY,
+        DiagnosticSeverity.Warning,
+        isEnabledByDefault: true
+    );
 }

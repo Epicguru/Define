@@ -1,5 +1,4 @@
-﻿using Define.SourceGen.Attributes;
-using FluentAssertions;
+﻿using FluentAssertions;
 using TestSharedLib;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,19 +16,22 @@ public class BasicGenTest(ITestOutputHelper output) : DefTestBase(output)
         
         //def.ConfigErrorsGenerated(new ConfigErrorReporter());
     }
-    
-    [Example]
-    public partial class ExampleDef : IDef, IConfigErrors
-    {
-        public string ID { get; set; } = null!;
+}
 
-        [Example]
-        public string Required; // Populate!
+public partial class ExampleDef : IDef, IConfigErrors
+{
+    public string ID { get; set; } = null!;
+
+    [Required]
+    [Assert("!= 'Invalid'")]
+    public string Required = null!; // Populate!
+
+    [Assert("is > 0 and < 10")]
+    public int RangedInt = 5;
     
-        public void ConfigErrors(ConfigErrorReporter config)
-        {
-            config.Warn("A warning.");
-        }
+    public void ConfigErrors(ConfigErrorReporter config)
+    {
+        config.Warn("A warning.");
     }
 }
 

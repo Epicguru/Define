@@ -1,5 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Linq;
+using Microsoft.CodeAnalysis;
 using Scriban;
+using SourceGenerator.Helper.CopyCode;
 
 namespace Define.SourceGen.Generators;
 
@@ -18,21 +20,44 @@ public partial class {{ class.name }}
 {
     public {{ method.modifier }} void ConfigErrorsGenerated(ConfigErrorReporter config)
     {
+        {{~ for mem in members ~}}
+        // {{ mem.name }}
+        {{ mem.config_method_contents }}
         
+        {{~ end ~}}
     }
-}
+} 
 """;
-    
+
+    public override void Initialize(GeneratorInitializationContext context)
+    {
+        base.Initialize(context);
+        context.RegisterForPostInitialization(ctx =>
+        {
+            ctx.AddSource("AssertAttribute.g.cs", Copy.DefineSourceGenAssertAttribute);
+            ctx.AddSource("RequiredAttribute.g.cs", Copy.DefineSourceGenRequiredAttribute);
+        });
+    }
+
     public override void Execute(GeneratorExecutionContext context)
     {
+        foreach (var diag in SyntaxReceiver.DiagnosticsList)
+        {
+            context.ReportDiagnostic(diag);
+        }
+        
         var template = Template.Parse(TEMPLATE);
         
-        foreach (var pair in SyntaxReceiver.ToGenerate)
+        foreach (var def in SyntaxReceiver.DefData)
         {
-            var (syntax, symbol) = pair;
-            string className = symbol.ContainingType.Name;
-            string classNamespace = symbol.ContainingNamespace.ToDisplayString();
+            string className = def.ClassSymbol.Name;
+            string classNamespace = def.ClassSymbol.ContainingNamespace.ToDisplayString();
 
+            foreach (var member in def.MemberGenData)
+            {
+                member.ConfigMethodContents = member.GetConfigMethodContents(def);
+            }
+            
             var source = template.Render(new
             {
                 Namespace = classNamespace,
@@ -43,12 +68,11 @@ public partial class {{ class.name }}
                 Method = new
                 {
                     Modifier = "virtual"
-                }
+                },
+                Members = def.MemberGenData.ToList()
             });
             
             context.AddSource($"{className}.g.cs", source);
         }
-        
-        //context.AddSource("Debug.g.cs", $"// There are {SyntaxReceiver.ToGenerate.Count} fields to generate.");
     }
 }

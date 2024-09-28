@@ -10,7 +10,7 @@ public static class Extensions
         => symbol.GetAttributes().Any(attr => attr.AttributeClass?.ToDisplayString() == extensionFullName);
 
     [Pure]
-    public static bool HasAttribute(this ISymbol symbol, string extensionFullName, out AttributeData attribute)
+    public static bool HasAttribute(this ISymbol symbol, string extensionFullName, out AttributeData? attribute)
     {
         attribute = symbol.GetAttributes().FirstOrDefault(attr => attr.AttributeClass?.ToDisplayString() == extensionFullName);
         return attribute != null;

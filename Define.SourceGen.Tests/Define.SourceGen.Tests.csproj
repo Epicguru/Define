@@ -38,7 +38,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Define.SourceGen.Attributes\Define.SourceGen.Attributes.csproj" />
     <ProjectReference Include="..\Define.SourceGen\Define.SourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 

@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Define.SourceGen.Generators.Data;
+using Define.SourceGen.Generators.Data.ConfigGenParts;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -6,9 +9,13 @@ namespace Define.SourceGen.Generators;
 
 public sealed class DefGeneratorCollector : ISyntaxContextReceiver
 {
-    private const string EXAMPLE_ATTR_NAME = "Define.SourceGen.Attributes.ExampleAttribute";
+    private static readonly string RequiredAttributeName = typeof(RequiredAttribute).FullName!;
+    private static readonly string AssertAttributeName = typeof(AssertAttribute).FullName!;
+
+    public IEnumerable<DefGenData> DefData => typeToDef.Values;
+    public List<Diagnostic> DiagnosticsList { get; } = [];
     
-    public List<(FieldDeclarationSyntax syntax, IFieldSymbol symbol)> ToGenerate { get; } = new();
+    private readonly Dictionary<INamedTypeSymbol, DefGenData> typeToDef = [];
     
     public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
     {
@@ -27,13 +34,57 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
         }
     }
 
+    private DefGenData GetDefGenData(INamedTypeSymbol defType)
+    {
+        if (!typeToDef.TryGetValue(defType, out var found))
+        {
+            found = new DefGenData
+            {
+                ClassSymbol = defType
+            };
+            typeToDef.Add(defType, found);
+        }
+
+        return found;
+    }
+    
     private void OnVisitField(FieldDeclarationSyntax fieldSyntax, IFieldSymbol fieldSymbol)
     {
-        if (!fieldSymbol.HasAttribute(EXAMPLE_ATTR_NAME))
+        var parentType = fieldSymbol.ContainingType;
+        if (parentType == null)
         {
             return;
         }
+
+        // [Required] attribute:
+        bool isRequired = fieldSymbol.HasAttribute(RequiredAttributeName);
+        if (isRequired)
+        {
+            var def = GetDefGenData(parentType);
+            var member = def.GetOrCreateMemberData(fieldSymbol);
+            member.ConfigGenParts.Add(new RequiredGenPart());
+        }
         
-        ToGenerate.Add((fieldSyntax, fieldSymbol));
+        // [Assert] attribute:
+        bool isAssert = fieldSymbol.HasAttribute(AssertAttributeName, out var assertAttr);
+        if (isAssert)
+        {
+            var def = GetDefGenData(parentType);
+            var member = def.GetOrCreateMemberData(fieldSymbol);
+            string? expression = assertAttr!.ConstructorArguments[0].Value as string;
+
+            if (string.IsNullOrWhiteSpace(expression))
+            {
+                // Output warning if null or blank condition.
+                DiagnosticsList.Add(Diagnostic.Create(
+                    Diagnostics.AssertionExpressionNull,
+                    assertAttr.AttributeConstructor!.Locations.FirstOrDefault()
+                ));
+            }
+            else
+            {
+                member.ConfigGenParts.Add(new AssertGenPart(expression!));
+            }
+        }
     }
 }

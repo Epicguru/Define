@@ -6,7 +6,7 @@ namespace Define.SourceGen;
 
 public abstract class SourceGeneratorBase<T> : ISourceGenerator where T : ISyntaxContextReceiver, new()
 {
-    protected T SyntaxReceiver { get; private set; }
+    protected T SyntaxReceiver { get; private set; } = default!;
 
     protected static string MakeBindingFlags(ISymbol symbol)
     {
