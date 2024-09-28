@@ -1,7 +1,7 @@
 ﻿using System;
 using SourceGenerator.Helper.CopyCode;
 
-namespace Define.SourceGen;
+namespace Define.SourceGen.Attributes;
 
 /// <summary>
 /// When placed on a serialized field or property in a def,
@@ -19,5 +19,5 @@ namespace Define.SourceGen;
 [Copy]
 public sealed class AssertAttribute : Attribute
 {
-    public AssertAttribute(string condition) { }
+    public AssertAttribute(string condition, bool isError = true) { }
 }

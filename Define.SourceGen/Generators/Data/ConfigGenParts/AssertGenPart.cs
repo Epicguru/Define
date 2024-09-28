@@ -8,17 +8,19 @@ public sealed class AssertGenPart : IConfigGenPart
     private static readonly Regex StringReplaceRegex
         = new Regex("'..+'", RegexOptions.Compiled);
     
-    public AssertGenPart(string rawConditionExpression)
+    public AssertGenPart(string rawConditionExpression, bool isErrorAssert)
     {
         RawConditionExpression = rawConditionExpression;
+        IsErrorAssert = isErrorAssert;
     }
 
     public string RawConditionExpression { get; }
+    public bool IsErrorAssert { get; }
 
     public string? GenerateBody(DefGenData def, MemberGenData member)
     {
         string condition = TransformCondition(member);
-        return $"config.Assert({condition});";
+        return $"config.Assert{(IsErrorAssert ? "" : "Warn")}({condition});";
     }
 
     private string TransformCondition(MemberGenData member)

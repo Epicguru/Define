@@ -1,0 +1,6 @@
+<Defs>
+  <FailingDef Type="ExampleDef">
+    <RangedInt>12</RangedInt>
+    <SomeFloat>-5</SomeFloat>
+  </FailingDef>
+</Defs>

@@ -2,7 +2,7 @@
 using JetBrains.Annotations;
 using SourceGenerator.Helper.CopyCode;
 
-namespace Define.SourceGen;
+namespace Define.SourceGen.Attributes;
 
 /// <summary>
 /// When placed on a def member, it is required to not be null by the time
