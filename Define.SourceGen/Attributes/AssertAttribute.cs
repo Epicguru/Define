@@ -15,7 +15,7 @@ namespace Define.SourceGen.Attributes;
 /// For example <c>MyString != 'Something'</c> becomes <c>MyString != "Something"</c>.</item>
 /// </list> 
 /// </summary>
-[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 [Copy]
 public sealed class AssertAttribute : Attribute
 {
