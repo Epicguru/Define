@@ -15,7 +15,7 @@ public abstract class MonogameDefTestBase(ITestOutputHelper output) : DefTestBas
         }
         catch (Exception e)
         {
-            throw new NoSuitableGraphicsDeviceException("Default graphics adapter threw an exception when being created, assuming bad graphics device. See inner exception.", e);
+            throw new NoSuitableGraphicsDeviceException($"Default graphics adapter threw an exception when being created, assuming bad graphics device. See inner exception: {e}", e);
         }
     }
 
