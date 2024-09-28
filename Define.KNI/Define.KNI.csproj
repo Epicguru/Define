@@ -34,7 +34,7 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2024.2.0" />
-    <PackageReference Include="nkast.Xna.Framework.Ref" Version="3.12.9001" />
+    <PackageReference Include="nkast.Xna.Framework.Ref" Version="3.14.9001" />
   </ItemGroup>
 
   <Import Project="..\Define.XnaSupportShared\Define.XnaSupportShared.projitems" Label="Shared" />
