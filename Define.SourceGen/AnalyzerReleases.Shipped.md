@@ -7,4 +7,5 @@
 
 Rule ID | Category | Severity | Notes 
 --------|----------|----------|-------
-DEFS0001|Define|Warning|
+DEFS0001|Define| Warning  |
+DEFS0002|Define| Error    |

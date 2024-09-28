@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Define.SourceGen;
 
@@ -16,6 +18,9 @@ public static class Extensions
         return attribute != null;
     }
 
+    public static bool IsDeclaredPartial(this INamedTypeSymbol symbol)
+        => symbol.DeclaringSyntaxReferences.Any(syntax => syntax.GetSyntax() is BaseTypeDeclarationSyntax declaration && declaration.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PartialKeyword)));
+    
     [Pure]
     public static string MakeNestedName(this ITypeSymbol type)
     {

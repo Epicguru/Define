@@ -51,6 +51,19 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
 
         return found;
     }
+
+    private void EnsureConfigAndPartial(IFieldSymbol symbol)
+    {
+        var owner = symbol.ContainingType;
+        if (!owner.IsDeclaredPartial())
+        {
+            DiagnosticsList.Add(Diagnostic.Create(
+                Diagnostics.ClassNotPartial,
+                symbol.Locations.FirstOrDefault()
+            ));
+        }
+        // TODO Check that the owner implements interface!
+    }
     
     private void OnVisitField(FieldDeclarationSyntax fieldSyntax, IFieldSymbol fieldSymbol)
     {
@@ -64,7 +77,9 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
         bool isRequired = fieldSymbol.HasAttribute(RequiredAttributeName);
         if (isRequired)
         {
+            EnsureConfigAndPartial(fieldSymbol);
             var def = GetDefGenData(parentType);
+            // Check if the def.ClassSymbol is partial:
             var member = def.GetOrCreateMemberData(fieldSymbol);
             member.ConfigGenParts.Add(new RequiredGenPart());
         }
@@ -73,6 +88,7 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
         bool isAssert = fieldSymbol.HasAttribute(AssertAttributeName, out var assertAttr);
         if (isAssert)
         {
+            EnsureConfigAndPartial(fieldSymbol);
             var def = GetDefGenData(parentType);
             var member = def.GetOrCreateMemberData(fieldSymbol);
             string? expression = assertAttr!.ConstructorArguments[0].Value as string;
@@ -98,6 +114,7 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
         bool isMax = fieldSymbol.HasAttribute(MaxAttributeName, out var maxAttr);
         if (isMin || isMax)
         {
+            EnsureConfigAndPartial(fieldSymbol);
             var def = GetDefGenData(parentType);
             var member = def.GetOrCreateMemberData(fieldSymbol);
 

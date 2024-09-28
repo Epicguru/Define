@@ -17,4 +17,13 @@ internal static class Diagnostics
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true
     );
+    
+    public static readonly DiagnosticDescriptor ClassNotPartial = new DiagnosticDescriptor(
+        id: "DEFS0002",
+        title: "The containing type must be partial",
+        messageFormat: "This type that declares this member must be partial.",
+        category: CATEGORY,
+        DiagnosticSeverity.Error,
+        isEnabledByDefault: true
+    );
 }
