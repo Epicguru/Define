@@ -55,11 +55,12 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
     private void EnsureConfigAndPartial(IFieldSymbol symbol, AttributeData attr)
     {
         var owner = symbol.ContainingType;
+        
         if (!owner.IsDeclaredPartial())
         {
             DiagnosticsList.Add(Diagnostic.Create(
                 Diagnostics.ClassNotPartial,
-                symbol.Locations.FirstOrDefault(),
+                attr.GetLocation() ?? symbol.Locations.FirstOrDefault(),
                 attr.AttributeClass!.Name
             ));
         }
@@ -99,7 +100,7 @@ public sealed class DefGeneratorCollector : ISyntaxContextReceiver
                 // Output warning if null or blank condition.
                 DiagnosticsList.Add(Diagnostic.Create(
                     Diagnostics.AssertionExpressionNull,
-                    fieldSymbol.Locations.FirstOrDefault()
+                    assertAttr.GetLocation() ?? fieldSymbol.Locations.FirstOrDefault()
                 ));
             }
             else

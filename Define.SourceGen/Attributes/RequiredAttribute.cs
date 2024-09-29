@@ -12,4 +12,4 @@ namespace Define.SourceGen.Attributes;
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 [MeansImplicitUse(ImplicitUseKindFlags.Assign)]
 [Copy]
-public sealed class RequiredAttribute : Attribute;
+internal sealed class RequiredAttribute : Attribute;

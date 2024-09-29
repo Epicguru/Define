@@ -5,7 +5,7 @@ namespace Define.SourceGen.Attributes;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 [Copy]
-public class MinAttribute : Attribute
+internal class MinAttribute : Attribute
 {
      public MinAttribute(object min, bool enforce = true) { }
 }

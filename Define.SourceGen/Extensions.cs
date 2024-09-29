@@ -21,6 +21,9 @@ public static class Extensions
 
     public static bool IsDeclaredPartial(this INamedTypeSymbol symbol)
         => symbol.DeclaringSyntaxReferences.Any(syntax => syntax.GetSyntax() is BaseTypeDeclarationSyntax declaration && declaration.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PartialKeyword)));
+
+    public static Location? GetLocation(this AttributeData attribute)
+        => attribute.ApplicationSyntaxReference?.GetSyntax().GetLocation();
     
     [Pure]
     public static string MakeNestedName(this ITypeSymbol type)

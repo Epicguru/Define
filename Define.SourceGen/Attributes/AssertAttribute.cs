@@ -17,7 +17,7 @@ namespace Define.SourceGen.Attributes;
 /// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = true)]
 [Copy]
-public sealed class AssertAttribute : Attribute
+internal sealed class AssertAttribute : Attribute
 {
     public AssertAttribute(string condition, bool isError = true) { }
 }
