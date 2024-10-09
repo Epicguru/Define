@@ -265,7 +265,12 @@ public class XmlLoader : IDisposable
                     continue;
 
                 if (TryCreateInstance(type, default) is IDef created)
-                    prePopulatedDefs.Add(sub.Name, created);
+                {
+                    if (!prePopulatedDefs.TryAdd(sub.Name, created))
+                    {
+                        DefDebugger.Error($"Duplicate def ID: '{sub.Name}'");
+                    }
+                }
             }
 
             existingDefsFunc = str => prePopulatedDefs.GetValueOrDefault(str);
@@ -285,7 +290,8 @@ public class XmlLoader : IDisposable
 
             if (!ids.Add(sub.Name))
             {
-                DefDebugger.Error($"Duplicate def ID: '{sub.Name}'");
+                if (existingDefs != null)
+                    DefDebugger.Error($"Duplicate def ID: '{sub.Name}'");
                 continue;
             }
 
