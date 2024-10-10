@@ -99,9 +99,11 @@ public class MemberStore
 
     /// <summary>
     /// Given a <see cref="MemberInfo"/>, returns all the names that the member can be accessed by.
-    /// This is a slow method because it always performs reflection, no caching is done unlike in <see cref="GetMember"/>.
+    /// This is a slow method because it always performs reflection, no caching is done unlike
+    /// in <see cref="GetMember(System.Predicate{System.Reflection.MemberInfo})"/>.
     /// </summary>
-    /// <param name="member">The member to get the names of. Valid types are <see cref="FieldInfo"/> and <see cref="PropertyInfo"/>. Must not be null.</param>
+    /// <param name="member">The member to get the names of. Valid types are <see cref="FieldInfo"/> and
+    /// <see cref="PropertyInfo"/>. Must not be null.</param>
     /// <returns>An enumeration of possible names. Will never be null or empty.</returns>
     public static IEnumerable<string> GetNames(MemberInfo member)
     {

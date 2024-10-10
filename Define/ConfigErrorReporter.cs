@@ -44,11 +44,29 @@ public class ConfigErrorReporter
     /// <param name="condition">The condition to evaluate. It is expected to be true.</param>
     /// <param name="message">The message to print. If you do not specify this argument, it will be automatically populated with the expression of <paramref name="condition"/>.</param>
     /// <returns>The value of <paramref name="condition"/>.</returns>
-    public bool Assert(bool condition, [CallerArgumentExpression(nameof(condition))] string? message = null)
-    {
-        if (!condition)
-            Error($"Assert failed: {message}");
+    public bool Assert(bool condition, [CallerArgumentExpression(nameof(condition))] string? message = null) => AssertInt(condition, message, true);
 
-        return condition;
+    /// <summary>
+    /// Checks that an expression is true. If the expression is not true, a warning is logged using <see cref="Warn(string)"/>.
+    /// Unlike <see cref="System.Diagnostics.Debug.Assert(bool)"/>, this method is not conditionally compiled, so it will still run in release mode.
+    /// The return value is simply <paramref name="condition"/>, allowing this to be placed inline in a <c>if</c> statement.
+    /// </summary>
+    /// <param name="condition">The condition to evaluate. It is expected to be true.</param>
+    /// <param name="message">The message to print. If you do not specify this argument, it will be automatically populated with the expression of <paramref name="condition"/>.</param>
+    /// <returns>The value of <paramref name="condition"/>.</returns>
+    public bool AssertWarn(bool condition, [CallerArgumentExpression(nameof(condition))] string? message = null) => AssertInt(condition, message, false);
+    
+    private bool AssertInt(bool condition, string? message, bool isError)
+    {
+        if (condition)
+            return true;
+        
+        string msg = $"Assert failed: {message}";
+        if (isError)
+            Error(msg);
+        else
+            Warn(msg);
+
+        return false;
     }
 }

@@ -508,6 +508,7 @@ public class DefDatabase
             {
                 // ReSharper disable once SuspiciousTypeConversion.Global
                 reporter.CurrentDef = item as IDef;
+                item.ConfigErrorsGenerated(reporter);
                 item.ConfigErrors(reporter);
             }
             catch (Exception e)
