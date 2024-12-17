@@ -561,6 +561,8 @@ public class DefDatabase
         {
             container.Add(def);
         }
+        
+        def.OnRegister(this);
         return true;
     }
 
@@ -594,6 +596,7 @@ public class DefDatabase
             }
         }
         
+        def.OnUnRegister(this);
         return true;
     }
 

@@ -31,10 +31,7 @@ public sealed class AssertGenPart : IConfigGenPart
         string replaced = condition.Replace("value", name);
         bool didChange = replaced != condition;
 
-        if (!didChange)
-        {
-            condition = $"{name} {condition}";
-        }
+        condition = !didChange ? $"{name} {condition}" : replaced;
 
         condition = StringReplaceRegex.Replace(condition, m => $"\"{m.Value[1..^1]}\"");
 

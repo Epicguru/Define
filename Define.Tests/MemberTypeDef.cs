@@ -36,4 +36,7 @@ public sealed class MemberTypeDef : IDef
     }
 
     public string? GetIncluded() => included;
+    
+    public void OnRegister(DefDatabase database) { }
+    public void OnUnRegister(DefDatabase database) { }
 }
