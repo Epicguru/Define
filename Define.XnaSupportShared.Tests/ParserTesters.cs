@@ -67,7 +67,7 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
         db2.GetAll().Should().BeEquivalentTo(DefDatabase.GetAll());
     }
 
-    [SkippableFact(typeof(NoSuitableGraphicsDeviceException))]
+    [SkippableFact(typeof(NoSuitableGraphicsDeviceException), typeof(PlatformNotSupportedException))]
     public void TestGameRunBaseline()
     {
         CheckAdapterCreation();
@@ -88,7 +88,7 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
         }
     }
 
-    [SkippableFact(typeof(NoSuitableGraphicsDeviceException))]
+    [SkippableFact(typeof(NoSuitableGraphicsDeviceException), typeof(PlatformNotSupportedException))]
     public void TestGameLoadContentManual()
     {
         CheckAdapterCreation();
@@ -103,7 +103,7 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
         game.Run();
     }
 
-    [SkippableFact(typeof(NoSuitableGraphicsDeviceException))]
+    [SkippableFact(typeof(NoSuitableGraphicsDeviceException), typeof(PlatformNotSupportedException))]
     public void TestParseTexture()
     {
         CheckAdapterCreation();
