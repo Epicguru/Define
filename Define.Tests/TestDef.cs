@@ -10,6 +10,8 @@ public class TestDef : IDef, IPostLoad, IConfigErrors, IPostXmlConstruct
     public bool LatePostLoadCalled { get; private set; }
     public bool ConfigErrorsCalled { get; private set; }
     public bool PostXmlConstructCalled { get; private set; }
+    public List<DefDatabase> DatabasesRegisteredTo { get; } = [];
+    public List<DefDatabase> DatabasesUnRegisteredFrom { get; } = [];
 
     public string ID { get; set; } = null!;
 
@@ -53,6 +55,9 @@ public class TestDef : IDef, IPostLoad, IConfigErrors, IPostXmlConstruct
     {
         PostXmlConstructCalled = true;
     }
+
+    public void OnRegister(DefDatabase database) => DatabasesRegisteredTo.Add(database);
+    public void OnUnRegister(DefDatabase database) => DatabasesUnRegisteredFrom.Add(database);
 }
 
 [UsedImplicitly(ImplicitUseKindFlags.Access | ImplicitUseKindFlags.Assign, ImplicitUseTargetFlags.Members)]

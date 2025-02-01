@@ -40,5 +40,8 @@ public partial class ExampleDef : IDef, IConfigErrors
     {
         config.Warn("A warning.");
     }
+    
+    public void OnRegister(DefDatabase database) { }
+    public void OnUnRegister(DefDatabase database) { }
 }
 
