@@ -18,7 +18,7 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
         DefDatabase.GetAll<AltSubclassDef>().Should().HaveCount(1);
         DefDatabase.GetAll<AltSubclassAbstractDef>().Should().HaveCount(1);
 
-        DefDatabase.ContainerCount.Should().Be(7); // 4 interfaces, 3 classes
+        DefDatabase.ContainerCount.Should().Be(8); // 5 interfaces, 3 classes
 
         // Now unregister that sub:
         var sub = DefDatabase.GetAll<AltSubclassAbstractDef>()[0];
@@ -35,7 +35,7 @@ public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
         DefDatabase.GetAll<AltSubclassDef>().Should().HaveCount(0);
         DefDatabase.GetAll<AltSubclassAbstractDef>().Should().HaveCount(0);
 
-        DefDatabase.ContainerCount.Should().Be(5); // 4 interfaces, 1 class
+        DefDatabase.ContainerCount.Should().Be(6); // 5 interfaces, 1 class
     }
 
     [Fact]

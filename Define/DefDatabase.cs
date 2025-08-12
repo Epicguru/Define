@@ -656,7 +656,7 @@ public class DefDatabase
     /// <returns>The list of defs matching the target type, or an empty list if none were found.</returns>
     [PublicAPI]
     public IReadOnlyList<object> GetAll(Type defType)    
-        => defsOfType.TryGetValue(defType, out var found) ? found.DefsAsObjects : Array.Empty<object>();    
+        => defsOfType.TryGetValue(defType, out var found) ? found.DefsAsObjects : [];    
 
     /// <summary>
     /// Gets or creates a def container for the specified def type (or def interface).
