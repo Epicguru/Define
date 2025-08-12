@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace Define.Tests;
 
 [UsedImplicitly(ImplicitUseKindFlags.Assign | ImplicitUseKindFlags.Access, ImplicitUseTargetFlags.Members)]
-public class TestDef : IDef, IPostLoad, IConfigErrors, IPostXmlConstruct
+public class TestDef : IDef, IPostLoad, IConfigErrors, IPostXmlConstruct, IOnDatabaseRegister
 {
     public bool PostLoadCalled { get; private set; }
     public bool LatePostLoadCalled { get; private set; }

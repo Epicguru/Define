@@ -561,8 +561,12 @@ public class DefDatabase
         {
             container.Add(def);
         }
-        
-        def.OnRegister(this);
+
+        // ReSharper disable once SuspiciousTypeConversion.Global
+        if (def is IOnDatabaseRegister onRegister)
+        {
+            onRegister.OnRegister(this);
+        }
         return true;
     }
 
@@ -595,8 +599,12 @@ public class DefDatabase
                 defsOfType.Remove(container.ContainedType);
             }
         }
-        
-        def.OnUnRegister(this);
+
+        // ReSharper disable once SuspiciousTypeConversion.Global
+        if (def is IOnDatabaseRegister defOnRegister)
+        {
+            defOnRegister.OnUnRegister(this);
+        }
         return true;
     }
 

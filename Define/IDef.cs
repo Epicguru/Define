@@ -14,14 +14,4 @@ public interface IDef
     /// The unique ID of this def.
     /// </summary>
     string ID { get; set; }
-
-    /// <summary>
-    /// This is called immediately after this def is registered to a database.
-    /// </summary>
-    void OnRegister(DefDatabase database);
-
-    /// <summary>
-    /// This is called immediately after this def is unregistered from a database.
-    /// </summary>
-    void OnUnRegister(DefDatabase database);
 }
