@@ -69,6 +69,13 @@ public class XmlLoader : IDisposable
     /// </summary>
     public readonly List<IPostLoad> PostLoadItems = new List<IPostLoad>(256);
     /// <summary>
+    /// A list of types that need to have their static post-load methods called.
+    /// Note that this may contain duplicates, for example if class A implements the interface and class B inherits from A,
+    /// this method will contain both A and B but the static post-load should only be called once. Check if the type directly implements
+    /// the interface before calling the static post-load method.
+    /// </summary>
+    public readonly HashSet<Type> StaticPostLoadClasses = new HashSet<Type>(256);
+    /// <summary>
     /// A list of items that need to have their <see cref="IConfigErrors.ConfigErrors"/>
     /// methods called.
     /// </summary>
@@ -499,6 +506,12 @@ public class XmlLoader : IDisposable
         {
             if (parsed is IPostLoad postLoad)
                 PostLoadItems.Add(postLoad);
+        }
+
+        if (Config.DoStaticPostLoad)
+        {
+            if (parsed is IStaticPostLoad)
+                StaticPostLoadClasses.Add(parsed.GetType());
         }
 
         if (Config.DoConfigErrors)
@@ -1133,6 +1146,7 @@ public class XmlLoader : IDisposable
         TypesWithStaticData.Clear();
         HasResolvedInheritance = false;
         PostLoadItems.Clear();
+        StaticPostLoadClasses.Clear();
         ConfigErrorItems.Clear();
         masterDoc.RemoveAll();
         tempInheritance.Clear();
