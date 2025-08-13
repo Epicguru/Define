@@ -509,13 +509,13 @@ public class DefDatabase
                 // Need to check if the type directly implements the interface.
                 // Just check that the static method exists directly on the type.
                 const string INTERFACE_METHOD_NAME = nameof(IStaticPostLoad.StaticPostLoad);
-                var foundMethod = type.GetMethod(INTERFACE_METHOD_NAME, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | BindingFlags.DeclaredOnly);
+                var foundMethod = type.GetMethod(INTERFACE_METHOD_NAME, BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, [ typeof(DefDatabase) ]);
                 if (foundMethod == null)
                     continue;
                 
                 try
                 {
-                    foundMethod.Invoke(null, null);
+                    foundMethod.Invoke(null, [ this ]);
                 }
                 catch (Exception e)
                 {

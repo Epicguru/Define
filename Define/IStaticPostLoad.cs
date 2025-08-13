@@ -6,5 +6,10 @@ namespace Define;
 /// </summary>
 public interface IStaticPostLoad
 {
-    static abstract void StaticPostLoad();
+    /// <summary>
+    /// Called once after all defs have been loaded and after the instance <see cref="IPostLoad.PostLoad"/> methods are called.
+    /// This is only called if at least one instance of this type has been loaded from XML.
+    /// </summary>
+    /// <param name="database">The def database that is performing this callback.</param>
+    static abstract void StaticPostLoad(DefDatabase database);
 }
