@@ -561,8 +561,12 @@ public class DefDatabase
         {
             container.Add(def);
         }
-        
-        def.OnRegister(this);
+
+        // ReSharper disable once SuspiciousTypeConversion.Global
+        if (def is IOnDatabaseRegister onRegister)
+        {
+            onRegister.OnRegister(this);
+        }
         return true;
     }
 
@@ -595,8 +599,12 @@ public class DefDatabase
                 defsOfType.Remove(container.ContainedType);
             }
         }
-        
-        def.OnUnRegister(this);
+
+        // ReSharper disable once SuspiciousTypeConversion.Global
+        if (def is IOnDatabaseRegister defOnRegister)
+        {
+            defOnRegister.OnUnRegister(this);
+        }
         return true;
     }
 
@@ -648,7 +656,7 @@ public class DefDatabase
     /// <returns>The list of defs matching the target type, or an empty list if none were found.</returns>
     [PublicAPI]
     public IReadOnlyList<object> GetAll(Type defType)    
-        => defsOfType.TryGetValue(defType, out var found) ? found.DefsAsObjects : Array.Empty<object>();    
+        => defsOfType.TryGetValue(defType, out var found) ? found.DefsAsObjects : [];    
 
     /// <summary>
     /// Gets or creates a def container for the specified def type (or def interface).

@@ -33,7 +33,4 @@ public class ThrowExceptionsDef : IDef, IPostLoad, IConfigErrors, IPostXmlConstr
     {
         throw new Exception("PostXmlConstruct exception!");
     }
-    
-    public void OnRegister(DefDatabase database) { }
-    public void OnUnRegister(DefDatabase database) { }
 }

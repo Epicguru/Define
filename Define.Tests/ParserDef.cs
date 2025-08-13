@@ -19,9 +19,6 @@ public class ParserDef : IDef
     
     // Type:
     public List<Type?> Types = [];
-    
-    public void OnRegister(DefDatabase database) { }
-    public void OnUnRegister(DefDatabase database) { }
 }
 
 [UsedImplicitly(ImplicitUseKindFlags.Access, ImplicitUseTargetFlags.WithMembers)]

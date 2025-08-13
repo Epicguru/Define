@@ -12,7 +12,4 @@ public class SimpleDef : IDef
     public string? Data;
     public SimpleDef? Ref;
     public SimpleDef? SelfRef;
-    
-    public void OnRegister(DefDatabase database) { }
-    public void OnUnRegister(DefDatabase database) { }
 }
