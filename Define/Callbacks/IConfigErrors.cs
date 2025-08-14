@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Define;
+namespace Define.Callbacks;
 
 /// <summary>
 /// Classes or structs that implement this interface will have <see cref="ConfigErrors"/>

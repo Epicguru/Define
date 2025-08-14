@@ -1,4 +1,5 @@
-﻿using Define.Xml;
+﻿using Define.Callbacks;
+using Define.Xml;
 using JetBrains.Annotations;
 
 namespace Define.Tests;

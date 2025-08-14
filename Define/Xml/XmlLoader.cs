@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using Define.Callbacks;
 using Define.Xml.Members;
 using Define.Xml.Parsers;
 using JetBrains.Annotations;

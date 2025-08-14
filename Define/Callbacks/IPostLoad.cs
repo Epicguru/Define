@@ -1,4 +1,4 @@
-﻿namespace Define;
+﻿namespace Define.Callbacks;
 
 /// <summary>
 /// An interface that, when placed on a type that is parsed for a <see cref="IDef"/>,

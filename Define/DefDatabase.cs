@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
+using Define.Callbacks;
 using Define.Xml;
 using JetBrains.Annotations;
 

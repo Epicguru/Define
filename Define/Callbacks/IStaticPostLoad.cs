@@ -1,4 +1,4 @@
-namespace Define;
+namespace Define.Callbacks;
 
 /// <summary>
 /// Classes meet the following requirements will have the <see cref="StaticPostLoad"/> static method called
