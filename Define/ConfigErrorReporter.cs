@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using Define.Callbacks;
 using JetBrains.Annotations;
 
 namespace Define;

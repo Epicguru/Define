@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
+using Define.Callbacks;
 using JetBrains.Annotations;
 
 namespace Define;
@@ -44,21 +45,29 @@ public sealed class DefSerializeConfig : IEquatable<DefSerializeConfig>
     /// <summary>
     /// If true, any parsed class that implements <see cref="IPostLoad"/> will have
     /// <see cref="IPostLoad.PostLoad"/> called on it.
-    /// You can disable this for a gain in performance.
+    /// You can disable this for a gain in performance if it is not needed.
     /// </summary>
     public bool DoPostLoad { get; set; } = true;
 
     /// <summary>
     /// If true, any parsed class that implements <see cref="IPostLoad"/> will have
     /// <see cref="IPostLoad.LatePostLoad"/> called on it.
-    /// You can disable this for a gain in performance.
+    /// You can disable this for a gain in performance if it is not needed.
     /// </summary>
     public bool DoLatePostLoad { get; set; } = true;
+    
+    /// <summary>
+    /// If true, any parsed class that implements <see cref="IStaticPostLoad"/>
+    /// will have <see cref="IStaticPostLoad.StaticPostLoad"/> called on it, if and only if at least one instance of that class
+    /// has been parsed from XML.
+    /// You can disable this for a gain in performance if it is not needed.
+    /// </summary>
+    public bool DoStaticPostLoad { get; set; } = true;
 
     /// <summary>
     /// If true, any parsed class that implements <see cref="IConfigErrors"/> will have
     /// <see cref="IConfigErrors.ConfigErrors"/> called on it.
-    /// You can disable this for a gain in performance.
+    /// You can disable this for a gain in performance if it is not needed.
     /// </summary>
     public bool DoConfigErrors { get; set; } = true;
 

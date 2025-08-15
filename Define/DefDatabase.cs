@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using System.IO.Compression;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
+using Define.Callbacks;
 using Define.Xml;
 using JetBrains.Annotations;
 
@@ -496,6 +498,29 @@ public class DefDatabase
                 catch (Exception e)
                 {
                     DefDebugger.Error($"Exception PostLoading item '{item}'.", e);
+                }
+            }
+        }
+
+        if (Loader.Config.DoStaticPostLoad)
+        {
+            // Static Post-load.
+            foreach (var type in Loader.StaticPostLoadClasses)
+            {
+                // Need to check if the type directly implements the interface.
+                // Just check that the static method exists directly on the type.
+                const string INTERFACE_METHOD_NAME = nameof(IStaticPostLoad.StaticPostLoad);
+                var foundMethod = type.GetMethod(INTERFACE_METHOD_NAME, BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, [ typeof(DefDatabase) ]);
+                if (foundMethod == null)
+                    continue;
+                
+                try
+                {
+                    foundMethod.Invoke(null, [ this ]);
+                }
+                catch (Exception e)
+                {
+                    DefDebugger.Error($"Exception PostLoading static item '{type}'.", e);
                 }
             }
         }

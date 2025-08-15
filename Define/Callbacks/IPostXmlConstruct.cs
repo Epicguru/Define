@@ -1,6 +1,7 @@
-﻿using JetBrains.Annotations;
+﻿using Define.Xml;
+using JetBrains.Annotations;
 
-namespace Define.Xml;
+namespace Define.Callbacks;
 
 /// <summary>
 /// An interface with a single callback method that is invoked

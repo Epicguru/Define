@@ -1,4 +1,4 @@
-namespace Define;
+namespace Define.Callbacks;
 
 /// <summary>
 /// When a class that implements <see cref="IDef"/> also implements this interface,

@@ -1,4 +1,5 @@
-﻿using Define.SourceGen.Attributes;
+﻿using Define.Callbacks;
+using Define.SourceGen.Attributes;
 using FluentAssertions;
 using TestSharedLib;
 using Xunit;
