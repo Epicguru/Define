@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
+using JetBrains.Annotations;
 
 namespace Define;
 
 internal static class HashSetPool<T>
 {
-    public const int DEFAULT_CAPACITY = 32;
+    private const int DEFAULT_CAPACITY = 32;
 
     public static int PooledCount => pool.Count;
 
@@ -15,6 +16,7 @@ internal static class HashSetPool<T>
         pool.Clear();
     }
 
+    [MustDisposeResource]
     public static Using Rent(out HashSet<T> set)
     {
         set = RentOrCreate();
