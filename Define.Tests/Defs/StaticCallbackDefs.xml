@@ -1,0 +1,9 @@
+<Defs>
+  <StaticCallbackDef Type="StaticCallbackDef">
+    <BaseValue>123</BaseValue>
+  </StaticCallbackDef>
+  
+  <StaticCallbackChildDef Type="StaticCallbackChildDef" Parent="StaticCallbackDef">
+    <ChildValue>456</ChildValue>
+  </StaticCallbackChildDef>
+</Defs>

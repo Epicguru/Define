@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
 using System.IO.Compression;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
+using Define.Callbacks;
 using Define.Xml;
 using JetBrains.Annotations;
 
@@ -500,6 +502,29 @@ public class DefDatabase
             }
         }
 
+        if (Loader.Config.DoStaticPostLoad)
+        {
+            // Static Post-load.
+            foreach (var type in Loader.StaticPostLoadClasses)
+            {
+                // Need to check if the type directly implements the interface.
+                // Just check that the static method exists directly on the type.
+                const string INTERFACE_METHOD_NAME = nameof(IStaticPostLoad.StaticPostLoad);
+                var foundMethod = type.GetMethod(INTERFACE_METHOD_NAME, BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, [ typeof(DefDatabase) ]);
+                if (foundMethod == null)
+                    continue;
+                
+                try
+                {
+                    foundMethod.Invoke(null, [ this ]);
+                }
+                catch (Exception e)
+                {
+                    DefDebugger.Error($"Exception PostLoading static item '{type}'.", e);
+                }
+            }
+        }
+
         // Config errors.
         var reporter = new ConfigErrorReporter();
         foreach (var item in Loader.ConfigErrorItems)
@@ -508,6 +533,7 @@ public class DefDatabase
             {
                 // ReSharper disable once SuspiciousTypeConversion.Global
                 reporter.CurrentDef = item as IDef;
+                item.ConfigErrorsGenerated(reporter);
                 item.ConfigErrors(reporter);
             }
             catch (Exception e)
@@ -560,6 +586,12 @@ public class DefDatabase
         {
             container.Add(def);
         }
+
+        // ReSharper disable once SuspiciousTypeConversion.Global
+        if (def is IOnDatabaseRegister onRegister)
+        {
+            onRegister.OnRegister(this);
+        }
         return true;
     }
 
@@ -592,7 +624,12 @@ public class DefDatabase
                 defsOfType.Remove(container.ContainedType);
             }
         }
-        
+
+        // ReSharper disable once SuspiciousTypeConversion.Global
+        if (def is IOnDatabaseRegister defOnRegister)
+        {
+            defOnRegister.OnUnRegister(this);
+        }
         return true;
     }
 
@@ -644,7 +681,7 @@ public class DefDatabase
     /// <returns>The list of defs matching the target type, or an empty list if none were found.</returns>
     [PublicAPI]
     public IReadOnlyList<object> GetAll(Type defType)    
-        => defsOfType.TryGetValue(defType, out var found) ? found.DefsAsObjects : Array.Empty<object>();    
+        => defsOfType.TryGetValue(defType, out var found) ? found.DefsAsObjects : [];    
 
     /// <summary>
     /// Gets or creates a def container for the specified def type (or def interface).

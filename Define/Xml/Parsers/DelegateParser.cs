@@ -21,19 +21,20 @@ public class DelegateParser : XmlParser
         string raw = context.TextValue;
         if (string.IsNullOrEmpty(raw))
             return null;
+        raw = raw.Trim();
 
         var delegateFormat = context.TargetType;
         var delegateMethod = delegateFormat.GetMethod("Invoke")!;
         var delegateArgsCount = delegateMethod.GetParameters().Length;
         var genericArgsCount = delegateMethod.GetGenericArguments().Length;
 
-        string[] parts = context.TextValue.Split(':');
+        string[] parts = raw.Split(':');
         if (parts.Length != 2)
-            throw new Exception($"Expected Action in the format 'Namespace.ClassName:MethodName', got '{context.TextValue}'");
+            throw new Exception($"Expected Action in the format 'Namespace.ClassName:MethodName', got '{raw}'");
 
         var type = TypeResolver.Get(parts[0]);
         if (type == null)
-            throw new Exception($"Failed to find class called '{context.TextValue}'");
+            throw new Exception($"Failed to find class called '{parts[0]}'");
 
         string methodName = parts[1];
         var methods = type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);

@@ -20,12 +20,18 @@ public sealed class ParseDefTests(ITestOutputHelper output) : DefTestBase(output
         def.LatePostLoadCalled.Should().Be(latePostLoad);
         def.ConfigErrorsCalled.Should().Be(errors);
         def.PostXmlConstructCalled.Should().BeTrue();
+        def.DatabasesRegisteredTo.Should().ContainSingle(d => d == DefDatabase);
+        def.DatabasesUnRegisteredFrom.Should().BeEmpty();
 
         // On the struct field, nothing should have been called because it is not specified in the XML.
         def.Inner.PostLoadCalled.Should().BeFalse();
         def.Inner.LatePostLoadCalled.Should().BeFalse();
         def.Inner.ConfigErrorsCalled.Should().BeFalse();
         def.Inner.PostXmlConstructCalled.Should().BeFalse();
+
+        DefDatabase.UnRegister(def).Should().BeTrue();
+        def.DatabasesUnRegisteredFrom.Should().ContainSingle(d => d == DefDatabase);
+        def.DatabasesRegisteredTo.Should().ContainSingle(d => d == DefDatabase);
     }
 
     [Theory]
