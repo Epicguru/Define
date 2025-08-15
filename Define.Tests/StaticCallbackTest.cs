@@ -20,7 +20,8 @@ public sealed class StaticCallbackTest(ITestOutputHelper output) : DefTestBase(o
         
         var childDef = DefDatabase.Get<StaticCallbackChildDef>("StaticCallbackChildDef");
         childDef.Should().NotBeNull();
-        childDef!.BaseValue.Should().Be(456);
+        childDef!.BaseValue.Should().Be(123);
+        childDef.ChildValue.Should().Be(456);
         
         // StaticPostLoad should only be called once, even if there are multiple defs including subclasses.
         StaticCallbackDef.TimesCalled.Should().Be(1);
