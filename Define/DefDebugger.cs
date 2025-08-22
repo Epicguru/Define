@@ -1,4 +1,5 @@
-﻿using Define.Xml;
+﻿using System.Diagnostics;
+using Define.Xml;
 
 namespace Define;
 
@@ -36,6 +37,7 @@ public static class DefDebugger
     /// </summary>
     public static void Warn(string message)
     {
+        Debug.Assert(OnWarning != null, "A def warning was logged, but no subscribers are registered for the OnWarning event.");
         OnWarning?.Invoke(message);
     }
 
@@ -44,6 +46,7 @@ public static class DefDebugger
     /// </summary>
     public static void Error(string message, Exception? e = null, in XmlParseContext? ctx = null)
     {
+        Debug.Assert(OnError != null, "A def error was logged, but no subscribers are registered for the OnError event.");
         OnError?.Invoke(message, e, ctx);
     }
 }

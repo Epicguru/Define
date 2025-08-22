@@ -7,7 +7,6 @@ namespace Define.Xml.Parsers;
 /// The base class for an object that can turn an <see cref="XmlNode"/>
 /// into a C# object of a particular type.
 /// </summary>
-[UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature, ImplicitUseTargetFlags.WithInheritors)]
 public abstract class XmlParser : IComparable<XmlParser>
 {
     /// <summary>
