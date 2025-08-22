@@ -6,7 +6,7 @@ namespace Define.Tests;
 
 public sealed class TypeResolverTests : DefTestBase
 {
-    public TypeResolverTests(ITestOutputHelper output) : base(output)
+    public TypeResolverTests : base(output)
     {
         // Called before every test in class:
         TypeResolver.ClearCache();

@@ -2,7 +2,7 @@
 
 namespace Define.Tests;
 
-public sealed class ParseDefTests(ITestOutputHelper output) : DefTestBase(output)
+public sealed class ParseDefTests : DefTestBase
 {
     [Test]
     [MethodDataSource(nameof(CheckInterfaceCallbacks_Args))]

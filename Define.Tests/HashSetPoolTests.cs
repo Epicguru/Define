@@ -2,7 +2,7 @@
 
 namespace Define.Tests;
 
-public class HashSetPoolTests(ITestOutputHelper output) : DefTestBase(output)
+public class HashSetPoolTests : DefTestBase
 {
     [Test]
     public void RentReturnsValidSet()

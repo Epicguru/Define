@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Define.Tests;
 
-public sealed class StaticCallbackTest(ITestOutputHelper output) : DefTestBase(output)
+public sealed class StaticCallbackTest : DefTestBase
 {
     [Test]
     public void TestStaticPostLoad()

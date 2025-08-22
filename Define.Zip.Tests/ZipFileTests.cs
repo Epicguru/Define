@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Define.Zip.Tests;
 
-public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
+public class ZipFileTests : DefTestBase
 {
     private void EnsureLoadedCorrectly()
     {

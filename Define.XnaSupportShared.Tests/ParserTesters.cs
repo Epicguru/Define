@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace Define.Monogame.Tests;
 
-public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(output)
+public class ParserTesters : MonogameDefTestBase(output)
 {
     [Test]
     public void TestVectorParsers()

@@ -2,7 +2,7 @@
 
 namespace Define.Tests;
 
-public sealed class XmlAttributeTests(ITestOutputHelper output) : DefTestBase(output)
+public sealed class XmlAttributeTests : DefTestBase
 {
     [Test]
     public void TestNullAttributeSimple()

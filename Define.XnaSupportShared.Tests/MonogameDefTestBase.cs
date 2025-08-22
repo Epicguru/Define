@@ -4,7 +4,7 @@ using Xunit.Abstractions;
 
 namespace Define.Monogame.Tests;
 
-public abstract class MonogameDefTestBase(ITestOutputHelper output) : DefTestBase(output)
+public abstract class MonogameDefTestBase : DefTestBase
 {
     protected static void CheckAdapterCreation()
     {

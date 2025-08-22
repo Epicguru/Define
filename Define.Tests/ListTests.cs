@@ -2,7 +2,7 @@
 
 namespace Define.Tests;
 
-public class ListTests(ITestOutputHelper output) : DefTestBase(output)
+public class ListTests : DefTestBase
 {
     [Test]
     public void TestListAndRefLoading()

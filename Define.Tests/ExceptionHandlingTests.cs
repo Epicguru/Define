@@ -2,7 +2,7 @@
 
 namespace Define.Tests;
 
-public class ExceptionHandlingTests(ITestOutputHelper output) : DefTestBase(output)
+public class ExceptionHandlingTests : DefTestBase
 {
     [Test]
     public void ExceptionsInCallbacksAreCaughtAndReported()

@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Define.Tests;
 
-public class SanityChecks(ITestOutputHelper output) : DefTestBase(output)
+public class SanityChecks : DefTestBase
 {
     [Test]
     public async Task CanLoadXmlDoc()

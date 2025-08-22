@@ -2,7 +2,7 @@
 
 namespace Define.Tests;
 
-public class ParsingTests(ITestOutputHelper output) : DefTestBase(output)
+public class ParsingTests : DefTestBase
 {
     [Test]
     public void DelegateParsing()

@@ -2,7 +2,7 @@
 
 namespace Define.Tests;
 
-public sealed class AliasTests(ITestOutputHelper output) : DefTestBase(output)
+public sealed class AliasTests : DefTestBase
 {
     [Test]
     [Arguments("AliasDef1", true, "This is name1.")]

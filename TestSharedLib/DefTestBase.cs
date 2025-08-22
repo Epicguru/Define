@@ -1,9 +1,9 @@
-﻿using System.Xml;
+﻿using System.Diagnostics;
+using System.Xml;
 using Define;
 using Define.Xml;
 using FluentAssertions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace TestSharedLib;
 
@@ -20,15 +20,13 @@ namespace TestSharedLib;
 public abstract class DefTestBase : IDisposable
 {
     protected readonly DefSerializeConfig Config = new DefSerializeConfig();
-    protected readonly ITestOutputHelper Output;
     protected readonly List<string> ErrorMessages = [];
     protected readonly List<string> WarningMessages = [];
     protected readonly DefDatabase DefDatabase;
     
-    protected DefTestBase(ITestOutputHelper output)
+    protected DefTestBase()
     {
         DefDatabase = new DefDatabase(Config);
-        Output = output;
         DefDebugger.OnWarning += OnWarning;
         DefDebugger.OnError += OnError;
     }
@@ -36,13 +34,13 @@ public abstract class DefTestBase : IDisposable
     private void OnWarning(string msg)
     {
         WarningMessages.Add(msg);
-        Output.WriteLine($"Def.Warn: {msg}");
+        Debug.WriteLine($"Def.Warn: {msg}");
     }
 
     private void OnError(string msg, Exception? e, in XmlParseContext? _)
     {
         ErrorMessages.Add(msg);
-        Output.WriteLine($"Def.Prs.Err: {msg}\nException: {e}");
+        Debug.WriteLine($"Def.Prs.Err: {msg}\nException: {e}");
     }
     
     protected virtual void PreLoad(DefDatabase db) {}
@@ -81,7 +79,7 @@ public abstract class DefTestBase : IDisposable
         T? found = DefDatabase.GetAll<T>().FirstOrDefault();
         found.Should().NotBeNull();
 
-        Output.WriteLine($"Loaded def '{found!.ID}' of type {found.GetType().FullName}");
+        Debug.WriteLine($"Loaded def '{found!.ID}' of type {found.GetType().FullName}");
         return found;
     }
     
@@ -91,7 +89,7 @@ public abstract class DefTestBase : IDisposable
 
         T? found = DefDatabase.GetAll<T>().FirstOrDefault();
 
-        Output.WriteLine(found != null
+        Debug.WriteLine(found != null
             ? $"Loaded def '{found.ID}' of type {found.GetType().FullName}"
             : $"{file} failed to load...");
         return found;

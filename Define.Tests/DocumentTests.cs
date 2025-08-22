@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Define.Tests;
 
-public class DocumentTests(ITestOutputHelper output) : DefTestBase(output)
+public class DocumentTests : DefTestBase
 {
     [Test]
     public void TestXPathGeneration()

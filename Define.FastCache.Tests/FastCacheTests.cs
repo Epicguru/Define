@@ -2,11 +2,12 @@ using FluentAssertions;
 using System.Diagnostics;
 using System.Reflection;
 using TestSharedLib;
+using TUnit.Core;
 using Xunit.Abstractions;
 
 namespace Define.FastCache.Tests;
 
-public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
+public class FastCacheTests : DefTestBase
 {
     [Test]
     public void TestSerialize()

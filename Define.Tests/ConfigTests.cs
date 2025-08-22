@@ -3,7 +3,7 @@ using Xunit.Abstractions;
 
 namespace Define.Tests;
 
-public sealed class ConfigTests(ITestOutputHelper output) : DefTestBase(output)
+public sealed class ConfigTests : DefTestBase
 {
     [Test]
     [Arguments(MemberTypes.Field, true)]

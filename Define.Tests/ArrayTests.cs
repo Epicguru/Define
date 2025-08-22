@@ -2,7 +2,7 @@
 
 namespace Define.Tests;
 
-public class ArrayTests(ITestOutputHelper output) : DefTestBase(output)
+public class ArrayTests : DefTestBase
 {
     [Test]
     public void TestLoadArray()

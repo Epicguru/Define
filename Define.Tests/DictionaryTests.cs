@@ -2,7 +2,7 @@
 
 namespace Define.Tests;
 
-public class DictionaryTests(ITestOutputHelper output) : DefTestBase(output)
+public class DictionaryTests : DefTestBase
 {
     [Test]
     public void TestDictionaryLoading()

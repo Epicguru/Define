@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace Define.SourceGen.Tests;
 
-public class BasicGenTest(ITestOutputHelper output) : DefTestBase(output)
+public class BasicGenTest : DefTestBase
 {
     [Test]
     public void TestExampleDef()

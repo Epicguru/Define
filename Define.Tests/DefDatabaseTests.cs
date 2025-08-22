@@ -2,7 +2,7 @@
 
 namespace Define.Tests;
 
-public class DefDatabaseTests(ITestOutputHelper output) : DefTestBase(output)
+public class DefDatabaseTests : DefTestBase
 {
     [Test]
     public void TestUnregisterDef()
