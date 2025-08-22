@@ -16,7 +16,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         b.Data.Should().Be("ExampleDef2 data here");
     }
 
-    [Fact]
+    [Test]
     public void TestReadUnEncryptedDefs()
     {
         DefDatabase.AddDefsFromZip("./Content/Defs.zip", null!).Should().BeTrue();
@@ -28,7 +28,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         EnsureLoadedCorrectly();
     }
     
-    [Fact]
+    [Test]
     public async Task TestReadUnEncryptedDefsAsync()
     {
         (await DefDatabase.AddDefsFromZipAsync("./Content/Defs.zip", null!)).Should().BeTrue();
@@ -40,7 +40,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         EnsureLoadedCorrectly();
     }
     
-    [Fact]
+    [Test]
     public void TestReadUnEncryptedDefsWithPassword()
     {
         DefDatabase.AddDefsFromZip("./Content/Defs.zip", "Wrong password").Should().BeTrue();
@@ -52,7 +52,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         EnsureLoadedCorrectly();
     }
     
-    [Fact]
+    [Test]
     public async Task TestReadUnEncryptedDefsWithPasswordAsync()
     {
         (await DefDatabase.AddDefsFromZipAsync("./Content/Defs.zip", "Wrong password")).Should().BeTrue();
@@ -64,7 +64,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         EnsureLoadedCorrectly();
     }
     
-    [Fact]
+    [Test]
     public void TestReadEncryptedDefs_FailNoPassword()
     {
         DefDatabase.AddDefsFromZip("./Content/DefsEncrypted.zip").Should().BeFalse();
@@ -74,7 +74,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         WarningMessages.Should().BeEmpty();
     }
     
-    [Fact]
+    [Test]
     public async Task TestReadEncryptedDefs_FailNoPasswordAsync()
     {
         (await DefDatabase.AddDefsFromZipAsync("./Content/DefsEncrypted.zip")).Should().BeFalse();
@@ -84,7 +84,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         WarningMessages.Should().BeEmpty();
     }
     
-    [Fact]
+    [Test]
     public void TestReadEncryptedDefs_FailWrongPassword()
     {
         DefDatabase.AddDefsFromZip("./Content/DefsEncrypted.zip", "asd123").Should().BeFalse();
@@ -94,7 +94,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         WarningMessages.Should().BeEmpty();
     }
     
-    [Fact]
+    [Test]
     public async Task TestReadEncryptedDefs_FailWrongPasswordAsync()
     {
         (await DefDatabase.AddDefsFromZipAsync("./Content/DefsEncrypted.zip", "asd123")).Should().BeFalse();
@@ -104,7 +104,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         WarningMessages.Should().BeEmpty();
     }
     
-    [Fact]
+    [Test]
     public void TestReadEncryptedDefs()
     {
         DefDatabase.AddDefsFromZip("./Content/DefsEncrypted.zip", "ExamplePassword").Should().BeTrue();
@@ -116,7 +116,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         EnsureLoadedCorrectly();
     }
     
-    [Fact]
+    [Test]
     public async Task TestReadEncryptedDefsAsync()
     {
         (await DefDatabase.AddDefsFromZipAsync("./Content/DefsEncrypted.zip", "ExamplePassword")).Should().BeTrue();
@@ -128,7 +128,7 @@ public class ZipFileTests(ITestOutputHelper output) : DefTestBase(output)
         EnsureLoadedCorrectly();
     }
 
-    [Fact]
+    [Test]
     public void CompareEncryptedAndNonEncrypted()
     {
         var db1 = new DefDatabase(Config);

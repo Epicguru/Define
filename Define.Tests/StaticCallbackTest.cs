@@ -5,7 +5,7 @@ namespace Define.Tests;
 
 public sealed class StaticCallbackTest(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Fact]
+    [Test]
     public void TestStaticPostLoad()
     {
         StaticCallbackDef.TimesCalled.Should().Be(0);

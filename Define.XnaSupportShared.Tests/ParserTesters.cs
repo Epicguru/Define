@@ -7,28 +7,28 @@ namespace Define.Monogame.Tests;
 
 public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(output)
 {
-    [Fact]
+    [Test]
     public void TestVectorParsers()
     {
         var single = LoadSingleDef<VectorDef>("VectorDef");
         single.EnsureExpected();
     }
     
-    [Fact]
+    [Test]
     public void TestRectangleParser()
     {
         var single = LoadSingleDef<RectangleDef>("RectangleDef");
         single.EnsureExpected();
     }
     
-    [Fact]
+    [Test]
     public void TestColorParser()
     {
         var single = LoadSingleDef<ColorDef>("ColorDef");
         single.EnsureExpected();
     }
 
-    [Fact]
+    [Test]
     public void TestFastCache()
     {
         DefDatabase.Loader.AddMonogameDataParsers();

@@ -4,7 +4,7 @@ namespace Define.Tests;
 
 public class ExceptionHandlingTests(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Fact]
+    [Test]
     public void ExceptionsInCallbacksAreCaughtAndReported()
     {
         var def = LoadSingleDef<ThrowExceptionsDef>("ExceptionDef", expectErrors: true, expectWarnings: true);
@@ -18,7 +18,7 @@ public class ExceptionHandlingTests(ITestOutputHelper output) : DefTestBase(outp
         WarningMessages.Should().HaveCount(1);
     }
     
-    [Fact]
+    [Test]
     public void ExceptionInConstructorIsHandled()
     {
         ThrowExceptionsDef.ThrowInConstructor = true;

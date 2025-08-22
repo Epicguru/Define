@@ -4,7 +4,7 @@ namespace Define.Tests;
 
 public class ListTests(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Fact]
+    [Test]
     public void TestListAndRefLoading()
     {
         LoadDefFile("TestListsAndRefs");
@@ -33,14 +33,14 @@ public class ListTests(ITestOutputHelper output) : DefTestBase(output)
         def2.List![0].Should().Be(def);
     }
 
-    [Fact]
+    [Test]
     public void TestListWithExistingItems()
     {
         var def = LoadSingleDef<TestDef>("ListWithExisting");
         def.ListWithExisting.Should().BeEquivalentTo([1, 2, 3, 55.6f]);
     }
 
-    [Fact]
+    [Test]
     public void TestAlternateListNames()
     {
         Config.ListItemName = "list-item";
@@ -49,14 +49,14 @@ public class ListTests(ITestOutputHelper output) : DefTestBase(output)
         def.List.Should().NotBeNull().And.HaveCount(4);
     }
     
-    [Fact]
+    [Test]
     public void TestForcedListParse()
     {
         var def = LoadSingleDef<TestDef>("ForceParseAsList");
         def.List.Should().NotBeNull().And.HaveCount(4);
     }
     
-    [Fact]
+    [Test]
     public void TestBadListNames()
     {
         var def = LoadSingleDef<TestDef>("ParseListBadNames", expectWarnings: true);
@@ -65,7 +65,7 @@ public class ListTests(ITestOutputHelper output) : DefTestBase(output)
         def.List.Should().NotBeNull().And.HaveCount(4);
     }
     
-    [Fact]
+    [Test]
     public void ElemTypeTest()
     {
         var def = LoadSingleDef<TestDef>("ListElemTypeDef");

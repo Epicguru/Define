@@ -8,7 +8,7 @@ namespace Define.FastCache.Tests;
 
 public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Fact]
+    [Test]
     public void TestSerialize()
     {
         // Allow static fields too.
@@ -43,7 +43,7 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         DefDatabase.GetAll().Should().NotIntersectWith(db2.GetAll());
     }
 
-    [Fact]
+    [Test]
     public void FastCacheShouldBeFasterThanXml()
     {
         // Attempt to mitigate external processes and other threads interfering with the test:

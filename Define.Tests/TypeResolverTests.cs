@@ -12,8 +12,8 @@ public sealed class TypeResolverTests : DefTestBase
         TypeResolver.ClearCache();
     }
 
-    [Theory]
-    [MemberData(nameof(Generate_ResolveGenericTypes_Args))]
+    [Test]
+    [MethodDataSource(nameof(Generate_ResolveGenericTypes_Args))]
     public void TestResolveGenericTypes(string name, Type type)
     {
         var resolved = TypeResolver.Get(name);
@@ -60,18 +60,18 @@ public sealed class TypeResolverTests : DefTestBase
         return data;
     }
 
-    [Theory]
-    [InlineData("Int32", typeof(int))]
-    [InlineData("int?", typeof(int?))]
-    [InlineData("float", typeof(float))]
-    [InlineData("Vector2", typeof(Vector2))]
-    [InlineData("Vector<decimal>?", typeof(Vector<decimal>?))]
-    [InlineData("NestedClass", typeof(NestedClass))]
-    [InlineData("TypeResolverTests+NestedClass", typeof(NestedClass))]
-    [InlineData("Define.Tests.TypeResolverTests+NestedClass", typeof(NestedClass))]
-    [InlineData("SubNestedClass<float>", typeof(SubNestedClass<float>))] // Without explicitly specifying it as a nested type, it should find the outer one.
-    [InlineData("TypeResolverTests+NestedClass+SubNestedClass<float>", typeof(NestedClass.SubNestedClass<float>))]
-    [InlineData("Define.Tests.TypeResolverTests+NestedClass+SubNestedClass<float>", typeof(NestedClass.SubNestedClass<float>))]
+    [Test]
+    [Arguments("Int32", typeof(int))]
+    [Arguments("int?", typeof(int?))]
+    [Arguments("float", typeof(float))]
+    [Arguments("Vector2", typeof(Vector2))]
+    [Arguments("Vector<decimal>?", typeof(Vector<decimal>?))]
+    [Arguments("NestedClass", typeof(NestedClass))]
+    [Arguments("TypeResolverTests+NestedClass", typeof(NestedClass))]
+    [Arguments("Define.Tests.TypeResolverTests+NestedClass", typeof(NestedClass))]
+    [Arguments("SubNestedClass<float>", typeof(SubNestedClass<float>))] // Without explicitly specifying it as a nested type, it should find the outer one.
+    [Arguments("TypeResolverTests+NestedClass+SubNestedClass<float>", typeof(NestedClass.SubNestedClass<float>))]
+    [Arguments("Define.Tests.TypeResolverTests+NestedClass+SubNestedClass<float>", typeof(NestedClass.SubNestedClass<float>))]
     public void TestResolveSimpleTypes(string name, Type type)
     {
         Output.WriteLine(typeof(NestedClass).FullName);
@@ -79,7 +79,7 @@ public sealed class TypeResolverTests : DefTestBase
         resolved.Should().Be(type);
     }
 
-    [Fact]
+    [Test]
     public void TestNullableReferenceType()
     {
         // Attempting to resolve any reference type as a nullable

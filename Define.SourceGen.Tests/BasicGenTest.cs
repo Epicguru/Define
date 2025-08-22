@@ -9,7 +9,7 @@ namespace Define.SourceGen.Tests;
 
 public class BasicGenTest(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Fact]
+    [Test]
     public void TestExampleDef()
     {
         var def = LoadSingleDef<ExampleDef>("ExampleDef", expectWarnings: true);

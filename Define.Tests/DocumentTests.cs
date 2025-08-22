@@ -5,7 +5,7 @@ namespace Define.Tests;
 
 public class DocumentTests(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Fact]
+    [Test]
     public void TestXPathGeneration()
     {
         var document = new XmlDocument

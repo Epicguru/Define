@@ -4,7 +4,7 @@ namespace Define.Tests;
 
 public class ParsingTests(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Fact]
+    [Test]
     public void DelegateParsing()
     {
         var defs = LoadSingleDef<ParserDef>("Parsing/Delegates");
@@ -26,7 +26,7 @@ public class ParsingTests(ITestOutputHelper output) : DefTestBase(output)
         str.Should().Be("Hello");
     }
 
-    [Fact]
+    [Test]
     public void TypeParsing()
     {
         var defs = LoadSingleDef<ParserDef>("Parsing/Types");

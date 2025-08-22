@@ -4,7 +4,7 @@ namespace Define.Tests;
 
 public class HashSetPoolTests(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Fact]
+    [Test]
     public void RentReturnsValidSet()
     {
         using var _ = HashSetPool<int>.Rent(out var set);
@@ -13,7 +13,7 @@ public class HashSetPoolTests(ITestOutputHelper output) : DefTestBase(output)
         set.Count.Should().Be(0);
     }
 
-    [Fact]
+    [Test]
     public void ReturnedSetIsPooledAndClearWorks()
     {
         HashSet<int> set;
@@ -34,7 +34,7 @@ public class HashSetPoolTests(ITestOutputHelper output) : DefTestBase(output)
         HashSetPool<int>.PooledCount.Should().Be(0);
     }
 
-    [Fact]
+    [Test]
     public void MultipleRentWorks()
     {
         using var _ = HashSetPool<int>.Rent(out var set);

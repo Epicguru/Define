@@ -4,7 +4,7 @@ namespace Define.Tests;
 
 public class DictionaryTests(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Fact]
+    [Test]
     public void TestDictionaryLoading()
     {
         var def = LoadSingleDef<TestDef>("Dictionary");
@@ -32,7 +32,7 @@ public class DictionaryTests(ITestOutputHelper output) : DefTestBase(output)
         inner.AnInt.Should().Be(123);
     }
     
-    [Fact]
+    [Test]
     public void TestDictionaryNoInherit()
     {
         var def = LoadSingleDef<TestDef>("DictionaryNoInherit");

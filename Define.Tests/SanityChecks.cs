@@ -5,7 +5,7 @@ namespace Define.Tests;
 
 public class SanityChecks(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Fact]
+    [Test]
     public async Task CanLoadXmlDoc()
     {
         const string PATH = "./Defs/DummyXMLFile.xml";

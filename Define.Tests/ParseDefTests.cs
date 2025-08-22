@@ -4,8 +4,8 @@ namespace Define.Tests;
 
 public sealed class ParseDefTests(ITestOutputHelper output) : DefTestBase(output)
 {
-    [Theory]
-    [MemberData(nameof(CheckInterfaceCallbacks_Args))]
+    [Test]
+    [MethodDataSource(nameof(CheckInterfaceCallbacks_Args))]
     public void CheckInterfaceCallbacks(bool postLoad, bool latePostLoad, bool errors)
     {
         Config.DoPostLoad = postLoad;
@@ -34,8 +34,8 @@ public sealed class ParseDefTests(ITestOutputHelper output) : DefTestBase(output
         def.DatabasesRegisteredTo.Should().ContainSingle(d => d == DefDatabase);
     }
 
-    [Theory]
-    [MemberData(nameof(CheckInterfaceCallbacks_Args))]
+    [Test]
+    [MethodDataSource(nameof(CheckInterfaceCallbacks_Args))]
     public void CheckInterfaceCallbacksWithInner(bool postLoad, bool latePostLoad, bool errors)
     {
         Config.DoPostLoad = postLoad;
