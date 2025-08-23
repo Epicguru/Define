@@ -1,11 +1,13 @@
+using System.Diagnostics;
 using Define.FastCache;
 using Define.Monogame.Tests.DefClasses;
 using Microsoft.Xna.Framework.Graphics;
+using TUnit.Core;
 using Xunit.Abstractions;
 
 namespace Define.Monogame.Tests;
 
-public class ParserTesters : MonogameDefTestBase(output)
+public class ParserTesters : MonogameDefTestBase
 {
     [Test]
     public void TestVectorParsers()
@@ -50,7 +52,7 @@ public class ParserTesters : MonogameDefTestBase(output)
 
         byte[] cacheData = fastCache.Serialize();
         cacheData.Should().HaveCountGreaterThan(0).And.Contain(b => b != 0);
-        Output.WriteLine($"Serialized all MG defs into {cacheData.Length} bytes.");
+        Debug.WriteLine($"Serialized all MG defs into {cacheData.Length} bytes.");
         
         // Deserialize.
         var loadedCache = new DefFastCache(cacheData, DefDatabase.Config);
@@ -83,7 +85,7 @@ public class ParserTesters : MonogameDefTestBase(output)
         }
         catch (NoSuitableGraphicsDeviceException e)
         {
-            Output.WriteLine("Critical error! No graphics device was found to monogame content tests cannot run! See the following exception:\n{0}", e);
+            Debug.WriteLine("Critical error! No graphics device was found to monogame content tests cannot run! See the following exception:\n{0}", e);
             throw;
         }
     }

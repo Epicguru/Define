@@ -1,4 +1,5 @@
 using TestSharedLib;
+using TUnit.Core;
 using Xunit.Abstractions;
 
 namespace Define.Zip.Tests;

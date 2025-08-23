@@ -1,4 +1,5 @@
-﻿using Xunit.Abstractions;
+﻿using TUnit.Core;
+using Xunit.Abstractions;
 
 namespace Define.Tests;
 

@@ -2,6 +2,7 @@
 using Define.SourceGen.Attributes;
 using FluentAssertions;
 using TestSharedLib;
+using TUnit.Core;
 using Xunit;
 using Xunit.Abstractions;
 

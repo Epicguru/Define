@@ -1,4 +1,6 @@
-﻿using System.Xml;
+﻿using System.Diagnostics;
+using System.Xml;
+using TUnit.Core;
 using Xunit.Abstractions;
 
 namespace Define.Tests;
@@ -30,7 +32,7 @@ public class DocumentTests : DefTestBase
             string txt = node.OuterXml.Replace("\n", "");
             if (txt.Length > 30)
                 txt = txt[..30] + "...";
-            Output.WriteLine($"'{txt}' -> '{xPath}'");
+            Debug.WriteLine($"'{txt}' -> '{xPath}'");
 
             var found = document.SelectSingleNode(xPath);
             found.Should().NotBeNull();

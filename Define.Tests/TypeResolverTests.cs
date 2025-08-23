@@ -1,12 +1,14 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using JetBrains.Annotations;
+using TUnit.Core;
 using Xunit.Abstractions;
 
 namespace Define.Tests;
 
 public sealed class TypeResolverTests : DefTestBase
 {
-    public TypeResolverTests : base(output)
+    public TypeResolverTests()
     {
         // Called before every test in class:
         TypeResolver.ClearCache();
@@ -74,7 +76,7 @@ public sealed class TypeResolverTests : DefTestBase
     [Arguments("Define.Tests.TypeResolverTests+NestedClass+SubNestedClass<float>", typeof(NestedClass.SubNestedClass<float>))]
     public void TestResolveSimpleTypes(string name, Type type)
     {
-        Output.WriteLine(typeof(NestedClass).FullName);
+        Debug.WriteLine(typeof(NestedClass).FullName);
         var resolved = TypeResolver.Get(name);
         resolved.Should().Be(type);
     }
@@ -96,7 +98,7 @@ public sealed class TypeResolverTests : DefTestBase
         });
     }
 
-    private class NestedClass
+    internal class NestedClass
     {
         // ReSharper disable once MemberHidesStaticFromOuterClass
         // ReSharper disable once UnusedTypeParameter
@@ -107,5 +109,5 @@ public sealed class TypeResolverTests : DefTestBase
     public class SubNestedClass;
 
     // ReSharper disable once UnusedTypeParameter
-    private class SubNestedClass<T>;
+    internal class SubNestedClass<T>;
 }
