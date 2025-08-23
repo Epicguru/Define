@@ -8,7 +8,7 @@ namespace Define.Monogame.Parsers;
 /// <summary>
 /// A Define parser that is used to load a specific Monogame content type <typeparamref name="T"/>
 /// from a <see cref="ContentManager"/>.
-/// The type can be loaded localized (see <see cref="ContentManager.LoadLocalized{T}"/>)
+/// The type can be loaded localized (see <see cref="Microsoft.Xna.Framework.Content.ContentManager.LoadLocalized{T}"/>)
 /// by adding the <c>Localized="true"</c> attribute to the XML node.
 /// </summary>
 /// <typeparam name="T">The content type to load.</typeparam>

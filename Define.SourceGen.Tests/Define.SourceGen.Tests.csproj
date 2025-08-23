@@ -6,8 +6,6 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <TUnitImplicitUsings>false</TUnitImplicitUsings>
-    <TUnitAssertionsImplicitUsings>false</TUnitAssertionsImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

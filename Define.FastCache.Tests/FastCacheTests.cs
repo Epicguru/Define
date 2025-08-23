@@ -1,9 +1,7 @@
-using FluentAssertions;
 using System.Diagnostics;
 using System.Reflection;
+using FluentAssertions;
 using TestSharedLib;
-using TUnit.Core;
-using Xunit.Abstractions;
 
 namespace Define.FastCache.Tests;
 
@@ -73,7 +71,7 @@ public class FastCacheTests : DefTestBase
         
         CheckDatabaseIsGood(newDb);
         
-        Debug.WriteLine($"XML {baseline.TotalMilliseconds:F3} ms vs Ceras {timer.Elapsed.TotalMilliseconds:F3} ms");
+        Console.WriteLine($"XML {baseline.TotalMilliseconds:F3} ms vs Ceras {timer.Elapsed.TotalMilliseconds:F3} ms");
         baseline.Should().BeGreaterThan(timer.Elapsed);
     }
 
@@ -86,7 +84,7 @@ public class FastCacheTests : DefTestBase
         }
         catch (Exception e)
         {
-            Debug.WriteLine($"Failed to set process or thread priority...\n{e}");
+            Console.WriteLine($"Failed to set process or thread priority...\n{e}");
         }
     }
 

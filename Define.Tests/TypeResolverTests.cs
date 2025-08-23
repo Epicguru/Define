@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Numerics;
 using JetBrains.Annotations;
-using TUnit.Core;
-using Xunit.Abstractions;
 
 namespace Define.Tests;
 
@@ -76,7 +74,7 @@ public sealed class TypeResolverTests : DefTestBase
     [Arguments("Define.Tests.TypeResolverTests+NestedClass+SubNestedClass<float>", typeof(NestedClass.SubNestedClass<float>))]
     public void TestResolveSimpleTypes(string name, Type type)
     {
-        Debug.WriteLine(typeof(NestedClass).FullName);
+        Console.WriteLine(typeof(NestedClass).FullName);
         var resolved = TypeResolver.Get(name);
         resolved.Should().Be(type);
     }

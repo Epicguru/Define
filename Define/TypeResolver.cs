@@ -193,7 +193,18 @@ public static partial class TypeResolver
         {
             foreach (var ass in allAssemblies)
             {
-                foreach (var type in ass.GetTypes())
+                Type[] types;
+
+                try
+                {
+                    types = ass.GetTypes();
+                }
+                catch (ReflectionTypeLoadException)
+                {
+                    continue;
+                }
+                
+                foreach (var type in types)
                 {
                     if (!type.FullName!.Equals(name, comp))
                     {

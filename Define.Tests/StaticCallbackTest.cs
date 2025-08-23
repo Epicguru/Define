@@ -1,6 +1,4 @@
 using Define.Callbacks;
-using TUnit.Core;
-using Xunit.Abstractions;
 
 namespace Define.Tests;
 

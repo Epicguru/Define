@@ -34,13 +34,13 @@ public abstract class DefTestBase : IDisposable
     private void OnWarning(string msg)
     {
         WarningMessages.Add(msg);
-        Debug.WriteLine($"Def.Warn: {msg}");
+        Console.WriteLine($"Def.Warn: {msg}");
     }
 
     private void OnError(string msg, Exception? e, in XmlParseContext? _)
     {
         ErrorMessages.Add(msg);
-        Debug.WriteLine($"Def.Prs.Err: {msg}\nException: {e}");
+        Console.WriteLine($"Def.Prs.Err: {msg}\nException: {e}");
     }
     
     protected virtual void PreLoad(DefDatabase db) {}
@@ -79,7 +79,7 @@ public abstract class DefTestBase : IDisposable
         T? found = DefDatabase.GetAll<T>().FirstOrDefault();
         found.Should().NotBeNull();
 
-        Debug.WriteLine($"Loaded def '{found!.ID}' of type {found.GetType().FullName}");
+        Console.WriteLine($"Loaded def '{found!.ID}' of type {found.GetType().FullName}");
         return found;
     }
     
@@ -89,7 +89,7 @@ public abstract class DefTestBase : IDisposable
 
         T? found = DefDatabase.GetAll<T>().FirstOrDefault();
 
-        Debug.WriteLine(found != null
+        Console.WriteLine(found != null
             ? $"Loaded def '{found.ID}' of type {found.GetType().FullName}"
             : $"{file} failed to load...");
         return found;

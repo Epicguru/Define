@@ -1,7 +1,4 @@
-﻿using TUnit.Core;
-using Xunit.Abstractions;
-
-namespace Define.Tests;
+﻿namespace Define.Tests;
 
 public sealed class XmlAttributeTests : DefTestBase
 {

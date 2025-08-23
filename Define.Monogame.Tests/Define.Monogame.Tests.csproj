@@ -6,8 +6,6 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <TUnitImplicitUsings>false</TUnitImplicitUsings>
-    <TUnitAssertionsImplicitUsings>false</TUnitAssertionsImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,7 +29,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Xunit.SkippableFact" Version="1.5.23" />
   </ItemGroup>
 
   <ItemGroup>

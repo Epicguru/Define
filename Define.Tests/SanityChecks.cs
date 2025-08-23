@@ -1,6 +1,4 @@
 using System.Xml;
-using TUnit.Core;
-using Xunit.Abstractions;
 
 namespace Define.Tests;
 
