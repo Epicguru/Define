@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO.Compression;
+﻿using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -55,6 +54,13 @@ public class DefDatabase
     /// The <see cref="DefSerializeConfig"/> used by this database.
     /// </summary>
     public DefSerializeConfig Config { get; internal set; }
+
+    /// <summary>
+    /// The debugger instance that is used to raise warnings and errors during the loading process.
+    /// You should subscribe to the <see cref="DefDebugger.OnWarning"/> and <see cref="DefDebugger.OnError"/> events
+    /// to handle warnings and errors as you see fit.
+    /// </summary>
+    public DefDebugger Debug { get; } = new DefDebugger();
     
     private readonly HashSet<Type> typesWithStaticData = [];
     private readonly Dictionary<string, IDef> idToDef = new Dictionary<string, IDef>(4096);
@@ -71,7 +77,17 @@ public class DefDatabase
         ArgumentNullException.ThrowIfNull(config);
         
         Config = config;
+        
+        // Redirect warnings and errors from the loader to this database's debugger.
         Loader = new XmlLoader(config);
+        Loader.OnError += (string message, Exception? exception, in XmlParseContext? ctx) =>
+        {
+            Debug.Error(message, exception, ctx);
+        };
+        Loader.OnWarning += message =>
+        {
+            Debug.Warn(message);
+        };
     }
     
     /// <summary>
@@ -101,7 +117,7 @@ public class DefDatabase
     {
         if (!File.Exists(zipFilePath))
         {
-            DefDebugger.Error($"Failed to find zip file at '{zipFilePath}'");
+            Debug.Error($"Failed to find zip file at '{zipFilePath}'");
             return false;
         }
 
@@ -121,7 +137,7 @@ public class DefDatabase
     {
         if (!File.Exists(zipFilePath))
         {
-            DefDebugger.Error($"Failed to find zip file at '{zipFilePath}'");
+            Debug.Error($"Failed to find zip file at '{zipFilePath}'");
             return false;
         }
 
@@ -202,7 +218,7 @@ public class DefDatabase
         }
         catch (Exception e)
         {
-            DefDebugger.Error($"Exception creating stream reader when trying to read def document '{source}'. The stream may not be readable.", e);
+            Debug.Error($"Exception creating stream reader when trying to read def document '{source}'. The stream may not be readable.", e);
             return false;
         }
     }
@@ -228,7 +244,7 @@ public class DefDatabase
         }
         catch (Exception e)
         {
-            DefDebugger.Error($"Exception creating stream reader when trying to read def document '{source}'. The stream may not be readable.", e);
+            Debug.Error($"Exception creating stream reader when trying to read def document '{source}'. The stream may not be readable.", e);
             return false;
         }
     }
@@ -251,7 +267,7 @@ public class DefDatabase
         }
         catch (Exception e)
         {
-            DefDebugger.Error($"Exception when reading def document from '{source}'", e);
+            Debug.Error($"Exception when reading def document from '{source}'", e);
             return false;
         }
     }
@@ -273,7 +289,7 @@ public class DefDatabase
         }
         catch (Exception e)
         {
-            DefDebugger.Error($"Exception reading stream when adding def document '{source}'", e);
+            Debug.Error($"Exception reading stream when adding def document '{source}'", e);
             return false;
         }
         
@@ -301,7 +317,7 @@ public class DefDatabase
         }
         catch (Exception e)
         {
-            DefDebugger.Error($"Exception parsing def file '{source}':", e);
+            Debug.Error($"Exception parsing def file '{source}':", e);
             return false;
         }
 
@@ -312,7 +328,7 @@ public class DefDatabase
         }
         catch (Exception e)
         {
-            DefDebugger.Error($"Exception adding def document '{source}':", e);
+            Debug.Error($"Exception adding def document '{source}':", e);
             return false;
         }
     }
@@ -332,7 +348,7 @@ public class DefDatabase
     {
         if (!Directory.Exists(folderPath))
         {
-            DefDebugger.Error($"Failed to find directory '{folderPath}' to load defs from.");
+            Debug.Error($"Failed to find directory '{folderPath}' to load defs from.");
             return false;
         }
 
@@ -351,7 +367,7 @@ public class DefDatabase
             }
             catch (Exception e)
             {
-                DefDebugger.Error($"Exception creating file stream when trying to read def document '{file}'.", e);
+                Debug.Error($"Exception creating file stream when trying to read def document '{file}'.", e);
                 worked = false;
             }
 
@@ -390,7 +406,7 @@ public class DefDatabase
             }
             catch (Exception e)
             {
-                DefDebugger.Error($"Exception creating file stream when trying to read def document '{file}'.", e);
+                Debug.Error($"Exception creating file stream when trying to read def document '{file}'.", e);
                 worked = false;
             }
 
@@ -429,7 +445,7 @@ public class DefDatabase
     public void FinishLoading()
     {
         // Resolve inheritance.
-        Debug.Assert(!Loader.HasResolvedInheritance);
+        System.Diagnostics.Debug.Assert(!Loader.HasResolvedInheritance);
         Loader.ResolveInheritance();
         
         Func<string, IDef?>? existing = null;
@@ -481,7 +497,7 @@ public class DefDatabase
                 }
                 catch (Exception e)
                 {
-                    DefDebugger.Error($"Exception PostLoading item '{item}'", e);
+                    Debug.Error($"Exception PostLoading item '{item}'", e);
                 }
             }
         }
@@ -497,7 +513,7 @@ public class DefDatabase
                 }
                 catch (Exception e)
                 {
-                    DefDebugger.Error($"Exception PostLoading item '{item}'.", e);
+                    Debug.Error($"Exception PostLoading item '{item}'.", e);
                 }
             }
         }
@@ -520,13 +536,13 @@ public class DefDatabase
                 }
                 catch (Exception e)
                 {
-                    DefDebugger.Error($"Exception PostLoading static item '{type}'.", e);
+                    Debug.Error($"Exception PostLoading static item '{type}'.", e);
                 }
             }
         }
 
         // Config errors.
-        var reporter = new ConfigErrorReporter();
+        var reporter = new ConfigErrorReporter(this);
         foreach (var item in Loader.ConfigErrorItems)
         {
             try
@@ -538,7 +554,7 @@ public class DefDatabase
             }
             catch (Exception e)
             {
-                DefDebugger.Error($"Exception PostLoading item '{item}'.", e);
+                Debug.Error($"Exception PostLoading item '{item}'.", e);
             }
         }
     }

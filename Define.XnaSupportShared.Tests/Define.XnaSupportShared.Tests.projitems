@@ -14,7 +14,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)DefClasses\MGDefBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefClasses\RectangleDef.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DefClasses\VectorDef.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameTestAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GlobalUsings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MonogameDefTestBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ParserTesters.cs" />

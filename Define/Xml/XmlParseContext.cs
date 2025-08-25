@@ -23,7 +23,7 @@ public readonly struct XmlParseContext
     /// <summary>
     /// The <see cref="XmlLoader"/> that is loading this node.
     /// </summary>
-    public XmlLoader Loader { get; init; }
+    public required XmlLoader Loader { get; init; }
     /// <summary>
     /// The <see cref="XmlNode"/> that is being parsed.
     /// May be null, but <see cref="TextValue"/> will never be.
@@ -33,19 +33,19 @@ public readonly struct XmlParseContext
     /// The target type for this node.
     /// Will never be null.
     /// </summary>
-    public Type TargetType { get; init; }
+    public required Type TargetType { get; init; }
     /// <summary>
     /// The default type for this node. You probably want to read <see cref="TargetType"/> instead.
     /// This value is almost always equal to <see cref="Member"/>.Type.
     /// Will never be null.
     /// </summary>
-    public Type DefaultType { get; init; }
+    public required Type DefaultType { get; init; }
     /// <summary>
     /// The text value that is being parsed.
     /// It is normally equal to <see cref="XmlNode.InnerText"/>,
     /// but <see cref="Node"/> may be null whereas this never will.
     /// </summary>
-    public string TextValue { get; init; }
+    public required string TextValue { get; init; }
     /// <summary>
     /// The member that is being written to.
     /// May be invalid (null), check <see cref="MemberWrapper.IsValid"/>.
@@ -71,6 +71,11 @@ public readonly struct XmlParseContext
     /// May be null if parsing from text alone, or other edge cases.
     /// </summary>
     public object? Owner { get; init; }
+    /// <summary>
+    /// A type resolver instance, used to resolve type names to <see cref="Type"/> instances.
+    /// Will never be null.
+    /// </summary>
+    public required TypeResolver TypeResolver { get; init; }
 
     /// <inheritdoc/>
     public override string ToString() => Node is XmlElement e ? e.GetFullXPath() : TextValue;

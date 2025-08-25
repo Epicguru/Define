@@ -6,17 +6,12 @@ namespace Define.Tests;
 
 public sealed class TypeResolverTests : DefTestBase
 {
-    public TypeResolverTests()
-    {
-        // Called before every test in class:
-        TypeResolver.ClearCache();
-    }
-
     [Test]
     [MethodDataSource(nameof(Generate_ResolveGenericTypes_Args))]
     public void TestResolveGenericTypes(string name, Type type)
     {
-        var resolved = TypeResolver.Get(name);
+        var resolver = new TypeResolver();
+        var resolved = resolver.Get(name);
         resolved.Should().Be(type);
     }
 
@@ -75,7 +70,9 @@ public sealed class TypeResolverTests : DefTestBase
     public void TestResolveSimpleTypes(string name, Type type)
     {
         Console.WriteLine(typeof(NestedClass).FullName);
-        var resolved = TypeResolver.Get(name);
+        
+        var resolver = new TypeResolver();
+        var resolved = resolver.Get(name);
         resolved.Should().Be(type);
     }
 
@@ -84,15 +81,16 @@ public sealed class TypeResolverTests : DefTestBase
     {
         // Attempting to resolve any reference type as a nullable
         // should result in an error.
-        var resolved = TypeResolver.Get("string?");
+        var resolver = new TypeResolver();
+        var resolved = resolver.Get("string?");
         resolved.Should().BeNull();
         
-        TypeResolver.ClearCache();
+        resolver.ClearCache();
 
         // Test exception throwing...
         Assert.ThrowsAny<Exception>(() =>
         {
-            resolved = TypeResolver.Get("StringBuilder?", true);
+            resolved = resolver.Get("StringBuilder?", true);
         });
     }
 

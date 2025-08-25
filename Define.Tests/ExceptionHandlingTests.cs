@@ -16,7 +16,7 @@ public class ExceptionHandlingTests : DefTestBase
         WarningMessages.Should().HaveCount(1);
     }
     
-    [Test]
+    [Test, DependsOn(nameof(ExceptionsInCallbacksAreCaughtAndReported))] // Can't run in parallel because of use of the static throw flag.
     public void ExceptionInConstructorIsHandled()
     {
         ThrowExceptionsDef.ThrowInConstructor = true;

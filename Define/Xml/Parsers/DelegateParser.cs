@@ -32,7 +32,7 @@ public class DelegateParser : XmlParser
         if (parts.Length != 2)
             throw new Exception($"Expected Action in the format 'Namespace.ClassName:MethodName', got '{raw}'");
 
-        var type = TypeResolver.Get(parts[0]);
+        var type = context.TypeResolver.Get(parts[0]);
         if (type == null)
             throw new Exception($"Failed to find class called '{parts[0]}'");
 

@@ -69,27 +69,13 @@ public class ParserTesters : MonogameDefTestBase
     }
 
     [Test]
-    [RequiresGpu]
-    public void TestGameRunBaseline()
+    [GameTest, TestExecutor<GameTest>]
+    public void TestGameRunBaseline(TestGame _)
     {
-        using var game = new TestGame(_ =>
-        {
-            
-        });
-
-        try
-        {
-            game.Run();
-        }
-        catch (NoSuitableGraphicsDeviceException e)
-        {
-            Console.WriteLine("Critical error! No graphics device was found to monogame content tests cannot run! See the following exception:\n{0}", e);
-            throw;
-        }
+        Console.WriteLine("Game ran successfully.");
     }
 
     [Test]
-    [RequiresGpu]
     [GameTest, TestExecutor<GameTest>]
     public void TestGameLoadContentManual(TestGame game)
     {
@@ -100,7 +86,6 @@ public class ParserTesters : MonogameDefTestBase
     }
 
     [Test]
-    [RequiresGpu]
     [GameTest, TestExecutor<GameTest>]    
     public void TestParseTexture(TestGame game)
     {

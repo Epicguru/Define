@@ -39,6 +39,8 @@ public class DefFastCache
     [PublicAPI]
     public DefSerializeConfig Config { get; private set; } = null!;
 
+    private readonly DefDatabase? db;
+
     /// <summary>
     /// Creates a new <see cref="DefFastCache"/> based on the current contents
     /// and config of the provided database.
@@ -51,6 +53,7 @@ public class DefFastCache
         TimeCreatedUtc = DateTime.UtcNow;
         Defs = database.GetAll().ToArray();
         Config = database.Config;
+        db = database;
         
         // Use this to store a list of types that have static data.
         foreach (var type in database.TypesWithStaticData)
@@ -77,7 +80,7 @@ public class DefFastCache
         
         if (!Config.Equals(config))
         {
-            DefDebugger.Warn("The def config that was used to save this FastCache does not match the config used to save it, this can lead to broken defs.");
+            throw new Exception("The def config that was used to save this FastCache does not match the config used to save it, this can lead to broken defs.");
         }
     }
     
@@ -131,7 +134,7 @@ public class DefFastCache
         {
             if (!database.Register(def))
             {
-                DefDebugger.Error($"Tried to load a def with duplicate ID '{def.ID}' into the database from this FastCache.");
+                database.Debug.Error($"Tried to load a def with duplicate ID '{def.ID}' into the database from this FastCache.");
             }
         }
         

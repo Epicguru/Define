@@ -15,6 +15,20 @@ public class ConfigErrorReporter
     /// The current <see cref="IDef"/> that is reporting errors.
     /// </summary>
     public IDef? CurrentDef { get; set; }
+    
+    /// <summary>
+    /// The database that this reporter is associated with.
+    /// </summary>
+    public DefDatabase Database { get; }
+
+    /// <summary>
+    /// Creates a new <see cref="ConfigErrorReporter"/> that reports warnings and errors to the specified database's <see cref="DefDebugger"/>.
+    /// </summary>
+    public ConfigErrorReporter(DefDatabase database)
+    {
+        ArgumentNullException.ThrowIfNull(database);
+        Database = database;
+    }
 
     /// <summary>
     /// Logs a config error for this def.
@@ -24,7 +38,7 @@ public class ConfigErrorReporter
     /// <param name="e">The optional exception if one occurred. May be null.</param>
     public void Error(string message, Exception? e = null)
     {
-        DefDebugger.Error($"[{CurrentDef?.ID ?? "?"}] {message}", e);
+        Database.Debug.Error($"[{CurrentDef?.ID ?? "?"}] {message}", e);
     }
 
     /// <summary>
@@ -34,7 +48,7 @@ public class ConfigErrorReporter
     /// <param name="message">The message to print. Should not be null.</param>
     public void Warn(string message)
     {
-        DefDebugger.Warn($"[{CurrentDef?.ID ?? "?"}] {message}");
+        Database.Debug.Warn($"[{CurrentDef?.ID ?? "?"}] {message}");
     }
 
     /// <summary>

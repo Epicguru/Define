@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Xml;
+﻿using System.Xml;
 using Define;
 using Define.Xml;
 using FluentAssertions;
@@ -27,8 +26,8 @@ public abstract class DefTestBase : IDisposable
     protected DefTestBase()
     {
         DefDatabase = new DefDatabase(Config);
-        DefDebugger.OnWarning += OnWarning;
-        DefDebugger.OnError += OnError;
+        DefDatabase.Debug.OnWarning += OnWarning;
+        DefDatabase.Debug.OnError += OnError;
     }
 
     private void OnWarning(string msg)
@@ -99,7 +98,7 @@ public abstract class DefTestBase : IDisposable
     {
         GC.SuppressFinalize(this);
         
-        DefDebugger.OnWarning -= OnWarning;
-        DefDebugger.OnError -= OnError;
+        DefDatabase.Debug.OnWarning -= OnWarning;
+        DefDatabase.Debug.OnError -= OnError;
     }
 }

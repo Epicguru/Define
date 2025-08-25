@@ -12,6 +12,6 @@ public class TypeParser : XmlParser<Type>
     /// <inheritdoc/>
     public override object? Parse(in XmlParseContext context)
     {
-        return TypeResolver.Get(context.TextValue, true);
+        return context.TypeResolver.Get(context.TextValue, true);
     }
 }
