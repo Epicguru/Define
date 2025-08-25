@@ -33,7 +33,7 @@ jobs:
         
       # Build and test in debug mode:
       - name: Test
-        run: dotnet test --configuration Debug -- --report-trx --results-directory test-results --coverage --coverage-output-format cobertura --no-restore
+        run: dotnet test --configuration Debug --no-restore -- --report-trx --results-directory test-results --coverage --coverage-output-format cobertura
         continue-on-error: true
 
       # Generate a test report.
