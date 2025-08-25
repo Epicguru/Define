@@ -24,10 +24,19 @@ public sealed class RequiresGpuAttribute() : SkipAttribute("This test requires a
             // Check and cache result.
             try
             {
+                // This fails if no GPU is available on KNI:
                 var adapter = GraphicsAdapter.DefaultAdapter;
                 adapter.Should().NotBeNull();
+                
+                // This fails on Monogame if no GPU is available:
+                using (var game = new TestGame(_ => { }))
+                {
+                    game.RunOneFrame();
+                }
+                
                 isGpuAvailable = true;
                 gpuException = gpuCheckException = null;
+                
                 return false;
             }
             catch (Exception e)

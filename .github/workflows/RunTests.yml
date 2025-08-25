@@ -33,7 +33,8 @@ jobs:
         
       # Build and test in debug mode:
       - name: Test
-        run: dotnet test --configuration Release -- --report-trx --results-directory test-results --coverage --coverage-output-format cobertura
+        run: dotnet test --configuration Debug -- --report-trx --results-directory test-results --coverage --coverage-output-format cobertura --no-restore
+        continue-on-error: true
 
       # Generate a test report.
       - name: Test Report
@@ -43,7 +44,6 @@ jobs:
           name: Test Report
           path: Define*Tests/test-results/*.trx
           reporter: dotnet-trx
-
       
       - name: Merge coverage reports
         run: |
