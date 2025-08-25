@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
+using Microsoft.Xna.Framework;
 using TUnit.Core.Interfaces;
 
 namespace Define.Monogame.Tests;
@@ -31,7 +32,7 @@ public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, I
         // In practice the parameter is assigned a value in ExecuteTest.
         
         var args = dataGeneratorMetadata.TestInformation?.Parameters;
-        if (args is not { Length: 1 } || !typeof(Microsoft.Xna.Framework.Game).IsAssignableFrom(args[0].Type))
+        if (args is not { Length: 1 } || !typeof(Game).IsAssignableFrom(args[0].Type))
         {
             throw new Exception("GameTest attribute can only be applied to tests with a single Game parameter.");
         }

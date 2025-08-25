@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using System.Numerics;
+﻿using System.Numerics;
 using JetBrains.Annotations;
+using TUnit.Core.Exceptions;
 
 namespace Define.Tests;
 
@@ -15,44 +15,32 @@ public sealed class TypeResolverTests : DefTestBase
         resolved.Should().Be(type);
     }
 
-    public static TheoryData<string, Type> Generate_ResolveGenericTypes_Args()
+    public static IEnumerable<Func<(string name, Type type)>> Generate_ResolveGenericTypes_Args()
     {
-        var data = Generate_ResolveGenericTypes_ArgsBase();
-
-        // Using square brackets:
-        int baseCount = data.Count;
-        var pending = new List<(string, Type)>();
-        for (int i = 0; i < baseCount; i++)
+        var baseData = Generate_ResolveGenericTypes_ArgsBase();
+        foreach (var func in baseData)
         {
-            var pair = data.ElementAt(i);
-            pair = [.. pair]; // Copy array to avoid changing original.
-            pair[0] = ((string)pair[0]).Replace('<', '[').Replace('>', ']');
-            pending.Add(((string)pair[0], (Type)pair[1]));
+            // Re-emit the original pair.
+            yield return func;
+            
+            // Emit a copy with the '<' and '>' replaced with '[' and ']' respectively.
+            var pair = func();
+            string newName = pair.name.Replace('<', '[').Replace('>', ']');
+            yield return () => (newName, pair.type);
         }
-
-        foreach (var pair in pending)
-        {
-            data.Add(pair.Item1, pair.Item2);
-        }
-        
-        data.Count.Should().Be(baseCount * 2);
-        return data;
     }
 
-    private static TheoryData<string, Type> Generate_ResolveGenericTypes_ArgsBase()
+    private static IEnumerable<Func<(string name, Type type)>> Generate_ResolveGenericTypes_ArgsBase()
     {
-        var data = new TheoryData<string, Type>
-        {
-            {"List<string>", typeof(List<string>)}, // Short aliased name.
-            {"List<String>", typeof(List<string>)}, // Actual type name.
-            {"List<int>", typeof(List<int>)},
-            // ReSharper disable once ConvertNullableToShortForm
-#pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
-            {"List<Dictionary<Nullable<int>, HashSet<double?>>>", typeof(List<Dictionary<Nullable<int>, HashSet<double?>>>) },
-            {"Dictionary<int?, SubNestedClass<Vector2>>", typeof(Dictionary<int?, SubNestedClass<Vector2>>) }
-#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
-        };
-        return data;
+        yield return () => ("List<string>", typeof(List<string>)); // Short aliased name.
+        yield return () => ("List<String>", typeof(List<string>)); // Actual type name.
+        yield return () => ("List<int>", typeof(List<int>));
+                
+        // ReSharper disable once ConvertNullableToShortForm
+        #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+        yield return () => ("List<Dictionary<Nullable<int>, HashSet<double?>>>", typeof(List<Dictionary<Nullable<int>, HashSet<double?>>>));
+        yield return () => ("Dictionary<int?, SubNestedClass<Vector2>>", typeof(Dictionary<int?, SubNestedClass<Vector2>>));
+        #pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
     }
 
     [Test]
@@ -87,11 +75,21 @@ public sealed class TypeResolverTests : DefTestBase
         
         resolver.ClearCache();
 
-        // Test exception throwing...
-        Assert.ThrowsAny<Exception>(() =>
+        // Creating a nullable reference type should also fail.
+        // And should throw an exception since the second parameter is true.
+        try
         {
-            resolved = resolver.Get("StringBuilder?", true);
-        });
+            resolver.Get("StringBuilder?", true);
+            throw new FailTestException("Expected exception was not thrown.");
+        }
+        catch (Exception e)
+        {
+            if (e is FailTestException)
+                throw;
+            
+            // Expected.
+            Console.WriteLine($"Got exception: {e.Message}");
+        }
     }
 
     internal class NestedClass

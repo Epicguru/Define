@@ -182,7 +182,7 @@ public partial class TypeResolver
         found = isNullable ? MakeNullable(found) : found;
         
         if (throwOnError && found == null)
-            throw new Exception($"Type not found: '{typeName}' was not found in any loaded assembly.");
+            throw new Exception($"Type not found: '{typeName}{(isNullable ? '?' : "")}' was not found in any loaded assembly, or could not be constructed.");
 
         return found;
     }
