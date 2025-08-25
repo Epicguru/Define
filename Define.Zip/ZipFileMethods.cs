@@ -24,7 +24,7 @@ public static class ZipFileMethods
         
         if (!File.Exists(zipFilePath))
         {
-            DefDebugger.Error($"Failed to find zip file at '{zipFilePath}'");
+            db.Debug.Error($"Failed to find zip file at '{zipFilePath}'");
             return false;
         }
 
@@ -53,7 +53,7 @@ public static class ZipFileMethods
         }
         catch (Exception e)
         {
-            DefDebugger.Error($"Expected exception when reading from encrypted def zip file:", e);
+            db.Debug.Error($"Expected exception when reading from encrypted def zip file:", e);
             return false;
         }
     }
@@ -74,7 +74,7 @@ public static class ZipFileMethods
         
         if (!File.Exists(zipFilePath))
         {
-            DefDebugger.Error($"Failed to find zip file at '{zipFilePath}'");
+            db.Debug.Error($"Failed to find zip file at '{zipFilePath}'");
             return false;
         }
 
@@ -103,7 +103,7 @@ public static class ZipFileMethods
         }
         catch (Exception e)
         {
-            DefDebugger.Error($"Expected exception when reading from encrypted def zip file:", e);
+            db.Debug.Error($"Expected exception when reading from encrypted def zip file:", e);
             return false;
         }
     }

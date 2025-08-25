@@ -10,9 +10,10 @@ namespace Define;
 /// beyond what <see cref="Type.GetType()"/> is capable of,
 /// including support for short class names, subclasses and fully-constructed generic types.
 /// </summary>
-public static partial class TypeResolver
+public partial class TypeResolver
 {
-    private static readonly Dictionary<string, Type?> cache = new Dictionary<string, Type?>(1024);
+    [ThreadStatic]
+    private static StringBuilder? strBuilder;
     private static readonly List<Assembly> allAssemblies = [];
     private static readonly Dictionary<Type, string> typeAliases = new Dictionary<Type, string>
     {
@@ -34,16 +35,17 @@ public static partial class TypeResolver
         { typeof(void), "void" }
     };
     private static readonly Dictionary<string, Type> typeAliasesInverse = [];
-    [ThreadStatic] private static StringBuilder? strBuilder;
-
+    
     static TypeResolver()
     {
         RefreshAssembliesList();
 
         foreach (var pair in typeAliases)
+        {
             typeAliasesInverse.Add(pair.Value, pair.Key);
+        }
     }
-
+    
     /// <summary>
     /// Registers all assemblies that are currently loaded into the <see cref="AppDomain"/>.
     /// </summary>
@@ -57,67 +59,7 @@ public static partial class TypeResolver
         if (getAssemblyPriority != null)
             allAssemblies.Sort((a, b) => getAssemblyPriority(b).CompareTo(getAssemblyPriority(a)));
     }
-
-    [GeneratedRegex(@"([\w\+]+)[<\[]([\w\+<>\[\],? ]+)[>\]]")] // See https://regexr.com/7q1ou
-    private static partial Regex GetGenericTypeRegex();
-
-    /// <summary>
-    /// Attempts to parse a type based on the type's name.
-    /// The allowed name formats are as followed:
-    /// <list type="bullet">
-    /// <item><b>Full assembly qualified:</b> The full assembly-qualified name of the type.</item>
-    /// <item><b>Namespace qualified name:</b> The name of the type including its namespace.</item>
-    /// <item><b>Short name:</b> Just the name of the type.</item>
-    /// </list>
-    /// Additionally, the following features are supported:
-    /// <list type="bullet">
-    /// <item><b>Nested types:</b> Nested types can be specified using the + symbol. For example: <c>ParentClass+NestedClass</c>.</item>
-    /// <item><b>Fully-constructed generic types:</b> Generics can be specified using either angular or square brackets. For example: <c>List[string]</c></item>
-    /// <item><b>Nullable types:</b> Nullable types can be specified using the ? symbol. For example: <c>int?</c>.</item>
-    /// </list>
-    /// The result of this call is cached for future use.
-    /// </summary>
-    /// <param name="typeName">The name of the type.</param>
-    /// <param name="throwOnError">If true, an exception is thrown when the type is not found. If false, an error or warning is logged (see <see cref="DefDebugger"/>) and null is returned.</param>
-    /// <returns>The found type, or null.</returns>
-    public static Type? Get(string typeName, bool throwOnError = false)
-    {
-        Type? found;
-        lock (cache)
-        {
-            if (cache.TryGetValue(typeName, out found))
-            {
-                if (throwOnError && found == null)
-                    throw new Exception($"Type not found: '{typeName}' was not found in any loaded assembly.");
-                return found;
-            }
-        }
-
-        bool isNullable = typeName[^1] == '?';
-        if (isNullable)
-            typeName = typeName[..^1];
-
-        // Attempt to resolve short type aliases i.e. 'float' => 'System.Single'
-        if (typeAliasesInverse.TryGetValue(typeName, out var alias))
-        {
-            return isNullable ? MakeNullable(alias) : alias;
-        }
-
-        found = TryFindType(typeName);
-        lock (cache)
-        {
-            cache.TryAdd(typeName, found);
-        }
-
-        // Make nullable if required:
-        found = isNullable ? MakeNullable(found) : found;
-        
-        if (throwOnError && found == null)
-            throw new Exception($"Type not found: '{typeName}' was not found in any loaded assembly.");
-
-        return found;
-    }
-
+    
     private static bool IsGenericTypeName(string input, out string name, out string[]? genericArgs)
     {
         if (GetGenericTypeRegex().Match(input) is { Success: true } m)
@@ -131,7 +73,7 @@ public static partial class TypeResolver
         genericArgs = null;
         return false;
     }
-
+    
     private static IEnumerable<string> TopLevelSplit(string str)
     {
         strBuilder ??= new StringBuilder(1024);
@@ -169,8 +111,98 @@ public static partial class TypeResolver
         if (final.Length > 0)
             yield return final;
     }
+    
+    private static string MakeNestedName(Type type)
+        => !type.IsNested ? type.Name : $"{MakeNestedName(type.DeclaringType!)}+{type.Name}";
 
-    private static Type? TryFindType(string name, StringComparison comp = StringComparison.Ordinal)
+    /// <summary>
+    /// An event that is raised when a warning occurs, typically indicating a problem with type resolution.
+    /// </summary>
+    public event Action<string>? OnWarning;
+    
+    /// <summary>
+    /// An event that is raised when an error occurs, typically indicating a problem with type resolution.
+    /// </summary>
+    public event Action<string, Exception?>? OnError;
+    
+    private readonly Dictionary<string, Type?> cache = new Dictionary<string, Type?>(1024);
+
+    [GeneratedRegex(@"([\w\+]+)[<\[]([\w\+<>\[\],? ]+)[>\]]")] // See https://regexr.com/7q1ou
+    private static partial Regex GetGenericTypeRegex();
+
+    /// <summary>
+    /// Attempts to parse a type based on the type's name.
+    /// The allowed name formats are as followed:
+    /// <list type="bullet">
+    /// <item><b>Full assembly qualified:</b> The full assembly-qualified name of the type.</item>
+    /// <item><b>Namespace qualified name:</b> The name of the type including its namespace.</item>
+    /// <item><b>Short name:</b> Just the name of the type.</item>
+    /// </list>
+    /// Additionally, the following features are supported:
+    /// <list type="bullet">
+    /// <item><b>Nested types:</b> Nested types can be specified using the + symbol. For example: <c>ParentClass+NestedClass</c>.</item>
+    /// <item><b>Fully-constructed generic types:</b> Generics can be specified using either angular or square brackets. For example: <c>List[string]</c></item>
+    /// <item><b>Nullable types:</b> Nullable types can be specified using the ? symbol. For example: <c>int?</c>.</item>
+    /// </list>
+    /// The result of this call is cached for future use.
+    /// </summary>
+    /// <param name="typeName">The name of the type.</param>
+    /// <param name="throwOnError">If true, an exception is thrown when the type is not found. If false, an error or warning is logged (see <see cref="DefDebugger"/>) and null is returned.</param>
+    /// <returns>The found type, or null.</returns>
+    public Type? Get(string typeName, bool throwOnError = false)
+    {
+        Type? found;
+        lock (cache)
+        {
+            if (cache.TryGetValue(typeName, out found))
+            {
+                if (throwOnError && found == null)
+                    throw new Exception($"Type not found: '{typeName}' was not found in any loaded assembly.");
+                return found;
+            }
+        }
+
+        bool isNullable = typeName[^1] == '?';
+        if (isNullable)
+            typeName = typeName[..^1];
+
+        // Attempt to resolve short type aliases i.e. 'float' => 'System.Single'
+        if (typeAliasesInverse.TryGetValue(typeName, out var alias))
+        {
+            return isNullable ? MakeNullable(alias) : alias;
+        }
+
+        found = TryFindType(typeName);
+        lock (cache)
+        {
+            cache.TryAdd(typeName, found);
+        }
+
+        // Make nullable if required:
+        found = isNullable ? MakeNullable(found) : found;
+        
+        if (throwOnError && found == null)
+            throw new Exception($"Type not found: '{typeName}{(isNullable ? '?' : "")}' was not found in any loaded assembly, or could not be constructed.");
+
+        return found;
+    }
+
+    private Type? MakeNullable(Type? type)
+    {
+        if (type == null)
+            return null;
+
+        if (type.IsValueType)
+        {
+            // Construct nullable wrapper...
+            return typeof(Nullable<>).MakeGenericType(type);
+        }
+        
+        OnError?.Invoke($"The type '{type}' cannot be nullable, it is passed by ref.", null);
+        return null;
+    }
+    
+    private Type? TryFindType(string name, StringComparison comp = StringComparison.Ordinal)
     {
         Type? found = null;
         string originalName = name;
@@ -193,7 +225,18 @@ public static partial class TypeResolver
         {
             foreach (var ass in allAssemblies)
             {
-                foreach (var type in ass.GetTypes())
+                Type[] types;
+
+                try
+                {
+                    types = ass.GetTypes();
+                }
+                catch (ReflectionTypeLoadException)
+                {
+                    continue;
+                }
+                
+                foreach (var type in types)
                 {
                     if (!type.FullName!.Equals(name, comp))
                     {
@@ -240,7 +283,7 @@ public static partial class TypeResolver
 
         if (found == null)
         {
-            DefDebugger.Warn($"Failed to find type '{name}'.");
+            OnWarning?.Invoke($"Failed to find type '{name}'.");
             return null;
         }
 
@@ -255,7 +298,7 @@ public static partial class TypeResolver
             var parsed = Get(genericArgs[i]);
             if (parsed == null)
             {
-                DefDebugger.Error($"Failed to parse generic argument {i}, '{genericArgs[i]}', so the generic type '{originalName}' can not be constructed");
+                OnError?.Invoke($"Failed to parse generic argument {i}, '{genericArgs[i]}', so the generic type '{originalName}' can not be constructed", null);
                 return null;
             }
             args[i] = parsed;
@@ -267,34 +310,16 @@ public static partial class TypeResolver
         }
         catch (Exception e)
         {
-            DefDebugger.Error($"Failed to construct generic type '{found}' with type args: {string.Join(", ", args.Select(a => a.Name))}. This is probably due to an invalid generic constraint. See exception below.", e);
+            OnError?.Invoke($"Failed to construct generic type '{found}' with type args: {string.Join(", ", args.Select(a => a.Name))}. This is probably due to an invalid generic constraint. See exception below.", e);
             return null;
         }
-    }
-
-    private static string MakeNestedName(Type type)
-        => !type.IsNested ? type.Name : $"{MakeNestedName(type.DeclaringType!)}+{type.Name}";
-
-    private static Type? MakeNullable(Type? type)
-    {
-        if (type == null)
-            return null;
-
-        if (type.IsValueType)
-        {
-            // Construct nullable wrapper...
-            return typeof(Nullable<>).MakeGenericType(type);
-        }
-        
-        DefDebugger.Error($"The type '{type}' cannot be nullable, it is passed by ref.");
-        return null;
     }
 
     /// <summary>
     /// Clears the cached types.
     /// Calls to <see cref="Get"/> are cached for speed reasons.
     /// </summary>
-    public static void ClearCache()
+    public void ClearCache()
     {
         lock (cache)
         {

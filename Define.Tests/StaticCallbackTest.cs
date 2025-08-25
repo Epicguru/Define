@@ -1,11 +1,10 @@
 using Define.Callbacks;
-using Xunit.Abstractions;
 
 namespace Define.Tests;
 
-public sealed class StaticCallbackTest(ITestOutputHelper output) : DefTestBase(output)
+public sealed class StaticCallbackTest : DefTestBase
 {
-    [Fact]
+    [Test]
     public void TestStaticPostLoad()
     {
         StaticCallbackDef.TimesCalled.Should().Be(0);

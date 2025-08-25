@@ -2,47 +2,33 @@
 using Define;
 using Define.Xml;
 using FluentAssertions;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace TestSharedLib;
 
-/*
- * Tests needs to run sequentially. Normally multiple threads can work on defs
- * safely if each thread uses its own DefDatabase, which the tests do,
- * however the DefDebugger class and events are static and therefore events are
- * fired from multiple threads at once and so the tests that are listening for the events
- * end up failing.
- * This is a design oversight and in retrospect I would have but the debug events on the
- * def database itself instead.
- */
-[Collection("SequentialDefTests")]
 public abstract class DefTestBase : IDisposable
 {
     protected readonly DefSerializeConfig Config = new DefSerializeConfig();
-    protected readonly ITestOutputHelper Output;
     protected readonly List<string> ErrorMessages = [];
     protected readonly List<string> WarningMessages = [];
     protected readonly DefDatabase DefDatabase;
     
-    protected DefTestBase(ITestOutputHelper output)
+    protected DefTestBase()
     {
         DefDatabase = new DefDatabase(Config);
-        Output = output;
-        DefDebugger.OnWarning += OnWarning;
-        DefDebugger.OnError += OnError;
+        DefDatabase.Debug.OnWarning += OnWarning;
+        DefDatabase.Debug.OnError += OnError;
     }
 
     private void OnWarning(string msg)
     {
         WarningMessages.Add(msg);
-        Output.WriteLine($"Def.Warn: {msg}");
+        Console.WriteLine($"Def.Warn: {msg}");
     }
 
     private void OnError(string msg, Exception? e, in XmlParseContext? _)
     {
         ErrorMessages.Add(msg);
-        Output.WriteLine($"Def.Prs.Err: {msg}\nException: {e}");
+        Console.WriteLine($"Def.Prs.Err: {msg}\nException: {e}");
     }
     
     protected virtual void PreLoad(DefDatabase db) {}
@@ -81,7 +67,7 @@ public abstract class DefTestBase : IDisposable
         T? found = DefDatabase.GetAll<T>().FirstOrDefault();
         found.Should().NotBeNull();
 
-        Output.WriteLine($"Loaded def '{found!.ID}' of type {found.GetType().FullName}");
+        Console.WriteLine($"Loaded def '{found!.ID}' of type {found.GetType().FullName}");
         return found;
     }
     
@@ -91,7 +77,7 @@ public abstract class DefTestBase : IDisposable
 
         T? found = DefDatabase.GetAll<T>().FirstOrDefault();
 
-        Output.WriteLine(found != null
+        Console.WriteLine(found != null
             ? $"Loaded def '{found.ID}' of type {found.GetType().FullName}"
             : $"{file} failed to load...");
         return found;
@@ -101,7 +87,7 @@ public abstract class DefTestBase : IDisposable
     {
         GC.SuppressFinalize(this);
         
-        DefDebugger.OnWarning -= OnWarning;
-        DefDebugger.OnError -= OnError;
+        DefDatabase.Debug.OnWarning -= OnWarning;
+        DefDatabase.Debug.OnError -= OnError;
     }
 }

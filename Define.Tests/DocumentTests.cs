@@ -1,11 +1,10 @@
 ﻿using System.Xml;
-using Xunit.Abstractions;
 
 namespace Define.Tests;
 
-public class DocumentTests(ITestOutputHelper output) : DefTestBase(output)
+public class DocumentTests : DefTestBase
 {
-    [Fact]
+    [Test]
     public void TestXPathGeneration()
     {
         var document = new XmlDocument
@@ -30,7 +29,7 @@ public class DocumentTests(ITestOutputHelper output) : DefTestBase(output)
             string txt = node.OuterXml.Replace("\n", "");
             if (txt.Length > 30)
                 txt = txt[..30] + "...";
-            Output.WriteLine($"'{txt}' -> '{xPath}'");
+            Console.WriteLine($"'{txt}' -> '{xPath}'");
 
             var found = document.SelectSingleNode(xPath);
             found.Should().NotBeNull();

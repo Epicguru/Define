@@ -1,10 +1,8 @@
-﻿using Xunit.Abstractions;
+﻿namespace Define.Tests;
 
-namespace Define.Tests;
-
-public class ExceptionHandlingTests(ITestOutputHelper output) : DefTestBase(output)
+public class ExceptionHandlingTests : DefTestBase
 {
-    [Fact]
+    [Test]
     public void ExceptionsInCallbacksAreCaughtAndReported()
     {
         var def = LoadSingleDef<ThrowExceptionsDef>("ExceptionDef", expectErrors: true, expectWarnings: true);
@@ -18,7 +16,7 @@ public class ExceptionHandlingTests(ITestOutputHelper output) : DefTestBase(outp
         WarningMessages.Should().HaveCount(1);
     }
     
-    [Fact]
+    [Test, DependsOn(nameof(ExceptionsInCallbacksAreCaughtAndReported))] // Can't run in parallel because of use of the static throw flag.
     public void ExceptionInConstructorIsHandled()
     {
         ThrowExceptionsDef.ThrowInConstructor = true;

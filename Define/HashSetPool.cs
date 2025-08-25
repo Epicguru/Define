@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using JetBrains.Annotations;
 
 namespace Define;
@@ -9,7 +10,7 @@ internal static class HashSetPool<T>
 
     public static int PooledCount => pool.Count;
 
-    private static readonly Queue<HashSet<T>> pool = new Queue<HashSet<T>>();
+    private static readonly ConcurrentQueue<HashSet<T>> pool = new ConcurrentQueue<HashSet<T>>();
 
     public static void Clear()
     {

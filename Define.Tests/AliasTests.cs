@@ -1,14 +1,12 @@
-﻿using Xunit.Abstractions;
+﻿namespace Define.Tests;
 
-namespace Define.Tests;
-
-public sealed class AliasTests(ITestOutputHelper output) : DefTestBase(output)
+public sealed class AliasTests : DefTestBase
 {
-    [Theory]
-    [InlineData("AliasDef1", true, "This is name1.")]
-    [InlineData("AliasDef2", true, "This is name2.")]
-    [InlineData("AliasDef3", false, "This is name3.")]
-    [InlineData("AliasDef4", false, "This is name4.")]
+    [Test]
+    [Arguments("AliasDef1", true, "This is name1.")]
+    [Arguments("AliasDef2", true, "This is name2.")]
+    [Arguments("AliasDef3", false, "This is name3.")]
+    [Arguments("AliasDef4", false, "This is name4.")]
     public void CheckAlias(string defName, bool singleAttr, string expected)
     {
         LoadDefFile("AliasDefs");
@@ -27,7 +25,7 @@ public sealed class AliasTests(ITestOutputHelper output) : DefTestBase(output)
         }
     }
 
-    [Fact]
+    [Test]
     public void MultipleAssignToAliasShouldGiveWarning()
     {
         LoadDefFile("AliasMultipleAssign", expectWarnings: true);
@@ -43,7 +41,7 @@ public sealed class AliasTests(ITestOutputHelper output) : DefTestBase(output)
         msg.Should().Contain("Duplicate assignment to member 'MultiAliasSingleAttribute'");
     }
 
-    [Fact]
+    [Test]
     public void MultipleAssignShouldGiveWarning()
     {
         LoadDefFile("SimpleMultipleAssign", expectWarnings: true);
