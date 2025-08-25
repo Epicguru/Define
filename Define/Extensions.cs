@@ -9,7 +9,7 @@ namespace Define;
 /// </summary>
 public static class Extensions
 {
-    private static readonly StringBuilder str = new StringBuilder();
+    private static readonly ThreadLocal<StringBuilder> stringBuilder = new ThreadLocal<StringBuilder>(() => new  StringBuilder());
 
     /// <summary>
     /// Gets the string value of an attribute on this node, or returns the <paramref name="defaultValue"/>
@@ -64,6 +64,9 @@ public static class Extensions
     /// </summary>
     public static string GetFullXPath(this XmlElement node)
     {
+        var str = stringBuilder.Value;
+        Debug.Assert(str != null);
+        
         str.Clear();
 
         string NodeToString(XmlNode n)
