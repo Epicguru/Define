@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using Define.FastCache;
 using Define.Monogame.Tests.DefClasses;
 using Microsoft.Xna.Framework.Graphics;
-using TUnit.Core.Executors;
 
 namespace Define.Monogame.Tests;
 
@@ -69,14 +67,14 @@ public class ParserTesters : MonogameDefTestBase
     }
 
     [Test]
-    [GameTest, TestExecutor<GameTest>]
-    public void TestGameRunBaseline(TestGame _)
+    [GameTest]
+    public void TestGameRunBaseline(TestGame game)
     {
         Console.WriteLine("Game ran successfully.");
     }
 
     [Test]
-    [GameTest, TestExecutor<GameTest>]
+    [GameTest]
     public void TestGameLoadContentManual(TestGame game)
     {
         using var tex = game.ContentManager.Load<Texture2D>("Content/MyImage");
@@ -86,7 +84,7 @@ public class ParserTesters : MonogameDefTestBase
     }
 
     [Test]
-    [GameTest, TestExecutor<GameTest>]    
+    [GameTest]    
     public void TestParseTexture(TestGame game)
     {
         DefDatabase.Loader.AddMonogameContentParsers(game.ContentManager);
