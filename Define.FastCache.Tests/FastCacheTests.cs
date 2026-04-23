@@ -1,14 +1,13 @@
-using FluentAssertions;
 using System.Diagnostics;
 using System.Reflection;
+using FluentAssertions;
 using TestSharedLib;
-using Xunit.Abstractions;
 
 namespace Define.FastCache.Tests;
 
-public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
+public class FastCacheTests : DefTestBase
 {
-    [Fact]
+    [Test]
     public void TestSerialize()
     {
         // Allow static fields too.
@@ -43,7 +42,7 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         DefDatabase.GetAll().Should().NotIntersectWith(db2.GetAll());
     }
 
-    [Fact]
+    [Test]
     public void FastCacheShouldBeFasterThanXml()
     {
         // Attempt to mitigate external processes and other threads interfering with the test:
@@ -72,11 +71,11 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         
         CheckDatabaseIsGood(newDb);
         
-        Output.WriteLine($"XML {baseline.TotalMilliseconds:F3} ms vs Ceras {timer.Elapsed.TotalMilliseconds:F3} ms");
+        Console.WriteLine($"XML {baseline.TotalMilliseconds:F3} ms vs Ceras {timer.Elapsed.TotalMilliseconds:F3} ms");
         baseline.Should().BeGreaterThan(timer.Elapsed);
     }
 
-    private void SetupProcessorAndThreadPriority()
+    private static void SetupProcessorAndThreadPriority()
     {
         try
         {
@@ -85,7 +84,7 @@ public class FastCacheTests(ITestOutputHelper output) : DefTestBase(output)
         }
         catch (Exception e)
         {
-            Output.WriteLine($"Failed to set process or thread priority...\n{e}");
+            Console.WriteLine($"Failed to set process or thread priority...\n{e}");
         }
     }
 

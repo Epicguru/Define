@@ -45,6 +45,16 @@ public class XmlLoader : IDisposable
     ];
 
     /// <summary>
+    /// An event that is raised whenever there is a warning in the parsing process.
+    /// </summary>
+    public event Action<string>? OnWarning;
+    
+    /// <summary>
+    /// An event that is raised whenever there is an error in the parsing process.
+    /// </summary>
+    public event DefDebugger.ParseErrorDelegate? OnError;
+
+    /// <summary>
     /// If true, <see cref="ResolveInheritance"/> has been called and the defs
     /// have had their inheritance hierarchy resolved and merged.
     /// </summary>
@@ -57,6 +67,11 @@ public class XmlLoader : IDisposable
     /// A collection of types that had static data loaded into them.
     /// </summary>
     public HashSet<Type> TypesWithStaticData { get; } = [];
+    /// <summary>
+    /// The type resolver that this loader uses.
+    /// This is passed down to all parsers.
+    /// </summary>
+    public TypeResolver TypeResolver { get; } = new TypeResolver();
 
     internal bool TypeToParserIsDirty { get; set; }
     
@@ -202,6 +217,16 @@ public class XmlLoader : IDisposable
         return null;
     }
 
+    private void Warn(string warning)
+    {
+        OnWarning?.Invoke(warning);
+    }
+
+    private void Error(string error, Exception? e = null, in XmlParseContext? ctx = null)
+    {
+        OnError?.Invoke(error, e, ctx);
+    }
+    
     /// <summary>
     /// Adds a new XML document to this loader, ready to be parsed.
     /// </summary>
@@ -216,7 +241,7 @@ public class XmlLoader : IDisposable
         var root = GetRootNode(document);
         if (root == null)
         {
-            DefDebugger.Warn($"There are no def nodes in the document '{source}':\n{document.InnerXml}");
+            Warn($"There are no def nodes in the document '{source}':\n{document.InnerXml}");
             return;
         }
 
@@ -276,7 +301,7 @@ public class XmlLoader : IDisposable
                 {
                     if (!prePopulatedDefs.TryAdd(sub.Name, created))
                     {
-                        DefDebugger.Error($"Duplicate def ID: '{sub.Name}'");
+                        Error($"Duplicate def ID: '{sub.Name}'");
                     }
                 }
             }
@@ -299,7 +324,7 @@ public class XmlLoader : IDisposable
             if (!ids.Add(sub.Name))
             {
                 if (existingDefs != null)
-                    DefDebugger.Error($"Duplicate def ID: '{sub.Name}'");
+                    Error($"Duplicate def ID: '{sub.Name}'");
                 continue;
             }
 
@@ -319,14 +344,14 @@ public class XmlLoader : IDisposable
     /// </summary>
     public IDef? TryGetDef(string defID) => existingDefsFunc?.Invoke(defID);
 
-    private static Type? GetDefType(string id, XmlNode defNode, bool silent = false)
+    private Type? GetDefType(string id, XmlNode defNode, bool silent = false)
     {
         // Get and validate type.
         string? typeName = defNode.GetAttributeValue("Type");
         if (typeName == null)
         {
             if (!silent)
-                DefDebugger.Error($"Def '{id}' does not specify a Type using the Type=\"TypeName\" attribute.");
+                Error($"Def '{id}' does not specify a Type using the Type=\"TypeName\" attribute.");
             return null;
         }
 
@@ -334,7 +359,7 @@ public class XmlLoader : IDisposable
         if (type == null)
         {
             if (!silent)
-                DefDebugger.Error($"Def '{id}' is of type '{typeName}', but that type could not be found in any loaded assembly.");
+                Error($"Def '{id}' is of type '{typeName}', but that type could not be found in any loaded assembly.");
             return null;
         }
 
@@ -342,14 +367,14 @@ public class XmlLoader : IDisposable
         if (type.IsAbstract)
         {
             if (!silent)
-                DefDebugger.Error($"Def '{id}' is of type '{typeName}', but that is an abstract type. A concrete subclass must be specified.");
+                Error($"Def '{id}' is of type '{typeName}', but that is an abstract type. A concrete subclass must be specified.");
             return null;
         }
 
         if (!typeof(IDef).IsAssignableFrom(type))
         {
             if (!silent)
-                DefDebugger.Error($"Def '{id}' of type '{typeName}' does not implement the IDef interface, so cannot be loaded as a def.");
+                Error($"Def '{id}' of type '{typeName}' does not implement the IDef interface, so cannot be loaded as a def.");
             return null;
         }
 
@@ -364,7 +389,7 @@ public class XmlLoader : IDisposable
         Type? type = existing?.GetType() ?? GetDefType(id, node);
         if (type == null)
         {
-            DefDebugger.Error($"Failed to find type for def '{node.Name}': specify a type using the Type=\"TypeName\" attribute!");
+            Error($"Failed to find type for def '{node.Name}': specify a type using the Type=\"TypeName\" attribute!");
             return null;
         }
 
@@ -372,7 +397,7 @@ public class XmlLoader : IDisposable
         var instance = existing ?? TryCreateInstance(type, default) as IDef;
         if (instance == null)
         {
-            DefDebugger.Error($"Def '{id}' of type '{node.GetAttributeValue("Type")}' could not be instantiated.");
+            Error($"Def '{id}' of type '{node.GetAttributeValue("Type")}' could not be instantiated.");
             return null;
         }
         instance.ID = id;
@@ -386,7 +411,8 @@ public class XmlLoader : IDisposable
             TargetType = type,
             Node = node,
             TextValue = "[[DefNode]]",
-            Owner = instance
+            Owner = instance,
+            TypeResolver = TypeResolver
         };
 
         var created = NodeToClass(ctx).Value as IDef; // Use NodeToClass instead of NodeToObject to bypass the ref resolver.
@@ -399,7 +425,7 @@ public class XmlLoader : IDisposable
         return created;
     }
 
-    private static Type GetNodeType(XmlNode node, Type defaultType)
+    private  Type GetNodeType(XmlNode node, Type defaultType)
     {
         // Check for custom Type attribute.
         string? specific = node.GetAttributeValue("Type");
@@ -409,8 +435,7 @@ public class XmlLoader : IDisposable
             if (found != null)
                 return found;
 
-            DefDebugger.Error($"Failed to find specified type '{specific}'. Falling back to default type '{defaultType}'.");
-            return defaultType.StripNullable();
+            Error($"Failed to find specified type '{specific}'. Falling back to default type '{defaultType}'.");
         }
 
         return defaultType.StripNullable();
@@ -461,7 +486,7 @@ public class XmlLoader : IDisposable
                     }
                     catch (Exception e)
                     {
-                        DefDebugger.Error($"Exception when parsing <{context.Node!.Name}> using parser '{parser.GetType().Name}'.", e, context);
+                        Error($"Exception when parsing <{context.Node!.Name}> using parser '{parser.GetType().Name}'.", e, context);
                         return default;
                     }
                 }
@@ -499,7 +524,7 @@ public class XmlLoader : IDisposable
             }
             catch (Exception e)
             {
-                DefDebugger.Error($"An exception was thrown in the {nameof(IPostXmlConstruct.PostXmlConstruct)} method in the {post.GetType().FullName} class:", e);
+                Error($"An exception was thrown in the {nameof(IPostXmlConstruct.PostXmlConstruct)} method in the {post.GetType().FullName} class:", e);
             }
         }
 
@@ -521,7 +546,7 @@ public class XmlLoader : IDisposable
                 ConfigErrorItems.Add(configErrorItem);
         }
 
-        if (context.Member is { IsValid: true, IsStatic: true, DeclaringType: not null})
+        if (context.Member is { IsValid: true, IsStatic: true })
         {
             // Loaded static data into this class here!
             TypesWithStaticData.Add(context.Member.DeclaringType);
@@ -546,11 +571,11 @@ public class XmlLoader : IDisposable
             var type = TypeResolver.Get(elemOverrideName);
             if (type == null)
             {
-                DefDebugger.Error($"Failed to find type named '{elemOverrideName}' to use as list element override.", ctx: context);
+                Error($"Failed to find type named '{elemOverrideName}' to use as list element override.", ctx: context);
             }
             else if (!elementType.IsAssignableFrom(type))
             {
-                DefDebugger.Error($"List element type '{type.FullName}' is not assignable to base list element type '{elementType}'.", ctx: context);
+                Error($"List element type '{type.FullName}' is not assignable to base list element type '{elementType}'.", ctx: context);
             }
             else
             {
@@ -601,7 +626,7 @@ public class XmlLoader : IDisposable
                 
                 if (list is { IsReadOnly: true })
                 {
-                    DefDebugger.Error($"Cannot write to read-only list-like type '{list.GetType()}' for node {((XmlElement)context.Node).GetFullXPath()}.");
+                    Error($"Cannot write to read-only list-like type '{list.GetType()}' for node {((XmlElement)context.Node).GetFullXPath()}.");
                     return default;
                 }
             }
@@ -624,7 +649,7 @@ public class XmlLoader : IDisposable
             var type = GetNodeType(node, elementType);
             if (!elementType.IsAssignableFrom(type))
             {
-                DefDebugger.Error($"List element type '{type.FullName}' is not assignable to base list element type '{elementType}'.", ctx: context);
+                Error($"List element type '{type.FullName}' is not assignable to base list element type '{elementType}'.", ctx: context);
                 continue;
             }
             
@@ -632,7 +657,7 @@ public class XmlLoader : IDisposable
             string name = node.Name;
             if (name != Config.ListItemName && !isExplicitList)
             {
-                DefDebugger.Warn($"List item nodes are expected to be called '{Config.ListItemName}' but found one called '{name}'. " +
+                Warn($"List item nodes are expected to be called '{Config.ListItemName}' but found one called '{name}'. " +
                                  $"This may result in errors when child defs attempt to append to this list. You can override the default list item name using the config {nameof(Config.ListItemName)} property," +
                                  $"or you can explicitly declare that {context.Node.Name} is a list by setting the IsList attribute to \"true\".");
             }
@@ -646,7 +671,8 @@ public class XmlLoader : IDisposable
                 ListIndex = list.Count,
                 Node = node,
                 TextValue = node.InnerText,
-                Owner = list
+                Owner = list,
+                TypeResolver = TypeResolver
             };
 
             // Recursive parse call.
@@ -685,11 +711,11 @@ public class XmlLoader : IDisposable
                 var type = TypeResolver.Get(elemOverrideName);
                 if (type == null)
                 {
-                    DefDebugger.Error($"Failed to find type named '{elemOverrideName}' to use as dictionary key/value override.", ctx: context);
+                    Error($"Failed to find type named '{elemOverrideName}' to use as dictionary key/value override.", ctx: context);
                 }
                 else if (!elementType.IsAssignableFrom(type))
                 {
-                    DefDebugger.Error($"Dictionary key/value type '{type.FullName}' is not assignable to base dictionary key/value type '{elementType}'.", ctx: context);
+                    Error($"Dictionary key/value type '{type.FullName}' is not assignable to base dictionary key/value type '{elementType}'.", ctx: context);
                 }
                 else
                 {
@@ -713,12 +739,12 @@ public class XmlLoader : IDisposable
         var keyParser = TryGetParser(keyType);
         if (keyParser == null)
         {
-            DefDebugger.Error($"There is no simple parser for dictionary key type '{keyType}'. A parser for that type should be added using AddParser.", ctx: context);
+            Error($"There is no simple parser for dictionary key type '{keyType}'. A parser for that type should be added using AddParser.", ctx: context);
             return new ParseResult(dict);
         }
         if (!keyParser.CanParseNoContext)
         {
-            DefDebugger.Error($"The parser '{keyParser.GetType()}' for dictionary key type '{keyType}' does not have the capability to parse with no context, so it that type cannot be used as a dictionary key.", ctx: context);
+            Error($"The parser '{keyParser.GetType()}' for dictionary key type '{keyType}' does not have the capability to parse with no context, so it that type cannot be used as a dictionary key.", ctx: context);
             return new ParseResult(dict);
         }
 
@@ -731,7 +757,7 @@ public class XmlLoader : IDisposable
             var localValueType = GetNodeType(node, valueType);
             if (!valueType.IsAssignableFrom(localValueType))
             {
-                DefDebugger.Error($"Type '{localValueType}' is not assignable to base dictionary value type '{valueType}'.", ctx: context);
+                Error($"Type '{localValueType}' is not assignable to base dictionary value type '{valueType}'.", ctx: context);
                 continue;
             }
 
@@ -741,11 +767,12 @@ public class XmlLoader : IDisposable
                 Loader = this,
                 TextValue = node.Name,
                 DefaultType = keyType,
-                TargetType = keyType
+                TargetType = keyType,
+                TypeResolver = TypeResolver
             });
             if (key == null)
             {
-                DefDebugger.Error($"Parser '{keyParser.GetType()} returned null when parsing key '{node.Name}' of type '{keyType}' for a dictionary. Dictionary keys cannot be null, so this entry will be discarded.", ctx: context);
+                Error($"Parser '{keyParser.GetType()} returned null when parsing key '{node.Name}' of type '{keyType}' for a dictionary. Dictionary keys cannot be null, so this entry will be discarded.", ctx: context);
                 continue;
             }
 
@@ -759,7 +786,8 @@ public class XmlLoader : IDisposable
                 DictionaryKey = key,
                 Owner = dict,
                 Node = node,
-                TextValue = node.InnerText
+                TextValue = node.InnerText,
+                TypeResolver = TypeResolver
             };
 
             // Recursive parse call.
@@ -781,7 +809,7 @@ public class XmlLoader : IDisposable
         // Final type cannot be abstract.
         if (type.IsAbstract)
         {
-            DefDebugger.Error($"Cannot create instance of abstract type/interface '{type}'.", ctx: context);
+            Error($"Cannot create instance of abstract type/interface '{type}'.", ctx: context);
             return default;
         }
 
@@ -802,7 +830,7 @@ public class XmlLoader : IDisposable
             var member = GetMember(instanceType, node.Name);
             if (!member.IsValid)
             {
-                DefDebugger.Error($"Failed to find member called '{node.Name}' in class '{instanceType.FullName}'!", ctx: context); // This technically isn't the right context...
+                Error($"Failed to find member called '{node.Name}' in class '{instanceType.FullName}'!", ctx: context); // This technically isn't the right context...
                 continue;
             }
 
@@ -825,7 +853,8 @@ public class XmlLoader : IDisposable
                 TargetType = childType,
                 CurrentValue = member.GetValue(instance),
                 Member = member,
-                Owner = instance
+                Owner = instance,
+                TypeResolver = TypeResolver
             };
 
             // Parse recursively.
@@ -841,7 +870,7 @@ public class XmlLoader : IDisposable
         return new ParseResult(instance);
     }
 
-    private static void WarnAboutDuplicateAssignment(in MemberWrapper member, XmlNode node)
+    private void WarnAboutDuplicateAssignment(in MemberWrapper member, XmlNode node)
     {
         string warnMsg = $"Duplicate assignment to member '{member.Name}' at {(node as XmlElement)?.GetFullXPath() ?? "???"}.";
         var names = MemberStore.GetNames(member.Member);
@@ -849,10 +878,10 @@ public class XmlLoader : IDisposable
         {
             warnMsg += $"This might be caused by aliases - {member.Name} has the following names: {string.Join(", ", names.Select(n => $"'{n}'"))}";
         }
-        DefDebugger.Warn(warnMsg);
+        Warn(warnMsg);
     }
 
-    private static bool ShouldSkipNodeForClassLikeParsing(XmlNode node)
+    private bool ShouldSkipNodeForClassLikeParsing(XmlNode node)
     {
         switch (node.NodeType)
         {
@@ -866,13 +895,13 @@ public class XmlLoader : IDisposable
             
             default:
                 var parent = node.ParentNode as XmlElement;
-                DefDebugger.Warn($"Unexpected XML node type '{node.NodeType}' found when parsing part of {parent?.GetFullXPath() ?? "?"}.\n" +
+                Warn($"Unexpected XML node type '{node.NodeType}' found when parsing part of {parent?.GetFullXPath() ?? "?"}.\n" +
                                   "This is often due to bad XML formatting or a missing parser.");
                 return true;
         }
     }
 
-    private static object? TryCreateInstance(Type type, in XmlParseContext context, Span<object> args = default)
+    private object? TryCreateInstance(Type type, in XmlParseContext context, Span<object> args = default)
     {
         try
         {
@@ -883,9 +912,9 @@ public class XmlLoader : IDisposable
         catch (Exception e)
         {
             if (context.IsValid)
-                DefDebugger.Error($"Failed to create instance of '{type.FullName}'.", e, context);
+                Error($"Failed to create instance of '{type.FullName}'.", e, context);
             else
-                DefDebugger.Error($"Failed to create instance of '{type.FullName}'.", e);
+                Error($"Failed to create instance of '{type.FullName}'.", e);
             return null;
         }
     }
@@ -1001,7 +1030,7 @@ public class XmlLoader : IDisposable
         {
             if (!tempInheritance.Add(node))
             {
-                DefDebugger.Error($"Cyclic inheritance detected in '{original.Name}' tree: {node.Name}. Def will not be loaded.");
+                Error($"Cyclic inheritance detected in '{original.Name}' tree: {node.Name}. Def will not be loaded.");
                 return null;
             }
             tempInheritanceList.Add(node);
@@ -1016,7 +1045,7 @@ public class XmlLoader : IDisposable
             var found = root[parentName];
             if (found == null)
             {
-                DefDebugger.Error($"Failed to find parent called '{parentName}' of '{node.Name}' for def '{original.Name}'. Def will not be loaded.");
+                Error($"Failed to find parent called '{parentName}' of '{node.Name}' for def '{original.Name}'. Def will not be loaded.");
                 return null;
             }
 
@@ -1035,7 +1064,7 @@ public class XmlLoader : IDisposable
 
         if (root == null)
         {
-            DefDebugger.Error("Called ResolveInheritance when there are no xml documents loaded! Use AppendDocument before calling this.");
+            Error("Called ResolveInheritance when there are no xml documents loaded! Use AppendDocument before calling this.");
             return;
         }
 

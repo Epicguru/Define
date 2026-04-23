@@ -16,10 +16,10 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v4.2.2
+      - uses: actions/checkout@v6.0.2
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4.3.1
+        uses: actions/setup-dotnet@v5.1.0
         with:
           dotnet-version: 8.0.x
 
@@ -33,28 +33,22 @@ jobs:
         
       # Build and test in debug mode:
       - name: Test
-        run: dotnet test --verbosity normal --logger "trx;LogFileName=test-results.trx" --no-restore
+        run: dotnet test --configuration Debug --no-restore -- --report-trx --results-directory test-results --coverage --coverage-output-format cobertura
+        continue-on-error: true
 
       # Generate a test report.
       - name: Test Report
-        uses: dorny/test-reporter@v2.1.1
+        uses: dorny/test-reporter@v2.5.0
         if: success() || failure()
         with:
           name: Test Report
-          path: Define*Tests/TestResults/test-results.trx
+          path: Define*Tests/test-results/*.trx
           reporter: dotnet-trx
-
-      # See this issue here for the reason why I am running test twice:
-      # https://github.com/microsoft/vstest/issues/2334
-      - name: Test (second pass)
-        run: dotnet test --collect:"XPlat Code Coverage" --verbosity normal --no-restore --no-build --results-directory coverage
-
-      # This step is required because the test projects reference a common base project,
-      # which causes wierdness with cobertura by generating duplicate coverage files.
+      
       - name: Merge coverage reports
         run: |
           dotnet tool install --global dotnet-coverage
-          dotnet-coverage merge coverage/*/coverage.cobertura.xml --output merged.cobertura.xml --output-format cobertura --remove-input-files
+          dotnet-coverage merge Define*Tests/test-results/*.cobertura.xml --output merged.cobertura.xml --output-format cobertura --remove-input-files
 
       # Generate code coverage report.
       - name: Code Coverage Report

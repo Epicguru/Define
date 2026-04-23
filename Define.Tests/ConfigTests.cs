@@ -1,16 +1,15 @@
 ﻿using System.Reflection;
-using Xunit.Abstractions;
 
 namespace Define.Tests;
 
-public sealed class ConfigTests(ITestOutputHelper output) : DefTestBase(output)
+public sealed class ConfigTests : DefTestBase
 {
-    [Theory]
-    [InlineData(MemberTypes.Field, true)]
-    [InlineData(MemberTypes.Field | MemberTypes.Property, true)]
-    [InlineData(MemberTypes.Property, false)]
-    [InlineData(MemberTypes.All, true)]
-    [InlineData(MemberTypes.Custom, false)]
+    [Test]
+    [Arguments(MemberTypes.Field, true)]
+    [Arguments(MemberTypes.Field | MemberTypes.Property, true)]
+    [Arguments(MemberTypes.Property, false)]
+    [Arguments(MemberTypes.All, true)]
+    [Arguments(MemberTypes.Custom, false)]
     public void TestFieldDiscovery(MemberTypes type, bool shouldFindField)
     {
         Config.DefaultMemberTypes = type;
@@ -29,12 +28,12 @@ public sealed class ConfigTests(ITestOutputHelper output) : DefTestBase(output)
         }
     }
     
-    [Theory]
-    [InlineData(MemberTypes.Property, true)]
-    [InlineData(MemberTypes.Field | MemberTypes.Property, true)]
-    [InlineData(MemberTypes.Field, false)]
-    [InlineData(MemberTypes.All, true)]
-    [InlineData(MemberTypes.Custom, false)]
+    [Test]
+    [Arguments(MemberTypes.Property, true)]
+    [Arguments(MemberTypes.Field | MemberTypes.Property, true)]
+    [Arguments(MemberTypes.Field, false)]
+    [Arguments(MemberTypes.All, true)]
+    [Arguments(MemberTypes.Custom, false)]
     public void TestPropertyDiscovery(MemberTypes type, bool shouldFindProperty)
     {
         Config.DefaultMemberTypes = type;
@@ -52,7 +51,7 @@ public sealed class ConfigTests(ITestOutputHelper output) : DefTestBase(output)
         }
     }
 
-    [Fact]
+    [Test]
     public void TestPropertyWithNoGetter()
     {
         Config.DefaultMemberTypes |= MemberTypes.Property;
@@ -61,7 +60,7 @@ public sealed class ConfigTests(ITestOutputHelper output) : DefTestBase(output)
         def.DidWritePropertyNoGetter.Should().BeTrue();
     }
 
-    [Fact]
+    [Test]
     public void TestPropertyWithNoSetter()
     {
         // This is invalid and should always fail.
@@ -71,7 +70,7 @@ public sealed class ConfigTests(ITestOutputHelper output) : DefTestBase(output)
         ErrorMessages.Should().ContainMatch("Failed to find member called 'PropertyNoSetter'*");
     }
 
-    [Fact]
+    [Test]
     public void TestStaticMemberWriting()
     {
         Config.DefaultMemberTypes |= MemberTypes.Property | MemberTypes.Field;
@@ -83,7 +82,7 @@ public sealed class ConfigTests(ITestOutputHelper output) : DefTestBase(output)
         MemberTypeDef.StaticProperty.Should().Be("StaticPropData");
     }
 
-    [Fact]
+    [Test]
     public void IgnoreShouldBeIgnored()
     {
         var def = LoadSingleDef<MemberTypeDef>("WriteIgnored", expectErrors: true);
@@ -91,9 +90,9 @@ public sealed class ConfigTests(ITestOutputHelper output) : DefTestBase(output)
         ErrorMessages.Should().ContainMatch("Failed to find member called 'Ignored'*");
     }
     
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
+    [Test]
+    [Arguments(true)]
+    [Arguments(false)]
     public void IncludeShouldBeIncluded(bool exclude)
     {
         // Regardless of whether private fields are included, the XmlInclude
@@ -107,11 +106,11 @@ public sealed class ConfigTests(ITestOutputHelper output) : DefTestBase(output)
         def.GetIncluded().Should().Be("Some Data");
     }
 
-    [Theory]
-    [InlineData(true,  true,  false)]
-    [InlineData(true,  false, true)]
-    [InlineData(false, true,  true)]
-    [InlineData(false, false, true)]
+    [Test]
+    [Arguments(true,  true,  false)]
+    [Arguments(true,  false, true)]
+    [Arguments(false, true,  true)]
+    [Arguments(false, false, true)]
     public void TestCaseSensitivity(bool caseSensitive, bool lowercase, bool shouldFind)
     {
         string toLoad = lowercase ? "CaseSensitivity_Lowercase" : "CaseSensitivity_Uppercase";

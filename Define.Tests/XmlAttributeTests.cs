@@ -1,10 +1,8 @@
-﻿using Xunit.Abstractions;
+﻿namespace Define.Tests;
 
-namespace Define.Tests;
-
-public sealed class XmlAttributeTests(ITestOutputHelper output) : DefTestBase(output)
+public sealed class XmlAttributeTests : DefTestBase
 {
-    [Fact]
+    [Test]
     public void TestNullAttributeSimple()
     {
         LoadDefFile("NullAttrs");
@@ -27,7 +25,7 @@ public sealed class XmlAttributeTests(ITestOutputHelper output) : DefTestBase(ou
         }
     }
 
-    [Fact]
+    [Test]
     public void TestNullAttrOnNodeWithContent()
     {
         var def = LoadSingleDef<TestDef>("NullWithContents");

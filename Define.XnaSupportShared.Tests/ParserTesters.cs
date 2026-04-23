@@ -1,34 +1,33 @@
 using Define.FastCache;
 using Define.Monogame.Tests.DefClasses;
 using Microsoft.Xna.Framework.Graphics;
-using Xunit.Abstractions;
 
 namespace Define.Monogame.Tests;
 
-public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(output)
+public class ParserTesters : MonogameDefTestBase
 {
-    [Fact]
+    [Test]
     public void TestVectorParsers()
     {
         var single = LoadSingleDef<VectorDef>("VectorDef");
         single.EnsureExpected();
     }
     
-    [Fact]
+    [Test]
     public void TestRectangleParser()
     {
         var single = LoadSingleDef<RectangleDef>("RectangleDef");
         single.EnsureExpected();
     }
     
-    [Fact]
+    [Test]
     public void TestColorParser()
     {
         var single = LoadSingleDef<ColorDef>("ColorDef");
         single.EnsureExpected();
     }
 
-    [Fact]
+    [Test]
     public void TestFastCache()
     {
         DefDatabase.Loader.AddMonogameDataParsers();
@@ -50,7 +49,7 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
 
         byte[] cacheData = fastCache.Serialize();
         cacheData.Should().HaveCountGreaterThan(0).And.Contain(b => b != 0);
-        Output.WriteLine($"Serialized all MG defs into {cacheData.Length} bytes.");
+        Console.WriteLine($"Serialized all MG defs into {cacheData.Length} bytes.");
         
         // Deserialize.
         var loadedCache = new DefFastCache(cacheData, DefDatabase.Config);
@@ -67,62 +66,38 @@ public class ParserTesters(ITestOutputHelper output) : MonogameDefTestBase(outpu
         db2.GetAll().Should().BeEquivalentTo(DefDatabase.GetAll());
     }
 
-    [SkippableFact(typeof(NoSuitableGraphicsDeviceException), typeof(PlatformNotSupportedException))]
-    public void TestGameRunBaseline()
+    [Test]
+    [GameTest]
+    public void TestGameRunBaseline(TestGame game)
     {
-        CheckAdapterCreation();
-
-        using var game = new TestGame(_ =>
-        {
-            
-        });
-
-        try
-        {
-            game.Run();
-        }
-        catch (NoSuitableGraphicsDeviceException e)
-        {
-            Output.WriteLine("Critical error! No graphics device was found to monogame content tests cannot run! See the following exception:\n{0}", e);
-            throw;
-        }
+        Console.WriteLine("Game ran successfully.");
     }
 
-    [SkippableFact(typeof(NoSuitableGraphicsDeviceException), typeof(PlatformNotSupportedException))]
-    public void TestGameLoadContentManual()
+    [Test]
+    [GameTest]
+    public void TestGameLoadContentManual(TestGame game)
     {
-        CheckAdapterCreation();
-
-        using var game = new TestGame(g =>
-        {
-            using var tex = g.ContentManager.Load<Texture2D>("Content/MyImage");
-            tex.Should().NotBeNull();
-            tex.Width.Should().Be(128);
-            tex.Height.Should().Be(128);
-        });
-        game.Run();
+        using var tex = game.ContentManager.Load<Texture2D>("Content/MyImage");
+        tex.Should().NotBeNull();
+        tex.Width.Should().Be(128);
+        tex.Height.Should().Be(128);
     }
 
-    [SkippableFact(typeof(NoSuitableGraphicsDeviceException), typeof(PlatformNotSupportedException))]
-    public void TestParseTexture()
+    [Test]
+    [GameTest]    
+    public void TestParseTexture(TestGame game)
     {
-        CheckAdapterCreation();
+        DefDatabase.Loader.AddMonogameContentParsers(game.ContentManager);
+        DefDatabase.AddDefDocument(File.ReadAllText("./Defs/ContentDef.xml"), "ContentDef.xml");
+        DefDatabase.FinishLoading();
 
-        using var game = new TestGame(g =>
-        {
-            DefDatabase.Loader.AddMonogameContentParsers(g.ContentManager);
-            DefDatabase.AddDefDocument(File.ReadAllText("./Defs/ContentDef.xml"), "ContentDef.xml");
-            DefDatabase.FinishLoading();
-
-            ErrorMessages.Should().BeEmpty();
-            WarningMessages.Should().BeEmpty();
+        ErrorMessages.Should().BeEmpty();
+        WarningMessages.Should().BeEmpty();
             
-            var def = DefDatabase.Get<ContentDef>("ContentDef");
-            def.Should().NotBeNull();
-            def!.Texture.Should().NotBeNull();
-            def.Texture!.Width.Should().Be(128);
-            def.Texture.Height.Should().Be(128);
-        });
-        game.Run();
+        var def = DefDatabase.Get<ContentDef>("ContentDef");
+        def.Should().NotBeNull();
+        def!.Texture.Should().NotBeNull();
+        def.Texture!.Width.Should().Be(128);
+        def.Texture.Height.Should().Be(128);
     }
 }

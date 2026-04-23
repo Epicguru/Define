@@ -2,14 +2,12 @@
 using Define.SourceGen.Attributes;
 using FluentAssertions;
 using TestSharedLib;
-using Xunit;
-using Xunit.Abstractions;
 
 namespace Define.SourceGen.Tests;
 
-public class BasicGenTest(ITestOutputHelper output) : DefTestBase(output)
+public class BasicGenTest : DefTestBase
 {
-    [Fact]
+    [Test]
     public void TestExampleDef()
     {
         var def = LoadSingleDef<ExampleDef>("ExampleDef", expectWarnings: true);

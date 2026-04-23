@@ -1,11 +1,10 @@
 using System.Xml;
-using Xunit.Abstractions;
 
 namespace Define.Tests;
 
-public class SanityChecks(ITestOutputHelper output) : DefTestBase(output)
+public class SanityChecks : DefTestBase
 {
-    [Fact]
+    [Test]
     public async Task CanLoadXmlDoc()
     {
         const string PATH = "./Defs/DummyXMLFile.xml";
