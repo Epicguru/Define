@@ -2,6 +2,7 @@
 
   <!-- Package info -->
   <PropertyGroup>
+    <IsPackable>true</IsPackable>
     <PackageId>Define.KNI</PackageId>
     <Title>Define.KNI</Title>
     <Version>1.1.0</Version>

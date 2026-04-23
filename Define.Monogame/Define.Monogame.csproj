@@ -2,6 +2,7 @@
 
   <!-- Package info -->
   <PropertyGroup>
+    <IsPackable>true</IsPackable>
     <PackageId>Define.Monogame</PackageId>
     <Title>Define.Monogame</Title>
     <Version>1.1.0</Version>

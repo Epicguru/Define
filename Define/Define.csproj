@@ -6,6 +6,7 @@
 
   <!-- Package info -->
   <PropertyGroup>
+    <IsPackable>true</IsPackable>
     <PackageId>Define</PackageId>
     <Title>Define</Title>
     <Version>1.1.0</Version>

@@ -45,13 +45,13 @@ public readonly struct MemberWrapper : IEquatable<MemberWrapper>
     /// <summary>
     /// Does this wrapper represent a field?
     /// </summary>
-    [MemberNotNullWhen(true, nameof(field))]
-    public bool IsField => field != null;
+    [MemberNotNullWhen(true, nameof(fieldInt))]
+    public bool IsField => fieldInt != null;
 
     /// <summary>
     /// The declaring type of the field/property that this wrapper represents.
     /// </summary>
-    public Type DeclaringType => IsField ? field.DeclaringType! : property!.DeclaringType!;
+    public Type DeclaringType => IsField ? fieldInt.DeclaringType! : property!.DeclaringType!;
     
     /// <summary>
     /// The name of this field or property.
@@ -61,13 +61,13 @@ public readonly struct MemberWrapper : IEquatable<MemberWrapper>
     /// <summary>
     /// The <see cref="Type"/> of this field or property.
     /// </summary>
-    public Type Type => IsField ? field.FieldType : property!.PropertyType;
+    public Type Type => IsField ? fieldInt.FieldType : property!.PropertyType;
     
     /// <summary>
     /// The backing <see cref="MemberInfo"/>
     /// behind the field or property this wrapper represents.
     /// </summary>
-    public MemberInfo Member => IsField ? field : property!;
+    public MemberInfo Member => IsField ? fieldInt : property!;
     
     /// <summary>
     /// An enumeration of all custom attributes on this field or property.
@@ -77,10 +77,10 @@ public readonly struct MemberWrapper : IEquatable<MemberWrapper>
     /// <summary>
     /// Is this field or property static?
     /// </summary>
-    public bool IsStatic => IsField ? field.IsStatic : property!.GetMethod?.IsStatic ?? property.SetMethod!.IsStatic;
+    public bool IsStatic => IsField ? fieldInt.IsStatic : property!.GetMethod?.IsStatic ?? property.SetMethod!.IsStatic;
 
     private readonly PropertyInfo? property;
-    private readonly FieldInfo? field;
+    private readonly FieldInfo? fieldInt;
 
     /// <summary>
     /// Creates a new <see cref="MemberWrapper"/> that represents the property
@@ -89,7 +89,7 @@ public readonly struct MemberWrapper : IEquatable<MemberWrapper>
     public MemberWrapper(PropertyInfo property)
     {
         this.property = property ?? throw new ArgumentNullException(nameof(property));
-        field = null;
+        fieldInt = null;
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ public readonly struct MemberWrapper : IEquatable<MemberWrapper>
     /// </summary>
     public MemberWrapper(FieldInfo field)
     {
-        this.field = field ?? throw new ArgumentNullException(nameof(field));
+        this.fieldInt = field ?? throw new ArgumentNullException(nameof(field));
         property = null;
     }
 
@@ -117,7 +117,7 @@ public readonly struct MemberWrapper : IEquatable<MemberWrapper>
     /// </summary>
     /// <param name="inherit">Whether to include inherited attributes.</param>
     public T? TryGetAttribute<T>(bool inherit = true) where T : Attribute
-        => IsField ? field.GetCustomAttribute<T>(inherit) : property!.GetCustomAttribute<T>(inherit);
+        => IsField ? fieldInt.GetCustomAttribute<T>(inherit) : property!.GetCustomAttribute<T>(inherit);
 
     /// <summary>
     /// Attempts to read the value of this field or property provided
@@ -127,7 +127,7 @@ public readonly struct MemberWrapper : IEquatable<MemberWrapper>
     /// </summary>
     /// <returns>The read object, or null if this is a property without a getter.</returns>
     public object? GetValue(object? owner)
-        => IsField ? field.GetValue(owner) : property!.GetMethod != null ? property.GetValue(owner) : null;
+        => IsField ? fieldInt.GetValue(owner) : property!.GetMethod != null ? property.GetValue(owner) : null;
 
     /// <summary>
     /// Attempts to write a value to this field or property provided
@@ -138,19 +138,19 @@ public readonly struct MemberWrapper : IEquatable<MemberWrapper>
     public void SetValue(object owner, object? value)
     {
         if (IsField)
-            field.SetValue(owner, value);
+            fieldInt.SetValue(owner, value);
         else if (property!.CanWrite)
             property.SetValue(owner, value);
     }
 
     /// <inheritdoc/>
-    public bool Equals(MemberWrapper other) => other.property == property && other.field == field;
+    public bool Equals(MemberWrapper other) => other.property == property && other.fieldInt == fieldInt;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj) => obj is MemberWrapper wrapper && Equals(wrapper);
 
     /// <inheritdoc/>
-    public override int GetHashCode() => HashCode.Combine(property, field);
+    public override int GetHashCode() => HashCode.Combine(property, fieldInt);
 
     /// <summary>
     /// Equivalent to <see cref="Equals(Define.Xml.Members.MemberWrapper)"/>.
