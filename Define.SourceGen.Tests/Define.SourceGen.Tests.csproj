@@ -10,12 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="[7.1.0]" />
-    <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.6.2" />
-    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="2.2.1" />
-    <PackageReference Include="TUnit.Core" Version="0.57.1" />
-    <PackageReference Include="TUnit.Engine" Version="0.57.1" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="JetBrains.Annotations" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
+    <PackageReference Include="TUnit.Core" />
+    <PackageReference Include="TUnit.Engine" />
   </ItemGroup>
 
   <ItemGroup>
