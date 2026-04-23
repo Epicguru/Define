@@ -354,3 +354,5 @@ MigrationBackup/
 
 .idea/.idea.Define/.idea/aws.xml
 test-results/
+
+.claude/worktrees/
