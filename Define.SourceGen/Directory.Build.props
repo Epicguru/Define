@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>
