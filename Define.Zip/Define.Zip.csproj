@@ -1,8 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  
   <!-- Package info -->
   <PropertyGroup>
-    <IsPackable>true</IsPackable>
     <PackageId>Define.Zip</PackageId>
     <Title>Define.Zip</Title>
     <Version>1.1.0</Version>

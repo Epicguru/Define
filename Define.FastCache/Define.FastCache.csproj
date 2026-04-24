@@ -1,8 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  
   <!-- Package info -->
   <PropertyGroup>
-    <IsPackable>true</IsPackable>
     <PackageId>Define.FastCache</PackageId>
     <Title>Define.FastCache</Title>
     <Version>1.2.0</Version>

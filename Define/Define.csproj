@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <Description>A data object parser library intended for game developers.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <!-- Package info -->
