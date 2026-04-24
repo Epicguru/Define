@@ -13,15 +13,18 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ['8.0.x', '10.0.x']
 
     steps:
 
       - uses: actions/checkout@v6.0.2
 
-      - name: Setup .NET
+      - name: Setup .NET ${{ matrix.dotnet-version }}
         uses: actions/setup-dotnet@v5.1.0
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: ${{ matrix.dotnet-version }}
 
       # This global tool is required to build Monogame content which is used in a test.
       - name: Install mgcb
@@ -32,29 +35,29 @@ jobs:
         run: dotnet restore
         
       # Build and test in debug mode:
-      - name: Test
-        run: dotnet test --configuration Debug --no-restore -- --report-trx --results-directory test-results --coverage --coverage-output-format cobertura
+      - name: Test (.NET ${{ matrix.dotnet-version }})
+        run: dotnet test --configuration Debug --no-restore -- --report-trx --results-directory test-results-${{ matrix.dotnet-version }} --coverage --coverage-output-format cobertura
         continue-on-error: true
 
       # Generate a test report.
-      - name: Test Report
+      - name: Test Report (.NET ${{ matrix.dotnet-version }})
         uses: dorny/test-reporter@v2.5.0
         if: success() || failure()
         with:
-          name: Test Report
-          path: Define*Tests/test-results/*.trx
+          name: Test Report (.NET ${{ matrix.dotnet-version }})
+          path: Define*Tests/test-results-${{ matrix.dotnet-version }}/*.trx
           reporter: dotnet-trx
       
-      - name: Merge coverage reports
+      - name: Merge coverage reports (.NET ${{ matrix.dotnet-version }})
         run: |
           dotnet tool install --global dotnet-coverage
-          dotnet-coverage merge Define*Tests/test-results/*.cobertura.xml --output merged.cobertura.xml --output-format cobertura --remove-input-files
+          dotnet-coverage merge Define*Tests/test-results-${{ matrix.dotnet-version }}/*.cobertura.xml --output merged-${{ matrix.dotnet-version }}.cobertura.xml --output-format cobertura --remove-input-files
 
       # Generate code coverage report.
-      - name: Code Coverage Report
+      - name: Code Coverage Report (.NET ${{ matrix.dotnet-version }})
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: merged.cobertura.xml
+          filename: merged-${{ matrix.dotnet-version }}.cobertura.xml
           badge: true
           fail_below_min: true
           format: markdown
@@ -65,12 +68,13 @@ jobs:
           thresholds: '70 75'
 
       # Post the results of the previous step as a PR comment.
-      - name: Add Coverage PR Comment
+      - name: Add Coverage PR Comment (.NET ${{ matrix.dotnet-version }})
         uses: marocchino/sticky-pull-request-comment@v2.9.4
         if: github.event_name == 'pull_request'
         with:
           recreate: true
-          path: code-coverage-results.md
+          header: ".NET ${{ matrix.dotnet-version }} Coverage"
+          path: code-coverage-results-${{ matrix.dotnet-version }}.md
 
-      - name: Write coverage to step summary
-        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+      - name: Write coverage to step summary (.NET ${{ matrix.dotnet-version }})
+        run: cat code-coverage-results-${{ matrix.dotnet-version }}.md >> $GITHUB_STEP_SUMMARY
