@@ -104,7 +104,8 @@ public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, I
         if (RequiresGpuAttribute.ShouldSkip())
         {
             context.TestContext.Execution.OverrideResult(TestState.Skipped, "This test requires GPU (graphics adapter) to run.");
-            
+            return ValueTask.CompletedTask;
+
             // Old TUnit way:
             //context.TestContext.SkipReason = "This test requires a GPU (graphics adapter) to run.";
         }
