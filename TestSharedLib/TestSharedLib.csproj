@@ -1,17 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <IsTestProject>false</IsTestProject>
+<!--    <IsTestProject>true</IsTestProject>-->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage" />
-    <PackageReference Include="FluentAssertions" Version="[7.1.0]" />
-    <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="JetBrains.Annotations" />
   </ItemGroup>
 
   <ItemGroup>

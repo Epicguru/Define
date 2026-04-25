@@ -18,7 +18,7 @@ namespace Define.Monogame.Tests;
 /// Note: it is not safe to run asynchronous code inside the test method.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method)]
-public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, IParallelConstraint, ITestRegisteredEventReceiver, ITestDiscoveryEventReceiver, IScopedAttribute<GameTest>
+public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, IParallelConstraint, ITestRegisteredEventReceiver, ITestDiscoveryEventReceiver, IScopedAttribute
 {
     private const string PARALLEL_CONSTRAINT_KEY = "MONOGAME_GAME_TEST";
     
@@ -40,6 +40,8 @@ public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, I
         Task<object?[]?> task = Task.FromResult<object?[]?>(new object[1]);
         yield return () => task;
     }
+    
+    public bool SkipIfEmpty { get; set; }
 
     private static void ForceUIThreadToCurrent()
     {
@@ -79,14 +81,15 @@ public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, I
     public ValueTask ExecuteTest(TestContext context, Func<ValueTask> action)
     {
         ForceUIThreadToCurrent();
-
-        using var game = new TestGame(_ =>
-        {
-            action().AsTask().Wait();
-        });
+        
         
         // Assign Game argument.
-        context.TestDetails.TestMethodArguments[0] = game;
+        var game = context.Metadata.TestDetails.TestMethodArguments[0] as TestGame;
+        Debug.Assert(game != null);
+        game.ToExecute = _ =>
+        {
+            action().AsTask().Wait();
+        };
         
         game.Run();
         return ValueTask.CompletedTask;
@@ -98,7 +101,11 @@ public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, I
         // This is the exact same logic as in RequiresGpuAttribute.
         if (RequiresGpuAttribute.ShouldSkip())
         {
-            context.TestContext.SkipReason = "This test requires a GPU (graphics adapter) to run.";
+            context.TestContext.Execution.OverrideResult(TestState.Skipped, "This test requires GPU (graphics adapter) to run.");
+            return ValueTask.CompletedTask;
+
+            // Old TUnit way:
+            //context.TestContext.SkipReason = "This test requires a GPU (graphics adapter) to run.";
         }
         
         // Set text executor to this. Note that I'm creating a new instance every time here, 
@@ -113,7 +120,7 @@ public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, I
         // Set parallel constraint to not run in parallel with other GameTests.
         // It is not safe to run multiple game instances at once, they assume they are the only one running and will access
         // static data in a way that will conflict.
-        context.SetParallelConstraint(new NotInParallelConstraint([PARALLEL_CONSTRAINT_KEY])
+        context.AddParallelConstraint(new NotInParallelConstraint([PARALLEL_CONSTRAINT_KEY])
         {
             Order = Order
         });
@@ -124,6 +131,9 @@ public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, I
         // This is completely an aesthetic change that makes the test discovery screen look better and more intuitive rather
         // than just displaying "null" for the game parameter.
         context.AddArgumentDisplayFormatter(new ArgDisplayFormatter());
+
+        // Set up game argument.
+        context.TestDetails.TestMethodArguments[0] = new TestGame();
         
         return default;
     }
@@ -136,4 +146,6 @@ public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, I
 
         public override string FormatValue(object? value) => "TestGame";
     }
+
+    public Type ScopeType => typeof(GameTest);
 }

@@ -7,12 +7,16 @@ public sealed class TestGame : Game
 {
     public ContentManager ContentManager { get; private set; } = null!;
 
-    private readonly Action<TestGame> toExecute;
+    public Action<TestGame>? ToExecute { get; set; }
     
-    public TestGame(Action<TestGame> toExecute)
+    public TestGame()
     {
         _ = new GraphicsDeviceManager(this);
-        this.toExecute = toExecute;
+    }
+
+    public TestGame(Action<TestGame>? toExecute) : this()
+    {
+        ToExecute = toExecute;
     }
     
     protected override void LoadContent()
@@ -20,7 +24,10 @@ public sealed class TestGame : Game
         base.LoadContent();
         ContentManager = Content;
 
-        toExecute(this);
+        if (ToExecute is null)
+            throw new InvalidOperationException("Missing run action");
+        
+        ToExecute?.Invoke(this);
         
         Exit();
     }

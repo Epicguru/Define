@@ -1,21 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="[7.1.0]" />
-    <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="17.14.2" />
-    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" Version="1.8.2" />
-    <PackageReference Include="TUnit.Core" Version="0.57.1" />
-    <PackageReference Include="TUnit.Engine" Version="0.57.1" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="JetBrains.Annotations" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
+    <PackageReference Include="TUnit.Core" />
+    <PackageReference Include="TUnit.Engine" />
   </ItemGroup>
   
   <ItemGroup>

@@ -7,43 +7,34 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-<!--    <GeneratePackageOnBuild>true</GeneratePackageOnBuild> &lt;!&ndash; Generates a package at build &ndash;&gt;-->
     <IncludeBuildOutput>false</IncludeBuildOutput> <!-- Do not include the generator as a lib dependency -->
-    
-<!--    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>-->
+    <PolySharpIncludeRuntimeSupportedAttributes>true</PolySharpIncludeRuntimeSupportedAttributes>
     <PackageScribanIncludeSource>true</PackageScribanIncludeSource>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
   </PropertyGroup>
-  
-<!--  <Target Name="GetDependencyTargetPaths">-->
-<!--    <ItemGroup>-->
-<!--      <TargetPathWithTargetPlatformMoniker Include="$(PKGScriban)\lib\netstandard2.0\Scriban.dll" IncludeRuntimeDependency="false"/>-->
-<!--    </ItemGroup>-->
-<!--  </Target>-->
 
   <!-- Version info -->
   <PropertyGroup>
+    <IsPackable>true</IsPackable>
     <Version>1.0.0</Version>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2025.2.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.11.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.11.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="SourceGenerator.Helper.CopyCode" Version="0.0.2">
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="Microsoft.CodeAnalysis" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" />
+    <PackageReference Include="Microsoft.CSharp" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+    <PackageReference Include="SourceGenerator.Helper.CopyCode">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
-    <PackageReference Include="PolySharp" Version="1.15.0">
+    <PackageReference Include="PolySharp">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-
-    <PackageReference Include="Scriban" Version="6.2.1" IncludeAssets="build"/>
-<!--    <None Include="$(PkgScriban)\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>-->
+    <PackageReference Include="Scriban" IncludeAssets="build" />
   </ItemGroup>
   
   <ItemGroup>

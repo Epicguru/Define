@@ -87,6 +87,11 @@ public class ParserTesters : MonogameDefTestBase
     [GameTest]    
     public void TestParseTexture(TestGame game)
     {
+        game.Should().NotBeNull();
+        game.ContentManager.Should().NotBeNull();
+        DefDatabase.Should().NotBeNull();
+        DefDatabase.Loader.Should().NotBeNull();
+        
         DefDatabase.Loader.AddMonogameContentParsers(game.ContentManager);
         DefDatabase.AddDefDocument(File.ReadAllText("./Defs/ContentDef.xml"), "ContentDef.xml");
         DefDatabase.FinishLoading();

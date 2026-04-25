@@ -15,6 +15,7 @@ public class MemberStore
     /// The type that this object is tracking the members of.
     /// </summary>
     public readonly Type TargetType;
+    
     /// <summary>
     /// The <see cref="DefSerializeConfig"/> that was used when creating this member store - this
     /// changes what types of field and properties are discovered, among other settings.
