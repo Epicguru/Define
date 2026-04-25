@@ -81,17 +81,15 @@ public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, I
     public ValueTask ExecuteTest(TestContext context, Func<ValueTask> action)
     {
         ForceUIThreadToCurrent();
-
-        using var game = new TestGame(_ =>
-        {
-            action().AsTask().Wait();
-        });
+        
         
         // Assign Game argument.
-        context.Metadata.TestDetails.TestMethodArguments[0] = game;
-        
-        // Old TUnit:
-        //context.TestDetails.TestMethodArguments[0] = game;
+        var game = context.Metadata.TestDetails.TestMethodArguments[0] as TestGame;
+        Debug.Assert(game != null);
+        game.ToExecute = _ =>
+        {
+            action().AsTask().Wait();
+        };
         
         game.Run();
         return ValueTask.CompletedTask;
@@ -133,6 +131,9 @@ public sealed class GameTest : Attribute, IDataSourceAttribute, ITestExecutor, I
         // This is completely an aesthetic change that makes the test discovery screen look better and more intuitive rather
         // than just displaying "null" for the game parameter.
         context.AddArgumentDisplayFormatter(new ArgDisplayFormatter());
+
+        // Set up game argument.
+        context.TestDetails.TestMethodArguments[0] = new TestGame();
         
         return default;
     }
