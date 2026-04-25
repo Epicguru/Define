@@ -75,7 +75,7 @@ jobs:
         with:
           recreate: true
           header: ".NET ${{ matrix.dotnet-version }} Coverage"
-          path: code-coverage-results-${{ matrix.dotnet-version }}.md
+          path: code-coverage-results.md
 
       - name: Write coverage to step summary (.NET ${{ matrix.dotnet-version }})
-        run: cat code-coverage-results-${{ matrix.dotnet-version }}.md >> $GITHUB_STEP_SUMMARY
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
