@@ -78,6 +78,11 @@ public sealed class DefSerializeConfig : IEquatable<DefSerializeConfig>
     /// for each entry here, just before <see cref="DefDatabase.FinishLoading"/> is called.
     /// </summary>
     public List<XmlParser> InitialParsers { get; set; } = [];
+    
+    /// <summary>
+    /// If set to a non-null value, this will be set as <see cref="DefDatabase.Debug"/>.
+    /// </summary>
+    public DefDebugger? Debugger { get; set; }
 
     /// <inheritdoc/>
     public bool Equals(DefSerializeConfig? other)
@@ -93,7 +98,11 @@ public sealed class DefSerializeConfig : IEquatable<DefSerializeConfig>
                && ListItemName == other.ListItemName 
                && DoPostLoad == other.DoPostLoad 
                && DoLatePostLoad == other.DoLatePostLoad 
-               && DoConfigErrors == other.DoConfigErrors;
+               && DoConfigErrors == other.DoConfigErrors
+               && DoStaticPostLoad == other.DoStaticPostLoad
+               && DoPostLoad == other.DoPostLoad
+               && DoConfigErrors == other.DoConfigErrors
+               && InitialParsers.SequenceEqual(other.InitialParsers);
     }
     
     /// <inheritdoc/>

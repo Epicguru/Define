@@ -60,7 +60,7 @@ public class DefDatabase
     /// You should subscribe to the <see cref="DefDebugger.OnWarning"/> and <see cref="DefDebugger.OnError"/> events
     /// to handle warnings and errors as you see fit.
     /// </summary>
-    public DefDebugger Debug { get; } = new DefDebugger();
+    public DefDebugger Debug { get; }
     
     private readonly HashSet<Type> typesWithStaticData = [];
     private readonly Dictionary<string, IDef> idToDef = new Dictionary<string, IDef>(4096);
@@ -77,6 +77,7 @@ public class DefDatabase
         ArgumentNullException.ThrowIfNull(config);
         
         Config = config;
+        Debug = config.Debugger ?? new DefDebugger();
         
         // Redirect warnings and errors from the loader to this database's debugger.
         Loader = new XmlLoader(config);
