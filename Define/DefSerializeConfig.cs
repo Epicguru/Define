@@ -1,5 +1,6 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using Define.Xml.Parsers;
 using Define.Callbacks;
 using JetBrains.Annotations;
 
@@ -70,6 +71,13 @@ public sealed class DefSerializeConfig : IEquatable<DefSerializeConfig>
     /// You can disable this for a gain in performance if it is not needed.
     /// </summary>
     public bool DoConfigErrors { get; set; } = true;
+    
+    /// <summary>
+    /// A list of <see cref="XmlParser"/>s to be registered before loading starts.
+    /// This is the same as calling <see cref="DefDatabase.Loader"/>'s <see cref="Define.Xml.XmlLoader.AddParser"/> method
+    /// for each entry here, just before <see cref="DefDatabase.FinishLoading"/> is called.
+    /// </summary>
+    public List<XmlParser> InitialParsers { get; set; } = [];
 
     /// <inheritdoc/>
     public bool Equals(DefSerializeConfig? other)

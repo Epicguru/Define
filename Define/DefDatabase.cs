@@ -444,6 +444,12 @@ public class DefDatabase
     /// <exception cref="Exception">If loading has not been started.</exception>
     public void FinishLoading()
     {
+        // Add parsers from config.
+        foreach (var parser in Config.InitialParsers)
+        {
+            Loader.AddParser(parser);
+        }
+        
         // Resolve inheritance.
         System.Diagnostics.Debug.Assert(!Loader.HasResolvedInheritance);
         Loader.ResolveInheritance();
