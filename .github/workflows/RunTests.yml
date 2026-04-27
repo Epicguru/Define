@@ -70,7 +70,7 @@ jobs:
 
       # Post the results of the previous step as a PR comment.
       - name: Add Coverage PR Comment (.NET ${{ matrix.dotnet-version }})
-        uses: marocchino/sticky-pull-request-comment@v2.9.4
+        uses: marocchino/sticky-pull-request-comment@v3.0.4
         if: github.event_name == 'pull_request'
         with:
           recreate: true
