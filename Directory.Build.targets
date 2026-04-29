@@ -24,11 +24,4 @@
     <None Include="Readme.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
-<Target Name="DebugDocGen" BeforeTargets="Build">
-  <Message Importance="high" Text="IsTestProject='$(IsTestProject)'" />
-  <Message Importance="high" Text="GenerateDocumentationFile='$(GenerateDocumentationFile)'" />
-  <Message Importance="high" Text="NoWarn='$(NoWarn)'" />
-  <Message Importance="high" Text="GenDocs='$(IsTestProject)' != 'true'" />
-</Target>
-
 </Project>
