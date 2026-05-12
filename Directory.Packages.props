@@ -15,7 +15,7 @@
     <PackageVersion Include="nkast.Xna.Framework.Media" Version="4.2.9001" />
     <PackageVersion Include="PolySharp" Version="1.15.0" />
     <PackageVersion Include="SharpZipLib" Version="1.4.2" />
-    <PackageVersion Include="Scriban" Version="7.1.0" />
+    <PackageVersion Include="Scriban" Version="7.2.0" />
     <PackageVersion Include="SourceGenerator.Helper.CopyCode" Version="0.0.2" />
     <PackageVersion Include="TUnit.Core" Version="1.37.36" />
     <PackageVersion Include="TUnit.Engine" Version="1.37.36" />
